@@ -77,6 +77,10 @@
       .iconbtn:active {
         transform: translateY(1px);
       }
+      .iconbtn:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
       .wrap {
         max-width: 1100px;
         margin: 0 auto;
@@ -386,7 +390,7 @@
         <button class="iconbtn" id="btnToggle" title="Toggle Week/Calendar">
           ≣
         </button>
-        <button class="iconbtn" id="btnAdd" title="Add">＋</button>
+        <button class="iconbtn" id="btnAdd" title="Add" disabled>＋</button>
       </div>
     </header>
 
@@ -837,18 +841,12 @@
       // Firebase configuration and initialization
       const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
       const firebaseConfig = {
-
-
-       
-  apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
-  authDomain: "home-planner-ce48b.firebaseapp.com",
-  projectId: "home-planner-ce48b",
-  storageBucket: "home-planner-ce48b.firebasestorage.app",
-  messagingSenderId: "20103999017",
-  appId: "1:20103999017:web:9be545d5a0f70008dc7638"
-
-
-
+        apiKey: "AIzaSyBUF1QlhzSef0xxcJ6paKwZ2gE0MRXgcVA",
+        authDomain: "home-planner-95e03.firebaseapp.com",
+        projectId: "home-planner-95e03",
+        storageBucket: "home-planner-95e03.firebasestorage.app",
+        messagingSenderId: "85328556868",
+        appId: "1:85328556868:web:7f5da0ad105b6f7b2edd11"
       };
       const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -975,6 +973,7 @@
                 state.milestone = data.milestone || [];
                 state.journal = data.journal || [];
                 renderAll();
+                $("#btnAdd").disabled = false;
             } else {
                 // If the document is deleted for some reason, re-seed it
                 setDoc(userDocRef, seed());
@@ -1246,9 +1245,13 @@
       function workRowTemplate(dow) {
         return `
       <div class="grid3" data-dow="${dow}">
-        <div class="picker"><label>${weekdays[dow]}</label></div>
-        <div class="picker"><label>Start</label><input type="time" class="wStart" value="09:00"></div>
-        <div class="picker"><label>End</label><input type="time" class="wEnd" value="17:00"></div>
+        <div class="picker">
+          <label>${weekdays[dow]}</label>
+          <div class="row">
+            <input type="time" class="wStart" value="09:00">
+            <input type="time" class="wEnd" value="17:00">
+          </div>
+        </div>
       </div>`;
       }
       function openWork() {
@@ -1275,7 +1278,6 @@
             state.work[parentId][dow] = {
               start: container.querySelector(".wStart").value || "",
               end: container.querySelector(".wEnd").value || "",
-              note: "",
             };
           });
         updatePlannerDoc().then(() => $("#dlgWork").close()).catch(showError);
@@ -1285,9 +1287,18 @@
       function lunchRowTemplate(dow) {
         return `
       <div class="grid3" data-dow="${dow}">
-        <div class="picker"><label>${weekdays[dow]}</label><input class="meal" placeholder="Meal (e.g., Turkey sandwich)"></div>
-        <div class="picker"><label>Assigned to</label><select class="who"></select></div>
-        <div class="picker"><label>Notes</label><input class="note" placeholder="optional"></div>
+        <div class="picker">
+          <label>${weekdays[dow]}</label>
+          <input class="meal" placeholder="Meal (e.g., Turkey sandwich)">
+        </div>
+        <div class="picker">
+          <label>Assigned to</label>
+          <select class="who"></select>
+        </div>
+        <div class="picker">
+          <label>Notes</label>
+          <input class="note" placeholder="optional">
+        </div>
       </div>`;
       }
       function openLunch() {
@@ -1727,7 +1738,6 @@
 
       /* ===== Init ===== */
       try {
-        renderAll();
         document.querySelectorAll("dialog").forEach((d) => {
           d.addEventListener("click", (e) => {
             const sheet = e.target.closest(".sheet");
