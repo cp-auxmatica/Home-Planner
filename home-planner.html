@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Home Planner</title>
+    <style>
+      :root {
+        --bg: #f7f7fb;
+        --card: #ffffff;
+        --ink: #111827;
+        --muted: #6b7280;
+        --grid: #e5e7eb;
+        --brand: #2563eb;
+        /* event colors (tints) */
+        --c-school: #2563eb;
+        --c-school-bg: #eff6ff;
+        --c-lunch: #10b981;
+        --c-lunch-bg: #ecfdf5;
+        --c-meeting: #0ea5e9;
+        --c-meeting-bg: #f0f9ff;
+        --c-timeoff: #f59e0b;
+        --c-timeoff-bg: #fffbeb;
+        --c-doctor: #ef4444;
+        --c-doctor-bg: #fef2f2;
+        --c-party: #8b5cf6;
+        --c-party-bg: #f5f3ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .appbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: #fff;
+        border-bottom: 1px solid var(--grid);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        padding: 0 12px;
+      }
+      .appbar h1 {
+        font-size: 18px;
+        margin: 0;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+      .appbar .actions {
+        position: absolute;
+        right: 10px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .iconbtn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid var(--grid);
+        background: #fff;
+        cursor: pointer;
+        display: inline-grid;
+        place-items: center;
+        font-size: 20px;
+        line-height: 0;
+      }
+      .iconbtn:active {
+        transform: translateY(1px);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 12px;
+      }
+      .seg {
+        background: var(--card);
+        border: 1px solid var(--grid);
+        border-radius: 16px;
+        padding: 12px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0 12px;
+      }
+      .tab {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--grid);
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 14px;
+        background: #fff;
+      }
+      .tab.active {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      .dayHeader {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 6px 2px 4px;
+        border-bottom: 1px solid var(--grid);
+        margin-top: 12px;
+      }
+      .dayName {
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: 0.2px;
+      }
+      .dayDate {
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .list {
+        display: grid;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .evt {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+        border: 1px solid var(--grid);
+        border-radius: 14px;
+        padding: 12px;
+        background: #fff;
+        cursor: default;
+      }
+      .evt.clickable {
+        cursor: pointer;
+      }
+      .evtTitle {
+        font-weight: 900;
+        font-size: 15px;
+      }
+      .evtMeta {
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--grid);
+        font-weight: 800;
+        letter-spacing: 0.3px;
+      }
+      .evt.school {
+        background: var(--c-school-bg);
+      }
+      .evt.lunch {
+        background: var(--c-lunch-bg);
+      }
+      .evt.meeting {
+        background: var(--c-meeting-bg);
+      }
+      .evt.timeoff {
+        background: var(--c-timeoff-bg);
+      }
+      .evt.doctor {
+        background: var(--c-doctor-bg);
+      }
+      .evt.party {
+        background: var(--c-party-bg);
+      }
+      .calHdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 4px 0 10px;
+      }
+      .calHdr h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+      }
+      .calGrid {
+        --cols: 7;
+        display: grid;
+        grid-template-columns: repeat(var(--cols), 1fr);
+        gap: 6px;
+      }
+      .dow {
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .day {
+        border: 1px solid var(--grid);
+        border-radius: 12px;
+        background: #fff;
+        min-height: 72px;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .dayNum {
+        font-weight: 800;
+        font-size: 13px;
+      }
+      .pill {
+        font-size: 10.5px;
+        border: 1px solid var(--grid);
+        border-radius: 999px;
+        padding: 1px 6px;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .pill.clickable {
+        cursor: pointer;
+      }
+      .today {
+        outline: 2px solid var(--brand);
+      }
+      dialog {
+        border: none;
+        border-radius: 16px;
+        padding: 0;
+        width: min(560px, 92vw);
+      }
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.25);
+      }
+      .sheet {
+        padding: 14px;
+      }
+      .sheet h3 {
+        margin: 6px 0 12px;
+        font-size: 16px;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--grid);
+        border-radius: 10px;
+        background: #fff;
+        font: inherit;
+      }
+      textarea {
+        min-height: 90px;
+      }
+      .sheet .row {
+        justify-content: flex-end;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--grid);
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: var(--brand);
+        color: #fff;
+        border-color: var(--brand);
+      }
+      .btn.warn {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+      }
+      .section {
+        display: grid;
+        gap: 10px;
+      }
+      .picker {
+        display: grid;
+        gap: 8px;
+      }
+      .actionGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .action {
+        border: 1px dashed var(--grid);
+        border-radius: 12px;
+        padding: 14px;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .action small {
+        display: block;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      @media (min-width: 900px) {
+        .wrap.cols {
+          display: grid;
+          grid-template-columns: 1.2fr 0.9fr;
+          gap: 12px;
+        }
+        .tabs {
+          display: none;
+        }
+        .deskHide {
+          display: none;
+        }
+      }
+      @media (max-width: 899px) {
+        .deskOnly {
+          display: none;
+        }
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18px;
+        background: #111827;
+        color: #fff;
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 10px 14px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s, transform 0.25s;
+        z-index: 100;
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+      }
+      #errorBubble {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 60px;
+        background: #dc2626;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        display: none;
+        z-index: 101;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="appbar">
+      <h1>Home Planner</h1>
+      <div class="actions">
+        <button class="iconbtn" id="btnToggle" title="Toggle Week/Calendar">
+          ≣
+        </button>
+        <button class="iconbtn" id="btnAdd" title="Add">＋</button>
+      </div>
+    </header>
+
+    <main class="wrap cols">
+      <section class="seg" id="weekPanel">
+        <div class="dayHeader">
+          <div class="dayName">Upcoming</div>
+          <div class="dayDate">Next 7 days</div>
+        </div>
+        <div class="list" id="upcomingList"></div>
+      </section>
+
+      <section class="seg" id="calPanel">
+        <div class="calHdr">
+          <button class="iconbtn" id="prevMonth" title="Previous Month">‹</button>
+          <h3 id="calTitle"></h3>
+          <button class="iconbtn" id="nextMonth" title="Next Month">›</button>
+        </div>
+        <div class="calGrid" id="dowRow"></div>
+        <div class="calGrid" id="calGrid"></div>
+        <div class="deskHide" style="margin-top: 10px">
+          <div class="tabs">
+            <button class="tab active" data-view="week">Week</button>
+            <button class="tab" data-view="cal">Calendar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="dlgAdd">
+      <form method="dialog" class="sheet">
+        <h3>Add / Manage</h3>
+        <div class="actionGrid">
+          <div class="action" data-act="people">
+            👥 Manage People <small>Edit / Delete</small>
+          </div>
+          <div class="action" data-act="person">
+            👤 New Person <small>Parent or Child</small>
+          </div>
+          <div class="action" data-act="school">
+            🏫 School Plan <small>Drop-off / Pick-up</small>
+          </div>
+          <div class="action" data-act="work">
+            💼 Work Schedule <small>Parent work hours</small>
+          </div>
+          <div class="action" data-act="lunch">
+            🥪 Lunch Plan <small>Meal + Assigned to</small>
+          </div>
+          <div class="action" data-act="meeting">
+            📅 Meeting <small>Work / PT conference</small>
+          </div>
+          <div class="action" data-act="timeoff">
+            🌴 Time Off <small>Vacation / PTO</small>
+          </div>
+          <div class="action" data-act="doctor">
+            🩺 Doctor <small>Appointment</small>
+          </div>
+          <div class="action" data-act="party">
+            🎉 Party <small>Invitees</small>
+          </div>
+          <div class="action" data-act="milestone">
+            🏆 Milestone <small>Achievement</small>
+          </div>
+          <div class="action" data-act="journal">
+            📝 Journal <small>Quick note</small>
+          </div>
+        </div>
+        <div class="row" style="margin-top: 12px">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgPeople">
+      <form method="dialog" class="sheet">
+        <h3>Manage People</h3>
+        <div id="peopleList" class="section"></div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgPerson">
+      <form method="dialog" class="sheet" id="formPerson">
+        <h3 id="personFormTitle">Person</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
+          <div class="picker">
+            <label>Name</label><input name="name" required />
+          </div>
+          <div class="picker">
+            <label>Type</label
+            ><select name="type">
+              <option value="parent">Parent</option>
+              <option value="child">Child</option>
+            </select>
+          </div>
+          <div class="picker">
+            <label>Color</label><input type="color" name="color" value="#2563eb" />
+          </div>
+          <div class="picker">
+            <label>Birth (optional)</label><input type="date" name="birth" />
+          </div>
+        </div>
+        <div class="row">
+          <button
+            class="btn warn"
+            id="deletePerson"
+            style="margin-right: auto; display: none"
+            type="button"
+          >
+            Delete
+          </button>
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="savePerson" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgSchool">
+      <form method="dialog" class="sheet" id="formSchool">
+        <h3>School Week Plan</h3>
+        <div class="grid2">
+          <div class="picker">
+            <label>Child</label><select name="child" id="schoolChild"></select>
+          </div>
+          <div class="picker">
+            <label>Start week</label><input type="date" name="start" id="schoolStart" />
+          </div>
+        </div>
+        <div id="schoolRows" class="section" style="margin-top: 6px"></div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveSchool" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgWork">
+      <form method="dialog" class="sheet" id="formWork">
+        <h3>Work Schedule</h3>
+        <div class="grid2">
+          <div class="picker">
+            <label>Parent</label><select name="parent" id="workParent"></select>
+          </div>
+          <div class="picker">
+            <label>Start week</label><input type="date" name="start" id="workStart" />
+          </div>
+        </div>
+        <div id="workRows" class="section" style="margin-top: 6px"></div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveWork" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgLunch">
+      <form method="dialog" class="sheet" id="formLunch">
+        <h3>Lunch Plan</h3>
+        <div class="grid2">
+          <div class="picker">
+            <label>Child</label><select name="child" id="lunchChild"></select>
+          </div>
+          <div class="picker">
+            <label>Start week</label><input type="date" name="start" id="lunchStart" />
+          </div>
+        </div>
+        <div id="lunchRows" class="section" style="margin-top: 6px"></div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveLunch" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgMeeting">
+      <form method="dialog" class="sheet" id="formMeeting">
+        <h3>Meeting</h3>
+        <div class="grid3">
+          <div class="picker">
+            <label>Title</label
+            ><input
+              name="title"
+              placeholder="e.g., 1:1, PT Conference"
+              required
+            />
+          </div>
+          <div class="picker">
+            <label>Date</label><input type="date" name="date" required />
+          </div>
+          <div class="picker">
+            <label>Start</label><input type="time" name="start" value="09:00" required />
+          </div>
+          <div class="picker">
+            <label>End</label><input type="time" name="end" value="10:00" required />
+          </div>
+          <div class="picker">
+            <label>Location</label><input name="loc" placeholder="Office, School, Zoom…" />
+          </div>
+          <div class="picker">
+            <label>Notes</label><input name="notes" placeholder="optional" />
+          </div>
+        </div>
+        <div class="section">
+          <label style="font-weight: 700">Participants</label>
+          <div id="meetingPeople" class="row"></div>
+        </div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveMeeting" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgTimeOff">
+      <form method="dialog" class="sheet" id="formTimeOff">
+        <h3>Time Off</h3>
+        <div class="grid3">
+          <div class="picker">
+            <label>Person</label><select name="person" id="timeoffPerson"></select>
+          </div>
+          <div class="picker">
+            <label>Start</label><input type="date" name="start" id="timeoffStart" />
+          </div>
+          <div class="picker">
+            <label>End</label><input type="date" name="end" id="timeoffEnd" />
+          </div>
+        </div>
+        <div class="picker">
+          <label>Reason</label
+          ><input name="reason" id="timeoffReason" placeholder="Vacation / PTO" />
+        </div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveTimeOff" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgDoctor">
+      <form method="dialog" class="sheet" id="formDoctor">
+        <h3>Doctor Appointment</h3>
+        <div class="grid3">
+          <div class="picker">
+            <label>Person</label><select name="person" id="doctorPerson"></select>
+          </div>
+          <div class="picker">
+            <label>Date</label><input type="date" name="date" id="doctorDate" />
+          </div>
+          <div class="picker">
+            <label>Start</label><input type="time" name="start" id="doctorStart" value="14:00" />
+          </div>
+          <div class="picker">
+            <label>End</label><input type="time" name="end" id="doctorEnd" value="15:00" />
+          </div>
+        </div>
+        <div class="picker">
+          <label>Notes</label
+          ><input name="note" id="doctorNote" placeholder="optional" />
+        </div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveDoctor" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgParty">
+      <form method="dialog" class="sheet" id="formParty">
+        <h3>Party / Event</h3>
+        <input type="hidden" name="id" id="partyId" />
+        <div class="grid3">
+          <div class="picker">
+            <label>Title</label
+            ><input
+              name="title"
+              id="partyTitle"
+              placeholder="Birthday, BBQ…"
+              required
+            />
+          </div>
+          <div class="picker">
+            <label>Date</label><input type="date" name="date" id="partyDate" required />
+          </div>
+          <div class="picker">
+            <label>Start</label
+            ><input type="time" name="start" id="partyStart" value="13:00" required />
+          </div>
+          <div class="picker">
+            <label>End</label><input type="time" name="end" id="partyEnd" value="16:00" required />
+          </div>
+        </div>
+        <div class="picker">
+          <label>Notes</label><input name="notes" id="partyNotes" placeholder="optional" />
+        </div>
+        <div class="section">
+          <label style="font-weight: 700">Invitees</label>
+          <div id="partyPeople" class="row"></div>
+        </div>
+        <div class="row">
+          <button
+            class="btn warn"
+            id="deleteParty"
+            style="margin-right: auto; display: none"
+            type="button"
+          >
+            Delete
+          </button>
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveParty" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgMilestone">
+      <form method="dialog" class="sheet" id="formMilestone">
+        <h3>Milestone</h3>
+        <div class="grid3">
+          <div class="picker">
+            <label>Title</label><input name="title" id="mileTitle" required />
+          </div>
+          <div class="picker">
+            <label>Date</label><input type="date" name="date" id="mileDate" required />
+          </div>
+          <div class="picker">
+            <label>Person</label><select name="person" id="milePerson"></select>
+          </div>
+        </div>
+        <div class="picker">
+          <label>Notes</label><input name="notes" id="mileNotes" placeholder="optional" />
+        </div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveMilestone" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="dlgJournal">
+      <form method="dialog" class="sheet" id="formJournal">
+        <h3>Journal</h3>
+        <div class="grid3">
+          <div class="picker">
+            <label>Date</label><input type="date" name="date" id="journalDate" />
+          </div>
+          <div class="picker">
+            <label>Person (optional)</label
+            ><select name="person" id="journalPerson"></select>
+          </div>
+          <div class="picker">
+            <label>Title</label><input name="title" id="journalTitle" placeholder="Entry" />
+          </div>
+        </div>
+        <div class="picker">
+          <label>Notes</label
+          ><textarea id="journalNotes" placeholder="What happened?"></textarea>
+        </div>
+        <div class="row">
+          <button
+            class="btn"
+            type="button"
+            onclick="this.closest('dialog').close()"
+          >
+            Cancel
+          </button>
+          <button class="btn primary" id="saveJournal" type="button">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" role="status" aria-live="polite">Saved</div>
+    <div id="errorBubble"></div>
+    
+    <script>
+      /* ===== Local date helpers (fix for weekend shift) ===== */
+      const pad = (n) => (n < 10 ? "0" : "") + n;
+      const toLocalISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      const fromISO = (iso) => {
+        const [y, m, dd] = iso.split("-").map(Number);
+        return new Date(y, m - 1, dd);
+      };
+      const todayISO = () => toLocalISO(new Date());
+      const addDays = (iso, n) => {
+        const d = fromISO(iso);
+        d.setDate(d.getDate() + n);
+        return toLocalISO(d);
+      };
+      const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const humanHeader = (iso) => {
+        const d = fromISO(iso);
+        return {
+          day: weekdays[d.getDay()],
+          date: d.toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          }),
+        };
+      };
+
+      /* ===== Small utils ===== */
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      
+      function toast(msg = "Saved") {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(toast._id);
+        toast._id = setTimeout(() => t.classList.remove("show"), 1300);
+      }
+      
+      function showError(e) {
+        const b = $("#errorBubble");
+        b.textContent = "Error: " + (e?.message || e);
+        b.style.display = "block";
+        console.error(e);
+        setTimeout(() => {
+          b.style.display = "none";
+        }, 5000);
+      }
+
+      /* ===== State ===== */
+      const EMPTY = {
+        people: [],
+        school: {},
+        work: {},
+        lunchMeals: {},
+        lunchAssigned: {},
+        meetings: [],
+        timeoff: [],
+        doctor: [],
+        party: [],
+        milestone: [],
+        journal: [],
+      };
+      let state = JSON.parse(JSON.stringify(EMPTY));
+
+      /* ===== Local Storage Data Persistence ===== */
+      function loadData() {
+        const saved = localStorage.getItem('homePlanner');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            state = {
