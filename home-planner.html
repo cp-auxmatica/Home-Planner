@@ -282,9 +282,6 @@
       }
       .sheet .row {
         justify-content: flex-end;
-        display: flex;
-        gap: 8px;
-        align-items: center;
       }
       .btn {
         padding: 10px 14px;
@@ -831,7 +828,58 @@
     <div id="toast" role="status" aria-live="polite">Saved</div>
     <div id="errorBubble"></div>
     
-    <script>
+    <script type="module">
+      // Firebase Firestore and Auth imports
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc, setDoc, addDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // Firebase configuration and initialization
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+      const firebaseConfig = {
+        apiKey: "AIzaSyBUF1QlhzSef0xxcJ6paKwZ2gE0MRXgcVA",
+        authDomain: "home-planner-95e03.firebaseapp.com",
+        projectId: "home-planner-95e03",
+        storageBucket: "home-planner-95e03.firebasestorage.app",
+        messagingSenderId: "85328556868",
+        appId: "1:85328556868:web:7f5da0ad105b6f7b2edd11"
+      };
+      const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      
+      let userId = null;
+      let isAuthReady = false;
+
+      // Event listener for authentication state changes
+      auth.onAuthStateChanged(async (user) => {
+          if (user) {
+              userId = user.uid;
+              console.log("Authenticated with user ID:", userId);
+              isAuthReady = true;
+              initApp();
+          } else {
+              // Sign in the user
+              try {
+                  if (__initial_auth_token) {
+                      const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                      userId = userCredential.user.uid;
+                  } else {
+                      const userCredential = await signInAnonymously(auth);
+                      userId = userCredential.user.uid;
+                  }
+                  console.log("Successfully authenticated user.");
+                  isAuthReady = true;
+                  initApp();
+              } catch (error) {
+                  console.error("Authentication failed:", error);
+                  showError("Authentication failed: " + error.message);
+              }
+          }
+      });
+
       /* ===== Local date helpers (fix for weekend shift) ===== */
       const pad = (n) => (n < 10 ? "0" : "") + n;
       const toLocalISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -858,9 +906,8 @@
       };
 
       /* ===== Small utils ===== */
-      const $ = (s) => document.querySelector(s);
-      const $$ = (s) => Array.from(document.querySelectorAll(s));
-      
+      const $ = (s) => document.querySelector(s),
+        $$ = (s) => Array.from(document.querySelectorAll(s));
       function toast(msg = "Saved") {
         const t = $("#toast");
         t.textContent = msg;
@@ -868,15 +915,11 @@
         clearTimeout(toast._id);
         toast._id = setTimeout(() => t.classList.remove("show"), 1300);
       }
-      
       function showError(e) {
         const b = $("#errorBubble");
         b.textContent = "Error: " + (e?.message || e);
         b.style.display = "block";
         console.error(e);
-        setTimeout(() => {
-          b.style.display = "none";
-        }, 5000);
       }
 
       /* ===== State ===== */
@@ -895,10 +938,799 @@
       };
       let state = JSON.parse(JSON.stringify(EMPTY));
 
-      /* ===== Local Storage Data Persistence ===== */
-      function loadData() {
-        const saved = localStorage.getItem('homePlanner');
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            state = {
+      /* ===== Firebase Data Sync ===== */
+      async function initApp() {
+        if (!isAuthReady) return;
+
+        // Reference to the user's private collection
+        const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
+
+        // Check if the user's document exists. If not, seed it with initial data.
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists()) {
+          const seedData = seed();
+          await setDoc(userDocRef, seedData);
+          console.log("Seeded initial data for new user.");
+        }
+
+        // Set up real-time listener for the user's data
+        onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                state.people = data.people || [];
+                state.school = data.school || {};
+                state.work = data.work || {};
+                state.lunchMeals = data.lunchMeals || {};
+                state.lunchAssigned = data.lunchAssigned || {};
+                state.meetings = data.meetings || [];
+                state.timeoff = data.timeoff || [];
+                state.doctor = data.doctor || [];
+                state.party = data.party || [];
+                state.milestone = data.milestone || [];
+                state.journal = data.journal || [];
+                renderAll();
+            } else {
+                // If the document is deleted for some reason, re-seed it
+                setDoc(userDocRef, seed());
+            }
+        }, (error) => {
+            showError("Error fetching data: " + error.message);
+        });
+      }
+
+      function seed() {
+        const p1 = { id: crypto.randomUUID(), name: "Chris", type: "parent", color: "#2563eb" };
+        const p2 = { id: crypto.randomUUID(), name: "Pat", type: "parent", color: "#10b981" };
+        const c1 = { id: crypto.randomUUID(), name: "Alex", type: "child", color: "#f59e0b" };
+        const s = JSON.parse(JSON.stringify(EMPTY));
+        s.people = [p1, p2, c1];
+        s.meetings.push({
+          id: crypto.randomUUID(),
+          title: "1:1",
+          date: todayISO(),
+          start: "10:00",
+          end: "10:30",
+          location: "Office",
+          notes: "Weekly check-in",
+          participants: [p1.id],
+        });
+        s.school[c1.id] = {
+          1: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
+          2: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
+          3: { dropoff: p2.id, pickup: p1.id, start: "08:00", end: "15:00" },
+          4: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
+          5: { dropoff: p1.id, pickup: p2.id, start: "08:30", end: "13:00" },
+        };
+        s.lunchMeals[c1.id] = { 1: "PB&J", 2: "Leftovers", 3: "Pasta", 4: "Tacos", 5: "Pizza" };
+        s.lunchAssigned[c1.id] = { 1: p1.id, 2: p2.id, 3: p1.id, 4: p2.id, 5: p1.id };
+        return s;
+      }
+
+      const getPerson = (id) => state.people.find((p) => p.id === id);
+
+      // Function to update the entire planner document
+      async function updatePlannerDoc() {
+        if (!isAuthReady) return;
+        const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
+        try {
+          await setDoc(userDocRef, state);
+          toast("Saved");
+        } catch (e) {
+          showError("Failed to save: " + e.message);
+        }
+      }
+
+      /* ===== View toggle ===== */
+      let mobileMode = window.matchMedia("(max-width: 899px)").matches;
+      let activeMobileView = "week";
+      function setMobileView(view) {
+        activeMobileView = view;
+        if (mobileMode) {
+          $("#weekPanel").style.display = view === "week" ? "" : "none";
+          $("#calPanel").style.display = view === "cal" ? "" : "none";
+          $$(".tab").forEach((t) =>
+            t.classList.toggle("active", t.dataset.view === view)
+          );
+        } else {
+          $("#weekPanel").style.display = "";
+          $("#calPanel").style.display = "";
+        }
+      }
+      window.addEventListener("resize", () => {
+        mobileMode = window.matchMedia("(max-width: 899px)").matches;
+        setMobileView(activeMobileView);
+      });
+      $("#btnToggle").addEventListener("click", () =>
+        setMobileView(activeMobileView === "week" ? "cal" : "week")
+      );
+      $$(".tab").forEach((t) =>
+        t.addEventListener("click", () => setMobileView(t.dataset.view))
+      );
+      $("#btnAdd").addEventListener("click", () => $("#dlgAdd").showModal());
+      $("#dlgAdd").addEventListener("click", (e) => {
+        const card = e.target.closest(".action");
+        if (!card) return;
+        $("#dlgAdd").close();
+        ({
+          people: openManagePeople,
+          person: openPerson,
+          school: openSchool,
+          work: openWork,
+          lunch: openLunch,
+          meeting: openMeeting,
+          timeoff: openTimeOff,
+          doctor: openDoctor,
+          party: openParty,
+          milestone: openMilestone,
+          journal: openJournal,
+        }[card.dataset.act] || (() => {}))();
+      });
+
+      /* ===== People management ===== */
+      function personRow(p) {
+        return `<div class="evt" style="background:#fff">
+      <div class="evtTitle">${p.name}</div>
+      <div class="evtMeta"><span class="badge">${p.type.toUpperCase()}</span>${
+          p.birth ? `<span>• b. ${p.birth}</span>` : ""
+        }</div>
+      <div class="evtMeta"><button class="btn" data-edit="${
+          p.id
+        }" type="button">Edit</button><button class="btn warn" data-del="${
+          p.id
+        }" type="button">Delete</button></div>
+    </div>`;
+      }
+      function openManagePeople() {
+        const list = $("#peopleList");
+        list.innerHTML = "";
+        if (!state.people.length) {
+          list.insertAdjacentHTML(
+            "beforeend",
+            '<div class="evt"><div class="evtTitle">No people yet</div><div class="evtMeta">Use “New Person”.</div></div>'
+          );
+        } else {
+          state.people.forEach((p) =>
+            list.insertAdjacentHTML("beforeend", personRow(p))
+          );
+        }
+        $("#dlgPeople").showModal();
+      }
+      $("#dlgPeople").addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const del = btn.getAttribute("data-del"),
+          edit = btn.getAttribute("data-edit");
+        if (del) {
+          deletePerson(del);
+          $("#dlgPeople").close();
+          renderAll();
+          return;
+        }
+        if (edit) {
+          const p = getPerson(edit);
+          if (p) openPerson(p);
+          return;
+        }
+      });
+
+      function openPerson(p = null) {
+        const f = $("#formPerson");
+        f.reset();
+        $("#personFormTitle").textContent = p ? "Edit Person" : "New Person";
+        f.elements.id.value = p?.id || "";
+        f.elements.name.value = p?.name || "";
+        f.elements.type.value = p?.type || "parent";
+        f.elements.color.value = p?.color || "#2563eb";
+        f.elements.birth.value = p?.birth || "";
+        $("#deletePerson").style.display = p ? "" : "none";
+        $("#dlgPerson").showModal();
+      }
+      $("#savePerson").addEventListener("click", () => {
+        const f = $("#formPerson");
+        const id = f.elements.id.value || crypto.randomUUID();
+        const obj = {
+          id,
+          name: f.elements.name.value.trim() || "Unnamed",
+          type: f.elements.type.value,
+          color: f.elements.color.value,
+          birth: f.elements.birth.value || "",
+        };
+        const i = state.people.findIndex((p) => p.id === id);
+        if (i >= 0) state.people[i] = obj;
+        else state.people.push(obj);
+        updatePlannerDoc().then(() => $("#dlgPerson").close()).catch(showError);
+      });
+      $("#deletePerson").addEventListener("click", () => {
+        const id = $("#formPerson").elements.id.value;
+        if (!id) return;
+        deletePerson(id);
+        $("#dlgPerson").close();
+        if ($("#dlgPeople").open) openManagePeople();
+        renderAll();
+      });
+      function deletePerson(id) {
+        const person = getPerson(id);
+        state.people = state.people.filter((p) => p.id !== id);
+        if (person?.type === "child") {
+          delete state.school[id];
+          delete state.lunchMeals[id];
+          delete state.lunchAssigned[id];
+        }
+        Object.values(state.school).forEach((days) => {
+          Object.values(days).forEach((rec) => {
+            if (rec.dropoff === id) rec.dropoff = null;
+            if (rec.pickup === id) rec.pickup = null;
+          });
+        });
+        Object.keys(state.work).forEach((pid) => {
+          if (pid === id) delete state.work[pid];
+        });
+        Object.values(state.lunchAssigned).forEach((days) => {
+          Object.keys(days).forEach((k) => {
+            if (days[k] === id) days[k] = null;
+          });
+        });
+        state.meetings = state.meetings.filter(m => !(m.participants || []).includes(id));
+        state.timeoff = state.timeoff.filter(t => t.personId !== id);
+        state.doctor = state.doctor.filter(d => d.personId !== id);
+        state.milestone = state.milestone.filter(m => m.personId !== id);
+        state.journal = state.journal.filter(j => j.personId !== id);
+        state.party = state.party.filter(p => !(p.invitees || []).includes(id));
+        updatePlannerDoc();
+      }
+
+      /* ===== School (Mon–Fri UI) ===== */
+      function schoolRowTemplate(dow) {
+        return `
+      <div class="grid3" data-dow="${dow}">
+        <div class="picker">
+          <label>${weekdays[dow]}</label>
+          <div class="row">
+            <input type="time" class="timeStart" value="08:00" style="width:120px">
+            <input type="time" class="timeEnd" value="15:00" style="width:120px">
+          </div>
+        </div>
+        <div class="picker"><label>Drop-off (who)</label><select class="drop"></select></div>
+        <div class="picker"><label>Pick-up (who)</label><select class="pick"></select></div>
+      </div>`;
+      }
+      function openSchool() {
+        const childSel = $("#schoolChild");
+        childSel.innerHTML = "";
+        state.people
+          .filter((p) => p.type === "child")
+          .forEach((c) => {
+            childSel.appendChild(new Option(c.name, c.id));
+          });
+        $("#schoolStart").value = todayISO();
+        const rows = $("#schoolRows");
+        rows.innerHTML = "";
+        for (let d = 1; d <= 5; d++) {
+          rows.insertAdjacentHTML("beforeend", schoolRowTemplate(d));
+        }
+        const parents = state.people.filter((p) => p.type === "parent");
+        rows.querySelectorAll(".grid3").forEach((c) => {
+          const drop = c.querySelector(".drop"),
+            pick = c.querySelector(".pick");
+          parents.forEach((p) => {
+            drop.appendChild(new Option(p.name, p.id));
+            pick.appendChild(new Option(p.name, p.id));
+          });
+        });
+        $("#dlgSchool").showModal();
+      }
+      $("#saveSchool").addEventListener("click", () => {
+        const childId = $("#schoolChild").value;
+        state.school[childId] = state.school[childId] || {};
+        $("#schoolRows")
+          .querySelectorAll(".grid3")
+          .forEach((container) => {
+            const dow = container.dataset.dow;
+            state.school[childId][dow] = {
+              start: container.querySelector(".timeStart").value || "",
+              end: container.querySelector(".timeEnd").value || "",
+              dropoff: container.querySelector(".drop").value || null,
+              pickup: container.querySelector(".pick").value || null,
+            };
+          });
+        updatePlannerDoc().then(() => $("#dlgSchool").close()).catch(showError);
+      });
+
+      /* ===== Work ===== */
+      function workRowTemplate(dow) {
+        return `
+      <div class="grid3" data-dow="${dow}">
+        <div class="picker"><label>${weekdays[dow]}</label></div>
+        <div class="picker"><label>Start</label><input type="time" class="wStart" value="09:00"></div>
+        <div class="picker"><label>End</label><input type="time" class="wEnd" value="17:00"></div>
+      </div>`;
+      }
+      function openWork() {
+        const sel = $("#workParent");
+        sel.innerHTML = "";
+        state.people
+          .filter((p) => p.type === "parent")
+          .forEach((c) => sel.appendChild(new Option(c.name, c.id)));
+        $("#workStart").value = todayISO();
+        const rows = $("#workRows");
+        rows.innerHTML = "";
+        for (let d = 1; d <= 5; d++) {
+          rows.insertAdjacentHTML("beforeend", workRowTemplate(d));
+        }
+        $("#dlgWork").showModal();
+      }
+      $("#saveWork").addEventListener("click", () => {
+        const parentId = $("#workParent").value;
+        state.work[parentId] = state.work[parentId] || {};
+        $("#workRows")
+          .querySelectorAll(".grid3")
+          .forEach((container) => {
+            const dow = container.dataset.dow;
+            state.work[parentId][dow] = {
+              start: container.querySelector(".wStart").value || "",
+              end: container.querySelector(".wEnd").value || "",
+              note: "",
+            };
+          });
+        updatePlannerDoc().then(() => $("#dlgWork").close()).catch(showError);
+      });
+
+      /* ===== Lunch ===== */
+      function lunchRowTemplate(dow) {
+        return `
+      <div class="grid3" data-dow="${dow}">
+        <div class="picker"><label>${weekdays[dow]}</label><input class="meal" placeholder="Meal (e.g., Turkey sandwich)"></div>
+        <div class="picker"><label>Assigned to</label><select class="who"></select></div>
+        <div class="picker"><label>Notes</label><input class="note" placeholder="optional"></div>
+      </div>`;
+      }
+      function openLunch() {
+        const sel = $("#lunchChild");
+        sel.innerHTML = "";
+        state.people
+          .filter((p) => p.type === "child")
+          .forEach((c) => sel.appendChild(new Option(c.name, c.id)));
+        $("#lunchStart").value = todayISO();
+        const rows = $("#lunchRows");
+        rows.innerHTML = "";
+        for (let d = 1; d <= 5; d++) {
+          rows.insertAdjacentHTML("beforeend", lunchRowTemplate(d));
+        }
+        const parents = state.people.filter((p) => p.type === "parent");
+        rows.querySelectorAll(".who").forEach((sel) => {
+          parents.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
+        });
+        $("#dlgLunch").showModal();
+      }
+      $("#saveLunch").addEventListener("click", () => {
+        const childId = $("#lunchChild").value;
+        state.lunchMeals[childId] = state.lunchMeals[childId] || {};
+        state.lunchAssigned[childId] = state.lunchAssigned[childId] || {};
+        $("#lunchRows")
+          .querySelectorAll(".grid3")
+          .forEach((container) => {
+            const dow = container.dataset.dow;
+            state.lunchMeals[childId][dow] = container.querySelector(".meal").value || "";
+            state.lunchAssigned[childId][dow] = container.querySelector(".who").value || null;
+          });
+        updatePlannerDoc().then(() => $("#dlgLunch").close()).catch(showError);
+      });
+
+      /* ===== Meeting ===== */
+      function openMeeting() {
+        const wrap = $("#meetingPeople");
+        wrap.innerHTML = "";
+        state.people.forEach((p) =>
+          wrap.insertAdjacentHTML(
+            "beforeend",
+            `<label class="badge"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`
+          )
+        );
+        const f = $("#formMeeting");
+        f.reset();
+        f.elements.date.value = todayISO();
+        $("#dlgMeeting").showModal();
+      }
+      $("#saveMeeting").addEventListener("click", () => {
+        const f = $("#formMeeting");
+        const participants = Array.from(
+          $("#meetingPeople").querySelectorAll('input[type="checkbox"]:checked')
+        ).map((x) => x.value);
+        state.meetings.push({
+          id: crypto.randomUUID(),
+          title: f.elements.title.value.trim() || "Meeting",
+          date: f.elements.date.value,
+          start: f.elements.start.value || "",
+          end: f.elements.end.value || "",
+          location: f.elements.loc.value || "",
+          notes: f.elements.notes.value || "",
+          participants,
+        });
+        updatePlannerDoc().then(() => $("#dlgMeeting").close()).catch(showError);
+      });
+
+      /* ===== Time Off ===== */
+      function openTimeOff() {
+        const sel = $("#timeoffPerson");
+        sel.innerHTML = "";
+        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
+        $("#timeoffStart").value = todayISO();
+        $("#timeoffEnd").value = todayISO();
+        $("#timeoffReason").value = "";
+        $("#dlgTimeOff").showModal();
+      }
+      $("#saveTimeOff").addEventListener("click", () => {
+        state.timeoff.push({
+          id: crypto.randomUUID(),
+          personId: $("#timeoffPerson").value,
+          start: $("#timeoffStart").value,
+          end: $("#timeoffEnd").value,
+          reason: $("#timeoffReason").value || "",
+        });
+        updatePlannerDoc().then(() => $("#dlgTimeOff").close()).catch(showError);
+      });
+
+      /* ===== Doctor ===== */
+      function openDoctor() {
+        const sel = $("#doctorPerson");
+        sel.innerHTML = "";
+        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
+        $("#doctorDate").value = todayISO();
+        $("#doctorStart").value = "14:00";
+        $("#doctorEnd").value = "15:00";
+        $("#doctorNote").value = "";
+        $("#dlgDoctor").showModal();
+      }
+      $("#saveDoctor").addEventListener("click", () => {
+        state.doctor.push({
+          id: crypto.randomUUID(),
+          personId: $("#doctorPerson").value,
+          date: $("#doctorDate").value,
+          start: $("#doctorStart").value,
+          end: $("#doctorEnd").value,
+          note: $("#doctorNote").value || "",
+        });
+        updatePlannerDoc().then(() => $("#dlgDoctor").close()).catch(showError);
+      });
+
+      /* ===== Party (add + edit) ===== */
+      function openParty(party = null) {
+        const wrap = $("#partyPeople");
+        wrap.innerHTML = "";
+        state.people.forEach((p) =>
+          wrap.insertAdjacentHTML(
+            "beforeend",
+            `<label class="badge"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`
+          )
+        );
+        $("#partyId").value = party?.id || "";
+        $("#partyTitle").value = party?.title || "";
+        $("#partyDate").value = party?.date || todayISO();
+        $("#partyStart").value = party?.start || "13:00";
+        $("#partyEnd").value = party?.end || "16:00";
+        $("#partyNotes").value = party?.notes || "";
+        if (party?.invitees?.length) {
+          party.invitees.forEach((id) => {
+            const cb = wrap.querySelector(`input[value="${id}"]`);
+            if (cb) cb.checked = true;
+          });
+        }
+        $("#deleteParty").style.display = party ? "" : "none";
+        $("#dlgParty").showModal();
+      }
+      $("#saveParty").addEventListener("click", () => {
+        const id = $("#partyId").value || crypto.randomUUID();
+        const invitees = Array.from(
+          $("#partyPeople").querySelectorAll('input[type="checkbox"]:checked')
+        ).map((x) => x.value);
+        const obj = {
+          id,
+          title: $("#partyTitle").value.trim() || "Party",
+          date: $("#partyDate").value,
+          start: $("#partyStart").value,
+          end: $("#partyEnd").value,
+          notes: $("#partyNotes").value || "",
+          invitees,
+        };
+        const idx = state.party.findIndex((p) => p.id === id);
+        if (idx >= 0) state.party[idx] = obj;
+        else state.party.push(obj);
+        updatePlannerDoc().then(() => $("#dlgParty").close()).catch(showError);
+      });
+      $("#deleteParty").addEventListener("click", () => {
+        const id = $("#partyId").value;
+        if (!id) return;
+        state.party = state.party.filter((p) => p.id !== id);
+        updatePlannerDoc().then(() => $("#dlgParty").close()).catch(showError);
+      });
+
+      /* ===== Milestone ===== */
+      function openMilestone() {
+        const sel = $("#milePerson");
+        sel.innerHTML = "";
+        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
+        $("#mileDate").value = todayISO();
+        $("#mileTitle").value = "";
+        $("#mileNotes").value = "";
+        $("#dlgMilestone").showModal();
+      }
+      $("#saveMilestone").addEventListener("click", () => {
+        state.milestone.push({
+          id: crypto.randomUUID(),
+          title: $("#mileTitle").value.trim() || "Milestone",
+          date: $("#mileDate").value,
+          personId: $("#milePerson").value,
+          notes: $("#mileNotes").value || "",
+        });
+        updatePlannerDoc().then(() => $("#dlgMilestone").close()).catch(showError);
+      });
+
+      /* ===== Journal ===== */
+      function openJournal() {
+        const sel = $("#journalPerson");
+        sel.innerHTML = "";
+        sel.appendChild(new Option("— (None)", ""));
+        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
+        $("#journalDate").value = todayISO();
+        $("#journalTitle").value = "";
+        $("#journalNotes").value = "";
+        $("#dlgJournal").showModal();
+      }
+      $("#saveJournal").addEventListener("click", () => {
+        state.journal.push({
+          id: crypto.randomUUID(),
+          title: $("#journalTitle").value.trim() || "Journal Entry",
+          date: $("#journalDate").value,
+          personId: $("#journalPerson").value || null,
+          notes: $("#journalNotes").value || "",
+        });
+        updatePlannerDoc().then(() => $("#dlgJournal").close()).catch(showError);
+      });
+
+      /* ===== Event gatherer (Sat/Sun included for date-based items) ===== */
+      function gatherEventsFor(iso) {
+        const evts = [];
+        const d = fromISO(iso);
+        const dow = d.getDay();
+
+        Object.entries(state.school).forEach(([childId, plan]) => {
+          const rec = plan[dow];
+          if (!rec) return;
+          const child = getPerson(childId);
+          const childName = child?.name || "—";
+          if (rec.dropoff) {
+            const who = getPerson(rec.dropoff);
+            evts.push({
+              kind: "school",
+              type: "drop-off",
+              title: `Drop-off: ${childName} → ${who?.name || "—"}`,
+              date: iso,
+            });
+          }
+          if (rec.pickup) {
+            const who = getPerson(rec.pickup);
+            evts.push({
+              kind: "school",
+              type: "pick-up",
+              title: `Pick-up: ${childName} ← ${who?.name || "—"}`,
+              date: iso,
+            });
+          }
+        });
+        Object.keys(state.lunchMeals).forEach((childId) => {
+          const meal = state.lunchMeals[childId]?.[dow];
+          const whoId = state.lunchAssigned[childId]?.[dow];
+          if (meal || whoId) {
+            const child = getPerson(childId);
+            const childName = child?.name || "—";
+            const assignee = whoId ? getPerson(whoId)?.name || "—" : "—";
+            evts.push({
+              kind: "lunch",
+              type: "lunch",
+              title: `Lunch: ${childName} • ${meal || "—"} · Assigned to ${assignee}`,
+              date: iso,
+            });
+          }
+        });
+        state.meetings.filter((m) => m.date === iso).forEach((m) => {
+          const who =
+            (m.participants || [])
+              .map(getPerson)
+              .map((p) => p?.name)
+              .filter(Boolean)
+              .join(", ") || "—";
+          evts.push({
+            kind: "meeting",
+            type: "meeting",
+            title: `${m.title} ${m.start ? m.start + "–" + m.end : ""}${
+              m.location ? ` · @ ${m.location}` : ""
+            } • With ${who}`,
+            date: iso,
+          });
+        });
+        state.timeoff.forEach((t) => {
+          if (iso >= t.start && iso <= t.end) {
+            const person = getPerson(t.personId);
+            evts.push({
+              kind: "timeoff",
+              type: "time-off",
+              title: `Time off: ${person?.name || "—"}${
+                t.reason ? ` · ${t.reason}` : ""
+              }`,
+              date: iso,
+            });
+          }
+        });
+        state.doctor.filter((a) => a.date === iso).forEach((a) => {
+          const person = getPerson(a.personId);
+          evts.push({
+            kind: "doctor",
+            type: "doctor",
+            title: `Doctor: ${person?.name || "—"} ${
+              a.start ? `${a.start}–${a.end}` : ""
+            }${a.note ? ` · ${a.note}` : ""}`,
+            date: iso,
+          });
+        });
+        state.party.filter((p) => p.date === iso).forEach((p) => {
+          evts.push({
+            kind: "party",
+            type: "party",
+            id: p.id,
+            title: `${p.title} ${p.start ? `${p.start}–${p.end}` : ""}${
+              p.notes ? ` · ${p.notes}` : ""
+            }`,
+            date: iso,
+          });
+        });
+        return evts;
+      }
+
+      /* ===== Upcoming (redesigned, large day headers) ===== */
+      function renderUpcoming() {
+        const list = $("#upcomingList");
+        list.innerHTML = "";
+        const start = todayISO();
+        for (let i = 0; i < 7; i++) {
+          const date = addDays(start, i);
+          const dayEvents = gatherEventsFor(date);
+          if (dayEvents.length === 0) continue;
+          const headerBits = humanHeader(date);
+          const header = document.createElement("div");
+          header.className = "dayHeader";
+          header.innerHTML = `<div class="dayName">${headerBits.day}</div><div class="dayDate">${headerBits.date}</div>`;
+          list.appendChild(header);
+          dayEvents.forEach((e) => {
+            const el = document.createElement("div");
+            el.className = `evt ${e.kind} ${e.type}${
+              e.type === "party" ? " clickable" : ""
+            }`;
+            const badgeColor =
+              {
+                school: "var(--c-school)",
+                lunch: "var(--c-lunch)",
+                meeting: "var(--c-meeting)",
+                timeoff: "var(--c-timeoff)",
+                doctor: "var(--c-doctor)",
+                party: "var(--c-party)",
+              }[e.kind] || "var(--ink)";
+            el.dataset.type = e.type;
+            if (e.id) el.dataset.id = e.id;
+            el.innerHTML = `
+          <div class="evtTitle">${e.title}</div>
+          <div class="evtMeta"><span class="badge" style="border-color:${badgeColor}; color:${badgeColor}">${e.type.toUpperCase()}</span></div>`;
+            list.appendChild(el);
+          });
+        }
+        if (!list.children.length) {
+          list.insertAdjacentHTML(
+            "beforeend",
+            `<div class="evt"><div class="evtTitle">No items yet</div><div class="evtMeta">Tap ＋ to add your first item.</div></div>`
+          );
+        }
+        list.onclick = (ev) => {
+          const item = ev.target.closest(".evt");
+          if (!item) return;
+          if (item.dataset.type === "party" && item.dataset.id) {
+            const p = state.party.find((x) => x.id === item.dataset.id);
+            if (p) openParty(p);
+          }
+        };
+      }
+
+      /* ===== Calendar (uses local dates too) ===== */
+      let calCursor = new Date();
+      const monthLabel = (d) =>
+        d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      function buildCalendar() {
+        $("#calTitle").textContent = monthLabel(calCursor);
+        const weekdaysShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const dowRow = $("#dowRow");
+        dowRow.innerHTML = "";
+        weekdaysShort.forEach((w) =>
+          dowRow.insertAdjacentHTML("beforeend", `<div class="dow">${w}</div>`)
+        );
+        const grid = $("#calGrid");
+        grid.innerHTML = "";
+        const y = calCursor.getFullYear(),
+          m = calCursor.getMonth();
+        const first = new Date(y, m, 1);
+        const startCell = first.getDay();
+        const daysInMonth = new Date(y, m + 1, 0).getDate();
+        for (let i = 0; i < startCell; i++)
+          grid.insertAdjacentHTML("beforeend", `<div></div>`);
+        for (let d = 1; d <= daysInMonth; d++) {
+          const iso = toLocalISO(new Date(y, m, d));
+          const evts = gatherEventsFor(iso);
+          const el = document.createElement("div");
+          el.className = "day";
+          if (iso === todayISO()) el.classList.add("today");
+          el.innerHTML = `<div class="dayNum">${d}</div>`;
+          evts.slice(0, 3).forEach((e) => {
+            const color =
+              {
+                school: "var(--c-school)",
+                lunch: "var(--c-lunch)",
+                meeting: "var(--c-meeting)",
+                timeoff: "var(--c-timeoff)",
+                doctor: "var(--c-doctor)",
+                party: "var(--c-party)",
+              }[e.kind] || "var(--ink)";
+            const span = document.createElement("div");
+            span.className = "pill" + (e.type === "party" ? " clickable" : "");
+            span.textContent = e.title;
+            span.style.borderColor = color;
+            if (e.type === "party" && e.id) {
+              span.dataset.type = "party";
+              span.dataset.id = e.id;
+            }
+            el.appendChild(span);
+          });
+          if (evts.length > 3) {
+            const more = document.createElement("div");
+            more.className = "pill";
+            more.textContent = `+${evts.length - 3} more`;
+            el.appendChild(more);
+          }
+          grid.appendChild(el);
+        }
+        grid.onclick = (ev) => {
+          const pill = ev.target.closest(".pill");
+          if (!pill) return;
+          if (pill.dataset.type === "party" && pill.dataset.id) {
+            const p = state.party.find((x) => x.id === pill.dataset.id);
+            if (p) openParty(p);
+          }
+        };
+      }
+      $("#prevMonth").addEventListener("click", () => {
+        calCursor.setMonth(calCursor.getMonth() - 1);
+        buildCalendar();
+      });
+      $("#nextMonth").addEventListener("click", () => {
+        calCursor.setMonth(calCursor.getMonth() + 1);
+        buildCalendar();
+      });
+
+      /* ===== Render all ===== */
+      function renderAll() {
+        renderUpcoming();
+        buildCalendar();
+        setMobileView(activeMobileView);
+      }
+
+      /* ===== Init ===== */
+      try {
+        renderAll();
+        document.querySelectorAll("dialog").forEach((d) => {
+          d.addEventListener("click", (e) => {
+            const sheet = e.target.closest(".sheet");
+            if (!sheet) d.close();
+          });
+        });
+      } catch (e) {
+        showError(e);
+      }
+    </script>
+  </body>
+</html>
