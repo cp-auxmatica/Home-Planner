@@ -6,13 +6,15 @@
     <title>Home Planner</title>
     <style>
       :root {
-        --bg: #f7f7fb;
+        --bg: #f9fafb;
         --card: #ffffff;
         --ink: #111827;
-        --muted: #6b7280;
+        --ink-muted: #6b7280;
         --grid: #e5e7eb;
         --brand: #2563eb;
-        /* event colors (tints) */
+        --brand-muted: #dbeafe;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        /* event colors */
         --c-school: #2563eb;
         --c-school-bg: #eff6ff;
         --c-lunch: #10b981;
@@ -25,6 +27,10 @@
         --c-doctor-bg: #fef2f2;
         --c-party: #8b5cf6;
         --c-party-bg: #f5f3ff;
+        --c-milestone: #d946ef;
+        --c-milestone-bg: #fae8ff;
+        --c-journal: #64748b;
+        --c-journal-bg: #f8fafc;
       }
       * {
         box-sizing: border-box;
@@ -36,43 +42,46 @@
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
         color: var(--ink);
         background: var(--bg);
+        -webkit-font-smoothing: antialiased;
       }
       .appbar {
         position: sticky;
         top: 0;
         z-index: 10;
-        background: #fff;
+        background: var(--card);
         border-bottom: 1px solid var(--grid);
         display: flex;
         align-items: center;
-        justify-content: center;
-        height: 56px;
-        padding: 0 12px;
+        justify-content: space-between;
+        height: 60px;
+        padding: 0 16px;
       }
       .appbar h1 {
-        font-size: 18px;
+        font-size: 20px;
         margin: 0;
         font-weight: 800;
-        letter-spacing: 0.2px;
+        letter-spacing: -0.2px;
       }
       .appbar .actions {
-        position: absolute;
-        right: 10px;
         display: flex;
         gap: 8px;
         align-items: center;
       }
       .iconbtn {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         border: 1px solid var(--grid);
-        background: #fff;
+        background: transparent;
         cursor: pointer;
         display: inline-grid;
         place-items: center;
-        font-size: 20px;
+        font-size: 22px;
         line-height: 0;
+        transition: background 0.15s;
+      }
+      .iconbtn:hover {
+        background: #f9fafb;
       }
       .iconbtn:active {
         transform: translateY(1px);
@@ -82,15 +91,16 @@
         opacity: 0.5;
       }
       .wrap {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 12px;
+        padding: 16px;
       }
       .seg {
         background: var(--card);
         border: 1px solid var(--grid);
         border-radius: 16px;
-        padding: 12px;
+        padding: 16px;
+        box-shadow: var(--shadow);
       }
       .tabs {
         display: flex;
@@ -99,9 +109,9 @@
         margin: 8px 0 12px;
       }
       .tab {
-        flex: 0 0 auto;
-        padding: 8px 12px;
-        border-radius: 999px;
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 12px;
         border: 1px solid var(--grid);
         cursor: pointer;
         font-weight: 700;
@@ -109,265 +119,220 @@
         background: #fff;
       }
       .tab.active {
-        background: var(--brand);
-        color: #fff;
+        background: var(--brand-muted);
+        color: var(--brand);
         border-color: var(--brand);
       }
       .dayHeader {
         display: flex;
         align-items: baseline;
-        gap: 10px;
-        padding: 6px 2px 4px;
+        gap: 12px;
+        padding: 8px 4px 8px;
         border-bottom: 1px solid var(--grid);
-        margin-top: 12px;
+        margin-top: 24px;
+      }
+      .dayHeader:first-child {
+        margin-top: 0;
       }
       .dayName {
-        font-size: 24px;
-        font-weight: 900;
-        letter-spacing: 0.2px;
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.2px;
       }
       .dayDate {
-        font-size: 14px;
-        color: var(--muted);
-        font-weight: 700;
+        font-size: 16px;
+        color: var(--ink-muted);
+        font-weight: 600;
       }
       .list {
         display: grid;
-        gap: 10px;
-        margin-top: 8px;
+        gap: 12px;
+        margin-top: 16px;
       }
       .evt {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 6px;
+        display: flex;
+        gap: 12px;
         border: 1px solid var(--grid);
+        border-left: 5px solid var(--grid);
         border-radius: 14px;
-        padding: 12px;
+        padding: 14px;
         background: #fff;
-        cursor: default;
-      }
-      .evt.clickable {
         cursor: pointer;
+        transition: box-shadow 0.15s;
+      }
+      .evt:hover {
+        box-shadow: var(--shadow);
+      }
+      .evtIcon {
+        font-size: 20px;
+      }
+      .evtContent {
+        flex: 1;
       }
       .evtTitle {
-        font-weight: 900;
-        font-size: 15px;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 4px;
       }
       .evtMeta {
-        font-size: 12px;
-        color: var(--muted);
+        font-size: 13px;
+        color: var(--ink-muted);
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
       }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 11px;
-        padding: 3px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--grid);
-        font-weight: 800;
-        letter-spacing: 0.3px;
-      }
-      .evt.school {
-        background: var(--c-school-bg);
-      }
-      .evt.lunch {
-        background: var(--c-lunch-bg);
-      }
-      .evt.meeting {
-        background: var(--c-meeting-bg);
-      }
-      .evt.timeoff {
-        background: var(--c-timeoff-bg);
-      }
-      .evt.doctor {
-        background: var(--c-doctor-bg);
-      }
-      .evt.party {
-        background: var(--c-party-bg);
-      }
+      .evt.school { border-left-color: var(--c-school); }
+      .evt.lunch { border-left-color: var(--c-lunch); }
+      .evt.meeting { border-left-color: var(--c-meeting); }
+      .evt.timeoff { border-left-color: var(--c-timeoff); }
+      .evt.doctor { border-left-color: var(--c-doctor); }
+      .evt.party { border-left-color: var(--c-party); }
+      .evt.milestone { border-left-color: var(--c-milestone); }
+      .evt.journal { border-left-color: var(--c-journal); }
+      
       .calHdr {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 4px 0 10px;
+        margin: 4px 0 16px;
       }
       .calHdr h3 {
         margin: 0;
-        font-size: 15px;
-        font-weight: 800;
+        font-size: 18px;
+        font-weight: 700;
       }
       .calGrid {
         --cols: 7;
         display: grid;
         grid-template-columns: repeat(var(--cols), 1fr);
-        gap: 6px;
+        gap: 8px;
       }
       .dow {
         font-size: 12px;
-        color: var(--muted);
+        color: var(--ink-muted);
         text-align: center;
+        font-weight: 600;
       }
       .day {
         border: 1px solid var(--grid);
         border-radius: 12px;
         background: #fff;
-        min-height: 72px;
-        padding: 6px;
+        min-height: 80px;
+        padding: 8px;
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
       .dayNum {
-        font-weight: 800;
+        font-weight: 700;
         font-size: 13px;
       }
       .pill {
-        font-size: 10.5px;
-        border: 1px solid var(--grid);
-        border-radius: 999px;
-        padding: 1px 6px;
+        font-size: 11px;
+        border-left: 3px solid var(--grid);
+        border-radius: 4px;
+        padding: 2px 6px;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: 600;
       }
-      .pill.clickable {
-        cursor: pointer;
-      }
-      .today {
-        outline: 2px solid var(--brand);
-      }
+      .pill.clickable { cursor: pointer; }
+      .today { border-color: var(--brand); }
+      .today .dayNum { color: var(--brand); }
+      
       dialog {
         border: none;
         border-radius: 16px;
         padding: 0;
-        width: min(560px, 92vw);
+        width: min(600px, 92vw);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       }
       dialog::backdrop {
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
       }
       .sheet {
-        padding: 14px;
+        padding: 20px;
       }
       .sheet h3 {
-        margin: 6px 0 12px;
-        font-size: 16px;
+        margin: 0 0 20px;
+        font-size: 20px;
+        font-weight: 700;
       }
-      .grid2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-      .grid3 {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      
       label {
-        font-size: 12px;
-        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ink-muted);
+        margin-bottom: 4px;
+        display: block;
       }
-      input,
-      select,
-      textarea {
+      input, select, textarea {
         width: 100%;
-        padding: 10px;
+        padding: 10px 12px;
         border: 1px solid var(--grid);
         border-radius: 10px;
         background: #fff;
         font: inherit;
+        font-size: 15px;
       }
-      textarea {
-        min-height: 90px;
-      }
-      .sheet .row {
-        justify-content: flex-end;
-      }
+      textarea { min-height: 90px; }
+      .sheet .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+      
       .btn {
-        padding: 10px 14px;
+        padding: 10px 16px;
         border-radius: 10px;
         border: 1px solid var(--grid);
         background: #fff;
         cursor: pointer;
         font-weight: 700;
+        font-size: 14px;
       }
-      .btn.primary {
-        background: var(--brand);
-        color: #fff;
-        border-color: var(--brand);
-      }
-      .btn.warn {
-        background: #ef4444;
-        color: #fff;
-        border-color: #ef4444;
-      }
-      .section {
-        display: grid;
-        gap: 10px;
-      }
-      .picker {
-        display: grid;
-        gap: 8px;
-      }
-      .actionGrid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-      }
+      .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+      .btn.warn { background: #ef4444; color: #fff; border-color: #ef4444; }
+      
+      .section { display: grid; gap: 12px; margin-top: 16px; }
+      .picker { display: flex; flex-direction: column; }
+      
+      .actionGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .action {
-        border: 1px dashed var(--grid);
+        border: 1px solid var(--grid);
         border-radius: 12px;
-        padding: 14px;
+        padding: 16px;
         text-align: center;
         cursor: pointer;
         font-weight: 700;
+        transition: background 0.15s;
       }
-      .action small {
-        display: block;
-        color: var(--muted);
-        font-weight: 400;
-      }
+      .action:hover { background: #f9fafb; }
+      .action small { display: block; color: var(--ink-muted); font-weight: 400; margin-top: 2px; }
+      
       @media (min-width: 900px) {
-        .wrap.cols {
-          display: grid;
-          grid-template-columns: 1.2fr 0.9fr;
-          gap: 12px;
-        }
-        .tabs {
-          display: none;
-        }
-        .deskHide {
-          display: none;
-        }
+        .wrap.cols { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 16px; }
+        .tabs { display: none; }
       }
-      @media (max-width: 899px) {
-        .deskOnly {
-          display: none;
-        }
-      }
+      @media (max-width: 899px) { .deskOnly { display: none; } }
+      
       #toast {
         position: fixed;
         left: 50%;
         transform: translateX(-50%);
-        bottom: 18px;
+        bottom: 20px;
         background: #111827;
         color: #fff;
-        font-weight: 800;
+        font-weight: 700;
         border-radius: 999px;
-        padding: 10px 14px;
+        padding: 12px 18px;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.25s, transform 0.25s;
         z-index: 100;
       }
-      #toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(-4px);
-      }
+      #toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
       #errorBubble {
         position: fixed;
         left: 50%;
@@ -375,9 +340,9 @@
         bottom: 60px;
         background: #dc2626;
         color: #fff;
-        padding: 8px 12px;
+        padding: 10px 14px;
         border-radius: 10px;
-        font-size: 12px;
+        font-size: 13px;
         display: none;
         z-index: 101;
       }
@@ -387,7 +352,7 @@
     <header class="appbar">
       <h1>Home Planner</h1>
       <div class="actions">
-        <button class="iconbtn" id="btnToggle" title="Toggle Week/Calendar">
+        <button class="iconbtn deskOnly" id="btnToggle" title="Toggle Week/Calendar">
           ≣
         </button>
         <button class="iconbtn" id="btnAdd" title="Add" disabled>＋</button>
@@ -396,9 +361,11 @@
 
     <main class="wrap cols">
       <section class="seg" id="weekPanel">
-        <div class="dayHeader">
-          <div class="dayName">Upcoming</div>
-          <div class="dayDate">Next 7 days</div>
+        <div class="deskHide" style="margin-bottom: 16px;">
+          <div class="tabs">
+            <button class="tab active" data-view="week">Upcoming</button>
+            <button class="tab" data-view="cal">Calendar</button>
+          </div>
         </div>
         <div class="list" id="upcomingList"></div>
       </section>
@@ -411,12 +378,6 @@
         </div>
         <div class="calGrid" id="dowRow"></div>
         <div class="calGrid" id="calGrid"></div>
-        <div class="deskHide" style="margin-top: 10px">
-          <div class="tabs">
-            <button class="tab active" data-view="week">Week</button>
-            <button class="tab" data-view="cal">Calendar</button>
-          </div>
-        </div>
       </section>
     </main>
 
@@ -431,13 +392,13 @@
             👤 New Person <small>Parent or Child</small>
           </div>
           <div class="action" data-act="school">
-            🏫 School Plan <small>Drop-off / Pick-up</small>
+            🏫 School Plan <small>Weekly Drop-off / Pick-up</small>
           </div>
           <div class="action" data-act="work">
-            💼 Work Schedule <small>Parent work hours</small>
+            💼 Work Schedule <small>Weekly Parent work hours</small>
           </div>
           <div class="action" data-act="lunch">
-            🥪 Lunch Plan <small>Meal + Assigned to</small>
+            🥪 Lunch Plan <small>Weekly Meal + Assigned to</small>
           </div>
           <div class="action" data-act="meeting">
             📅 Meeting <small>Work / PT conference</small>
@@ -458,12 +419,8 @@
             📝 Journal <small>Quick note</small>
           </div>
         </div>
-        <div class="row" style="margin-top: 12px">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+        <div class="row" style="margin-top: 12px; justify-content:center;">
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Close
           </button>
         </div>
@@ -475,11 +432,7 @@
         <h3>Manage People</h3>
         <div id="peopleList" class="section"></div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Close
           </button>
         </div>
@@ -495,8 +448,8 @@
             <label>Name</label><input name="name" required />
           </div>
           <div class="picker">
-            <label>Type</label
-            ><select name="type">
+            <label>Type</label>
+            <select name="type">
               <option value="parent">Parent</option>
               <option value="child">Child</option>
             </select>
@@ -509,19 +462,10 @@
           </div>
         </div>
         <div class="row">
-          <button
-            class="btn warn"
-            id="deletePerson"
-            style="margin-right: auto; display: none"
-            type="button"
-          >
+          <button class="btn warn" id="deletePerson" style="margin-right: auto; display: none" type="button">
             Delete
           </button>
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Cancel
           </button>
           <button class="btn primary" id="savePerson" type="button">Save</button>
@@ -532,21 +476,12 @@
     <dialog id="dlgSchool">
       <form method="dialog" class="sheet" id="formSchool">
         <h3>School Week Plan</h3>
-        <div class="grid2">
-          <div class="picker">
-            <label>Child</label><select name="child" id="schoolChild"></select>
-          </div>
-          <div class="picker">
-            <label>Start week</label><input type="date" name="start" id="schoolStart" />
-          </div>
+        <div class="picker">
+          <label>Child</label><select name="child" id="schoolChild"></select>
         </div>
-        <div id="schoolRows" class="section" style="margin-top: 6px"></div>
+        <div id="schoolRows" class="section"></div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Cancel
           </button>
           <button class="btn primary" id="saveSchool" type="button">Save</button>
@@ -557,21 +492,12 @@
     <dialog id="dlgWork">
       <form method="dialog" class="sheet" id="formWork">
         <h3>Work Schedule</h3>
-        <div class="grid2">
-          <div class="picker">
-            <label>Parent</label><select name="parent" id="workParent"></select>
-          </div>
-          <div class="picker">
-            <label>Start week</label><input type="date" name="start" id="workStart" />
-          </div>
+        <div class="picker">
+          <label>Parent</label><select name="parent" id="workParent"></select>
         </div>
-        <div id="workRows" class="section" style="margin-top: 6px"></div>
+        <div id="workRows" class="section"></div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Cancel
           </button>
           <button class="btn primary" id="saveWork" type="button">Save</button>
@@ -582,21 +508,12 @@
     <dialog id="dlgLunch">
       <form method="dialog" class="sheet" id="formLunch">
         <h3>Lunch Plan</h3>
-        <div class="grid2">
-          <div class="picker">
-            <label>Child</label><select name="child" id="lunchChild"></select>
-          </div>
-          <div class="picker">
-            <label>Start week</label><input type="date" name="start" id="lunchStart" />
-          </div>
+        <div class="picker">
+          <label>Child</label><select name="child" id="lunchChild"></select>
         </div>
-        <div id="lunchRows" class="section" style="margin-top: 6px"></div>
+        <div id="lunchRows" class="section"></div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">
             Cancel
           </button>
           <button class="btn primary" id="saveLunch" type="button">Save</button>
@@ -606,15 +523,12 @@
 
     <dialog id="dlgMeeting">
       <form method="dialog" class="sheet" id="formMeeting">
-        <h3>Meeting</h3>
-        <div class="grid3">
+        <h3 id="meetingFormTitle">Meeting</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
           <div class="picker">
-            <label>Title</label
-            ><input
-              name="title"
-              placeholder="e.g., 1:1, PT Conference"
-              required
-            />
+            <label>Title</label>
+            <input name="title" placeholder="e.g., 1:1, PT Conference" required/>
           </div>
           <div class="picker">
             <label>Date</label><input type="date" name="date" required />
@@ -625,7 +539,9 @@
           <div class="picker">
             <label>End</label><input type="time" name="end" value="10:00" required />
           </div>
-          <div class="picker">
+        </div>
+        <div class="grid2 section">
+           <div class="picker">
             <label>Location</label><input name="loc" placeholder="Office, School, Zoom…" />
           </div>
           <div class="picker">
@@ -633,17 +549,12 @@
           </div>
         </div>
         <div class="section">
-          <label style="font-weight: 700">Participants</label>
-          <div id="meetingPeople" class="row"></div>
+          <label>Participants</label>
+          <div id="meetingPeople" class="row" style="justify-content: flex-start; gap: 6px; flex-wrap: wrap;"></div>
         </div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteMeeting" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveMeeting" type="button">Save</button>
         </div>
       </form>
@@ -651,30 +562,26 @@
 
     <dialog id="dlgTimeOff">
       <form method="dialog" class="sheet" id="formTimeOff">
-        <h3>Time Off</h3>
+        <h3 id="timeoffFormTitle">Time Off</h3>
+        <input type="hidden" name="id" />
         <div class="grid3">
           <div class="picker">
             <label>Person</label><select name="person" id="timeoffPerson"></select>
           </div>
           <div class="picker">
-            <label>Start</label><input type="date" name="start" id="timeoffStart" />
+            <label>Start</label><input type="date" name="start" required />
           </div>
           <div class="picker">
-            <label>End</label><input type="date" name="end" id="timeoffEnd" />
+            <label>End</label><input type="date" name="end" required />
           </div>
         </div>
-        <div class="picker">
-          <label>Reason</label
-          ><input name="reason" id="timeoffReason" placeholder="Vacation / PTO" />
+        <div class="picker section">
+          <label>Reason</label>
+          <input name="reason" placeholder="Vacation / PTO" />
         </div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteTimeOff" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveTimeOff" type="button">Save</button>
         </div>
       </form>
@@ -682,33 +589,29 @@
 
     <dialog id="dlgDoctor">
       <form method="dialog" class="sheet" id="formDoctor">
-        <h3>Doctor Appointment</h3>
-        <div class="grid3">
+        <h3 id="doctorFormTitle">Doctor Appointment</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
           <div class="picker">
             <label>Person</label><select name="person" id="doctorPerson"></select>
           </div>
           <div class="picker">
-            <label>Date</label><input type="date" name="date" id="doctorDate" />
+            <label>Date</label><input type="date" name="date" required />
           </div>
           <div class="picker">
-            <label>Start</label><input type="time" name="start" id="doctorStart" value="14:00" />
+            <label>Start</label><input type="time" name="start" value="14:00" />
           </div>
           <div class="picker">
-            <label>End</label><input type="time" name="end" id="doctorEnd" value="15:00" />
+            <label>End</label><input type="time" name="end" value="15:00" />
           </div>
         </div>
-        <div class="picker">
-          <label>Notes</label
-          ><input name="note" id="doctorNote" placeholder="optional" />
+        <div class="picker section">
+          <label>Notes</label>
+          <input name="note" placeholder="optional" />
         </div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteDoctor" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveDoctor" type="button">Save</button>
         </div>
       </form>
@@ -716,52 +619,33 @@
 
     <dialog id="dlgParty">
       <form method="dialog" class="sheet" id="formParty">
-        <h3>Party / Event</h3>
-        <input type="hidden" name="id" id="partyId" />
-        <div class="grid3">
+        <h3 id="partyFormTitle">Party / Event</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
           <div class="picker">
-            <label>Title</label
-            ><input
-              name="title"
-              id="partyTitle"
-              placeholder="Birthday, BBQ…"
-              required
-            />
+            <label>Title</label>
+            <input name="title" placeholder="Birthday, BBQ…" required/>
           </div>
           <div class="picker">
-            <label>Date</label><input type="date" name="date" id="partyDate" required />
+            <label>Date</label><input type="date" name="date" required />
           </div>
           <div class="picker">
-            <label>Start</label
-            ><input type="time" name="start" id="partyStart" value="13:00" required />
+            <label>Start</label><input type="time" name="start" value="13:00" required />
           </div>
           <div class="picker">
-            <label>End</label><input type="time" name="end" id="partyEnd" value="16:00" required />
+            <label>End</label><input type="time" name="end" value="16:00" required />
           </div>
         </div>
-        <div class="picker">
-          <label>Notes</label><input name="notes" id="partyNotes" placeholder="optional" />
+        <div class="picker section">
+          <label>Notes</label><input name="notes" placeholder="optional" />
         </div>
         <div class="section">
-          <label style="font-weight: 700">Invitees</label>
-          <div id="partyPeople" class="row"></div>
+          <label>Invitees</label>
+          <div id="partyPeople" class="row" style="justify-content: flex-start; gap: 6px; flex-wrap: wrap;"></div>
         </div>
         <div class="row">
-          <button
-            class="btn warn"
-            id="deleteParty"
-            style="margin-right: auto; display: none"
-            type="button"
-          >
-            Delete
-          </button>
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteParty" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveParty" type="button">Save</button>
         </div>
       </form>
@@ -769,29 +653,25 @@
 
     <dialog id="dlgMilestone">
       <form method="dialog" class="sheet" id="formMilestone">
-        <h3>Milestone</h3>
-        <div class="grid3">
+        <h3 id="milestoneFormTitle">Milestone</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
           <div class="picker">
-            <label>Title</label><input name="title" id="mileTitle" required />
+            <label>Title</label><input name="title" required />
           </div>
-          <div class="picker">
-            <label>Date</label><input type="date" name="date" id="mileDate" required />
-          </div>
-          <div class="picker">
+           <div class="picker">
             <label>Person</label><select name="person" id="milePerson"></select>
           </div>
         </div>
         <div class="picker">
-          <label>Notes</label><input name="notes" id="mileNotes" placeholder="optional" />
+           <label>Date</label><input type="date" name="date" required />
+        </div>
+        <div class="picker section">
+          <label>Notes</label><input name="notes" placeholder="optional" />
         </div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteMilestone" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveMilestone" type="button">Save</button>
         </div>
       </form>
@@ -799,31 +679,27 @@
 
     <dialog id="dlgJournal">
       <form method="dialog" class="sheet" id="formJournal">
-        <h3>Journal</h3>
-        <div class="grid3">
+        <h3 id="journalFormTitle">Journal Entry</h3>
+        <input type="hidden" name="id" />
+        <div class="grid2">
           <div class="picker">
-            <label>Date</label><input type="date" name="date" id="journalDate" />
+            <label>Title</label><input name="title" placeholder="Entry" />
           </div>
           <div class="picker">
-            <label>Person (optional)</label
-            ><select name="person" id="journalPerson"></select>
-          </div>
-          <div class="picker">
-            <label>Title</label><input name="title" id="journalTitle" placeholder="Entry" />
+            <label>Date</label><input type="date" name="date" />
           </div>
         </div>
-        <div class="picker">
-          <label>Notes</label
-          ><textarea id="journalNotes" placeholder="What happened?"></textarea>
+        <div class="picker section">
+            <label>Person (optional)</label>
+            <select name="person" id="journalPerson"></select>
+        </div>
+        <div class="picker section">
+          <label>Notes</label>
+          <textarea id="journalNotes" placeholder="What happened?"></textarea>
         </div>
         <div class="row">
-          <button
-            class="btn"
-            type="button"
-            onclick="this.closest('dialog').close()"
-          >
-            Cancel
-          </button>
+          <button class="btn warn" id="deleteJournal" style="margin-right: auto; display: none" type="button">Delete</button>
+          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
           <button class="btn primary" id="saveJournal" type="button">Save</button>
         </div>
       </form>
@@ -833,12 +709,10 @@
     <div id="errorBubble"></div>
     
     <script type="module">
-      // Firebase Firestore and Auth imports
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import { getFirestore, doc, getDoc, setDoc, addDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // Firebase configuration and initialization
       const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
       const firebaseConfig = {
         apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
@@ -848,7 +722,6 @@
   messagingSenderId: "20103999017",
   appId: "1:20103999017:web:9be545d5a0f70008dc7638"
       };
-      const __initial_auth_token = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
@@ -857,34 +730,24 @@
       let userId = null;
       let isAuthReady = false;
 
-      // Event listener for authentication state changes
       auth.onAuthStateChanged(async (user) => {
           if (user) {
               userId = user.uid;
-              console.log("Authenticated with user ID:", userId);
               isAuthReady = true;
               initApp();
           } else {
-              // Sign in the user
               try {
-                  if (__initial_auth_token) {
-                      const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                      userId = userCredential.user.uid;
-                  } else {
-                      const userCredential = await signInAnonymously(auth);
-                      userId = userCredential.user.uid;
-                  }
-                  console.log("Successfully authenticated user.");
+                  const userCredential = await signInAnonymously(auth);
+                  userId = userCredential.user.uid;
                   isAuthReady = true;
                   initApp();
               } catch (error) {
-                  console.error("Authentication failed:", error);
                   showError("Authentication failed: " + error.message);
               }
           }
       });
 
-      /* ===== Local date helpers (fix for weekend shift) ===== */
+      /* ===== DATE & TIME UTILS ===== */
       const pad = (n) => (n < 10 ? "0" : "") + n;
       const toLocalISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
       const fromISO = (iso) => {
@@ -902,14 +765,18 @@
         const d = fromISO(iso);
         return {
           day: weekdays[d.getDay()],
-          date: d.toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-          }),
+          date: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
         };
       };
+      const formatTime = (time24) => {
+        if (!time24) return '';
+        const [h, m] = time24.split(':');
+        const h12 = h % 12 || 12;
+        const ampm = h < 12 ? 'am' : 'pm';
+        return `${h12}:${m}${ampm}`;
+      }
 
-      /* ===== Small utils ===== */
+      /* ===== DOM & UI UTILS ===== */
       const $ = (s) => document.querySelector(s),
         $$ = (s) => Array.from(document.querySelectorAll(s));
       function toast(msg = "Saved") {
@@ -926,56 +793,26 @@
         console.error(e);
       }
 
-      /* ===== State ===== */
-      const EMPTY = {
-        people: [],
-        school: {},
-        work: {},
-        lunchMeals: {},
-        lunchAssigned: {},
-        meetings: [],
-        timeoff: [],
-        doctor: [],
-        party: [],
-        milestone: [],
-        journal: [],
-      };
+      /* ===== STATE & DATA ===== */
+      const EMPTY = { people: [], school: {}, work: {}, lunch: {}, meetings: [], timeoff: [], doctor: [], party: [], milestone: [], journal: [] };
       let state = JSON.parse(JSON.stringify(EMPTY));
 
-      /* ===== Firebase Data Sync ===== */
       async function initApp() {
         if (!isAuthReady) return;
-
-        // Reference to the user's private collection
         const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
-
-        // Check if the user's document exists. If not, seed it with initial data.
         const userDocSnap = await getDoc(userDocRef);
         if (!userDocSnap.exists()) {
-          const seedData = seed();
-          await setDoc(userDocRef, seedData);
-          console.log("Seeded initial data for new user.");
+          await setDoc(userDocRef, seed());
         }
-
-        // Set up real-time listener for the user's data
         onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                state.people = data.people || [];
-                state.school = data.school || {};
-                state.work = data.work || {};
-                state.lunchMeals = data.lunchMeals || {};
-                state.lunchAssigned = data.lunchAssigned || {};
-                state.meetings = data.meetings || [];
-                state.timeoff = data.timeoff || [];
-                state.doctor = data.doctor || [];
-                state.party = data.party || [];
-                state.milestone = data.milestone || [];
-                state.journal = data.journal || [];
+                Object.keys(EMPTY).forEach(key => {
+                  state[key] = data[key] || EMPTY[key];
+                });
                 renderAll();
                 $("#btnAdd").disabled = false;
             } else {
-                // If the document is deleted for some reason, re-seed it
                 setDoc(userDocRef, seed());
             }
         }, (error) => {
@@ -989,16 +826,7 @@
         const c1 = { id: crypto.randomUUID(), name: "Alex", type: "child", color: "#f59e0b" };
         const s = JSON.parse(JSON.stringify(EMPTY));
         s.people = [p1, p2, c1];
-        s.meetings.push({
-          id: crypto.randomUUID(),
-          title: "1:1",
-          date: todayISO(),
-          start: "10:00",
-          end: "10:30",
-          location: "Office",
-          notes: "Weekly check-in",
-          participants: [p1.id],
-        });
+        s.meetings.push({ id: crypto.randomUUID(), title: "1:1", date: todayISO(), start: "10:00", end: "10:30", loc: "Office", notes: "Weekly check-in", participants: [p1.id] });
         s.school[c1.id] = {
           1: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
           2: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
@@ -1006,14 +834,14 @@
           4: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
           5: { dropoff: p1.id, pickup: p2.id, start: "08:30", end: "13:00" },
         };
-        s.lunchMeals[c1.id] = { 1: "PB&J", 2: "Leftovers", 3: "Pasta", 4: "Tacos", 5: "Pizza" };
-        s.lunchAssigned[c1.id] = { 1: p1.id, 2: p2.id, 3: p1.id, 4: p2.id, 5: p1.id };
+        s.lunch[c1.id] = {
+          1: { meal: "PB&J", who: p1.id }, 2: { meal: "Leftovers", who: p2.id }, 3: { meal: "Pasta", who: p1.id }, 4: { meal: "Tacos", who: p2.id }, 5: { meal: "Pizza", who: p1.id }
+        };
         return s;
       }
 
       const getPerson = (id) => state.people.find((p) => p.id === id);
 
-      // Function to update the entire planner document
       async function updatePlannerDoc() {
         if (!isAuthReady) return;
         const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
@@ -1025,7 +853,7 @@
         }
       }
 
-      /* ===== View toggle ===== */
+      /* ===== VIEW TOGGLE ===== */
       let mobileMode = window.matchMedia("(max-width: 899px)").matches;
       let activeMobileView = "week";
       function setMobileView(view) {
@@ -1033,9 +861,7 @@
         if (mobileMode) {
           $("#weekPanel").style.display = view === "week" ? "" : "none";
           $("#calPanel").style.display = view === "cal" ? "" : "none";
-          $$(".tab").forEach((t) =>
-            t.classList.toggle("active", t.dataset.view === view)
-          );
+          $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.view === view));
         } else {
           $("#weekPanel").style.display = "";
           $("#calPanel").style.display = "";
@@ -1045,80 +871,55 @@
         mobileMode = window.matchMedia("(max-width: 899px)").matches;
         setMobileView(activeMobileView);
       });
-      $("#btnToggle").addEventListener("click", () =>
-        setMobileView(activeMobileView === "week" ? "cal" : "week")
-      );
-      $$(".tab").forEach((t) =>
-        t.addEventListener("click", () => setMobileView(t.dataset.view))
-      );
+      $("#btnToggle").addEventListener("click", () => setMobileView(activeMobileView === "week" ? "cal" : "week"));
+      $$(".tab").forEach((t) => t.addEventListener("click", () => setMobileView(t.dataset.view)));
+      
+      /* ===== DIALOG OPENERS ===== */
       $("#btnAdd").addEventListener("click", () => $("#dlgAdd").showModal());
       $("#dlgAdd").addEventListener("click", (e) => {
         const card = e.target.closest(".action");
         if (!card) return;
         $("#dlgAdd").close();
-        ({
-          people: openManagePeople,
-          person: openPerson,
-          school: openSchool,
-          work: openWork,
-          lunch: openLunch,
-          meeting: openMeeting,
-          timeoff: openTimeOff,
-          doctor: openDoctor,
-          party: openParty,
-          milestone: openMilestone,
-          journal: openJournal,
-        }[card.dataset.act] || (() => {}))();
+        const action = card.dataset.act;
+        if (action === 'people') openManagePeople();
+        else if (action === 'person') openPerson();
+        else if (action === 'school') openSchool();
+        else if (action === 'work') openWork();
+        else if (action === 'lunch') openLunch();
+        else if (action === 'meeting') openMeeting();
+        else if (action === 'timeoff') openTimeOff();
+        else if (action === 'doctor') openDoctor();
+        else if (action === 'party') openParty();
+        else if (action === 'milestone') openMilestone();
+        else if (action === 'journal') openJournal();
       });
 
-      /* ===== People management ===== */
-      function personRow(p) {
-        return `<div class="evt" style="background:#fff">
-      <div class="evtTitle">${p.name}</div>
-      <div class="evtMeta"><span class="badge">${p.type.toUpperCase()}</span>${
-          p.birth ? `<span>• b. ${p.birth}</span>` : ""
-        }</div>
-      <div class="evtMeta"><button class="btn" data-edit="${
-          p.id
-        }" type="button">Edit</button><button class="btn warn" data-del="${
-          p.id
-        }" type="button">Delete</button></div>
-    </div>`;
-      }
+      /* ===== PEOPLE ===== */
       function openManagePeople() {
         const list = $("#peopleList");
-        list.innerHTML = "";
-        if (!state.people.length) {
-          list.insertAdjacentHTML(
-            "beforeend",
-            '<div class="evt"><div class="evtTitle">No people yet</div><div class="evtMeta">Use “New Person”.</div></div>'
-          );
-        } else {
-          state.people.forEach((p) =>
-            list.insertAdjacentHTML("beforeend", personRow(p))
-          );
-        }
+        list.innerHTML = !state.people.length
+          ? '<div class="evt" style="text-align:center;">No people yet. Use "New Person".</div>'
+          : state.people.map(p => `
+              <div class="evt" style="display:block;">
+                <div class="evtTitle">${p.name}</div>
+                <div class="evtMeta" style="margin-top:8px; justify-content:space-between;">
+                  <span>${p.type.toUpperCase()}${p.birth ? ` • b. ${p.birth}` : ""}</span>
+                  <div style="display:flex; gap: 6px;">
+                    <button class="btn" data-edit="${p.id}" type="button">Edit</button>
+                  </div>
+                </div>
+              </div>`).join('');
         $("#dlgPeople").showModal();
       }
       $("#dlgPeople").addEventListener("click", (e) => {
-        const btn = e.target.closest("button");
-        if (!btn) return;
-        const del = btn.getAttribute("data-del"),
-          edit = btn.getAttribute("data-edit");
-        if (del) {
-          deletePerson(del);
-          $("#dlgPeople").close();
-          renderAll();
-          return;
-        }
-        if (edit) {
-          const p = getPerson(edit);
-          if (p) openPerson(p);
-          return;
+        const editId = e.target.dataset.edit;
+        if (editId) {
+          openPerson(editId);
         }
       });
 
-      function openPerson(p = null) {
+      function openPerson(id = null) {
+        const p = id ? getPerson(id) : null;
         const f = $("#formPerson");
         f.reset();
         $("#personFormTitle").textContent = p ? "Edit Person" : "New Person";
@@ -1133,378 +934,196 @@
       $("#savePerson").addEventListener("click", () => {
         const f = $("#formPerson");
         const id = f.elements.id.value || crypto.randomUUID();
-        const obj = {
-          id,
-          name: f.elements.name.value.trim() || "Unnamed",
-          type: f.elements.type.value,
-          color: f.elements.color.value,
-          birth: f.elements.birth.value || "",
-        };
+        const obj = { id, name: f.elements.name.value.trim() || "Unnamed", type: f.elements.type.value, color: f.elements.color.value, birth: f.elements.birth.value || "" };
         const i = state.people.findIndex((p) => p.id === id);
         if (i >= 0) state.people[i] = obj;
         else state.people.push(obj);
-        updatePlannerDoc().then(() => $("#dlgPerson").close()).catch(showError);
+        updatePlannerDoc().then(() => {
+          $("#dlgPerson").close();
+          if ($("#dlgPeople").open) openManagePeople();
+        }).catch(showError);
       });
       $("#deletePerson").addEventListener("click", () => {
         const id = $("#formPerson").elements.id.value;
-        if (!id) return;
-        deletePerson(id);
-        $("#dlgPerson").close();
-        if ($("#dlgPeople").open) openManagePeople();
-        renderAll();
-      });
-      function deletePerson(id) {
-        const person = getPerson(id);
+        if (!id || !confirm("Are you sure you want to delete this person and all their related events?")) return;
+        
         state.people = state.people.filter((p) => p.id !== id);
-        if (person?.type === "child") {
-          delete state.school[id];
-          delete state.lunchMeals[id];
-          delete state.lunchAssigned[id];
+        delete state.school[id];
+        delete state.work[id];
+        delete state.lunch[id];
+        Object.values(state.school).forEach(days => Object.values(days).forEach(rec => { if (rec.dropoff === id) rec.dropoff = null; if (rec.pickup === id) rec.pickup = null; }));
+        Object.values(state.lunch).forEach(days => Object.values(days).forEach(rec => { if (rec.who === id) rec.who = null; }));
+        ['meetings', 'party'].forEach(key => state[key].forEach(evt => evt.participants = (evt.participants || []).filter(pId => pId !== id) ));
+        ['timeoff', 'doctor', 'milestone', 'journal'].forEach(key => state[key] = state[key].filter(evt => evt.personId !== id));
+
+        updatePlannerDoc().then(() => {
+          $("#dlgPerson").close();
+          if ($("#dlgPeople").open) openManagePeople();
+        }).catch(showError);
+      });
+      
+      /* ===== WEEKLY PLANS (School, Work, Lunch) ===== */
+      const openWeeklyPlan = (opts) => {
+        const people = state.people.filter(p => p.type === opts.personType);
+        if (people.length === 0) {
+          alert(`You must add a ${opts.personType} first before creating a ${opts.name} plan.`);
+          return;
         }
-        Object.values(state.school).forEach((days) => {
-          Object.values(days).forEach((rec) => {
-            if (rec.dropoff === id) rec.dropoff = null;
-            if (rec.pickup === id) rec.pickup = null;
-          });
-        });
-        Object.keys(state.work).forEach((pid) => {
-          if (pid === id) delete state.work[pid];
-        });
-        Object.values(state.lunchAssigned).forEach((days) => {
-          Object.keys(days).forEach((k) => {
-            if (days[k] === id) days[k] = null;
-          });
-        });
-        state.meetings = state.meetings.filter(m => !(m.participants || []).includes(id));
-        state.timeoff = state.timeoff.filter(t => t.personId !== id);
-        state.doctor = state.doctor.filter(d => d.personId !== id);
-        state.milestone = state.milestone.filter(m => m.personId !== id);
-        state.journal = state.journal.filter(j => j.personId !== id);
-        state.party = state.party.filter(p => !(p.invitees || []).includes(id));
-        updatePlannerDoc();
-      }
-
-      /* ===== School (Mon–Fri UI) ===== */
-      function schoolRowTemplate(dow) {
-        return `
-      <div class="grid3" data-dow="${dow}">
-        <div class="picker">
-          <label>${weekdays[dow]}</label>
-          <div class="row">
-            <input type="time" class="timeStart" value="08:00" style="width:120px">
-            <input type="time" class="timeEnd" value="15:00" style="width:120px">
-          </div>
-        </div>
-        <div class="picker"><label>Drop-off (who)</label><select class="drop"></select></div>
-        <div class="picker"><label>Pick-up (who)</label><select class="pick"></select></div>
-      </div>`;
-      }
-      function openSchool() {
-        const childSel = $("#schoolChild");
-        childSel.innerHTML = "";
-        state.people
-          .filter((p) => p.type === "child")
-          .forEach((c) => {
-            childSel.appendChild(new Option(c.name, c.id));
-          });
-        $("#schoolStart").value = todayISO();
-        const rows = $("#schoolRows");
-        rows.innerHTML = "";
-        for (let d = 1; d <= 5; d++) {
-          rows.insertAdjacentHTML("beforeend", schoolRowTemplate(d));
-        }
-        const parents = state.people.filter((p) => p.type === "parent");
-        rows.querySelectorAll(".grid3").forEach((c) => {
-          const drop = c.querySelector(".drop"),
-            pick = c.querySelector(".pick");
-          parents.forEach((p) => {
-            drop.appendChild(new Option(p.name, p.id));
-            pick.appendChild(new Option(p.name, p.id));
-          });
-        });
-        $("#dlgSchool").showModal();
-      }
-      $("#saveSchool").addEventListener("click", () => {
-        const childId = $("#schoolChild").value;
-        state.school[childId] = state.school[childId] || {};
-        $("#schoolRows")
-          .querySelectorAll(".grid3")
-          .forEach((container) => {
-            const dow = container.dataset.dow;
-            state.school[childId][dow] = {
-              start: container.querySelector(".timeStart").value || "",
-              end: container.querySelector(".timeEnd").value || "",
-              dropoff: container.querySelector(".drop").value || null,
-              pickup: container.querySelector(".pick").value || null,
-            };
-          });
-        updatePlannerDoc().then(() => $("#dlgSchool").close()).catch(showError);
-      });
-
-      /* ===== Work ===== */
-      function workRowTemplate(dow) {
-        return `
-      <div class="grid3" data-dow="${dow}">
-        <div class="picker">
-          <label>${weekdays[dow]}</label>
-          <div class="row">
-            <input type="time" class="wStart" value="09:00">
-            <input type="time" class="wEnd" value="17:00">
-          </div>
-        </div>
-      </div>`;
-      }
-      function openWork() {
-        const sel = $("#workParent");
-        sel.innerHTML = "";
-        state.people
-          .filter((p) => p.type === "parent")
-          .forEach((c) => sel.appendChild(new Option(c.name, c.id)));
-        $("#workStart").value = todayISO();
-        const rows = $("#workRows");
-        rows.innerHTML = "";
-        for (let d = 1; d <= 5; d++) {
-          rows.insertAdjacentHTML("beforeend", workRowTemplate(d));
-        }
-        $("#dlgWork").showModal();
-      }
-      $("#saveWork").addEventListener("click", () => {
-        const parentId = $("#workParent").value;
-        state.work[parentId] = state.work[parentId] || {};
-        $("#workRows")
-          .querySelectorAll(".grid3")
-          .forEach((container) => {
-            const dow = container.dataset.dow;
-            state.work[parentId][dow] = {
-              start: container.querySelector(".wStart").value || "",
-              end: container.querySelector(".wEnd").value || "",
-            };
-          });
-        updatePlannerDoc().then(() => $("#dlgWork").close()).catch(showError);
-      });
-
-      /* ===== Lunch ===== */
-      function lunchRowTemplate(dow) {
-        return `
-      <div class="grid3" data-dow="${dow}">
-        <div class="picker">
-          <label>${weekdays[dow]}</label>
-          <input class="meal" placeholder="Meal (e.g., Turkey sandwich)">
-        </div>
-        <div class="picker">
-          <label>Assigned to</label>
-          <select class="who"></select>
-        </div>
-        <div class="picker">
-          <label>Notes</label>
-          <input class="note" placeholder="optional">
-        </div>
-      </div>`;
-      }
-      function openLunch() {
-        const sel = $("#lunchChild");
-        sel.innerHTML = "";
-        state.people
-          .filter((p) => p.type === "child")
-          .forEach((c) => sel.appendChild(new Option(c.name, c.id)));
-        $("#lunchStart").value = todayISO();
-        const rows = $("#lunchRows");
-        rows.innerHTML = "";
-        for (let d = 1; d <= 5; d++) {
-          rows.insertAdjacentHTML("beforeend", lunchRowTemplate(d));
-        }
-        const parents = state.people.filter((p) => p.type === "parent");
-        rows.querySelectorAll(".who").forEach((sel) => {
-          parents.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
-        });
-        $("#dlgLunch").showModal();
-      }
-      $("#saveLunch").addEventListener("click", () => {
-        const childId = $("#lunchChild").value;
-        state.lunchMeals[childId] = state.lunchMeals[childId] || {};
-        state.lunchAssigned[childId] = state.lunchAssigned[childId] || {};
-        $("#lunchRows")
-          .querySelectorAll(".grid3")
-          .forEach((container) => {
-            const dow = container.dataset.dow;
-            state.lunchMeals[childId][dow] = container.querySelector(".meal").value || "";
-            state.lunchAssigned[childId][dow] = container.querySelector(".who").value || null;
-          });
-        updatePlannerDoc().then(() => $("#dlgLunch").close()).catch(showError);
-      });
-
-      /* ===== Meeting ===== */
-      function openMeeting() {
-        const wrap = $("#meetingPeople");
-        wrap.innerHTML = "";
-        state.people.forEach((p) =>
-          wrap.insertAdjacentHTML(
-            "beforeend",
-            `<label class="badge"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`
-          )
-        );
-        const f = $("#formMeeting");
-        f.reset();
-        f.elements.date.value = todayISO();
-        $("#dlgMeeting").showModal();
-      }
-      $("#saveMeeting").addEventListener("click", () => {
-        const f = $("#formMeeting");
-        const participants = Array.from(
-          $("#meetingPeople").querySelectorAll('input[type="checkbox"]:checked')
-        ).map((x) => x.value);
-        state.meetings.push({
-          id: crypto.randomUUID(),
-          title: f.elements.title.value.trim() || "Meeting",
-          date: f.elements.date.value,
-          start: f.elements.start.value || "",
-          end: f.elements.end.value || "",
-          location: f.elements.loc.value || "",
-          notes: f.elements.notes.value || "",
-          participants,
-        });
-        updatePlannerDoc().then(() => $("#dlgMeeting").close()).catch(showError);
-      });
-
-      /* ===== Time Off ===== */
-      function openTimeOff() {
-        const sel = $("#timeoffPerson");
-        sel.innerHTML = "";
-        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
-        $("#timeoffStart").value = todayISO();
-        $("#timeoffEnd").value = todayISO();
-        $("#timeoffReason").value = "";
-        $("#dlgTimeOff").showModal();
-      }
-      $("#saveTimeOff").addEventListener("click", () => {
-        state.timeoff.push({
-          id: crypto.randomUUID(),
-          personId: $("#timeoffPerson").value,
-          start: $("#timeoffStart").value,
-          end: $("#timeoffEnd").value,
-          reason: $("#timeoffReason").value || "",
-        });
-        updatePlannerDoc().then(() => $("#dlgTimeOff").close()).catch(showError);
-      });
-
-      /* ===== Doctor ===== */
-      function openDoctor() {
-        const sel = $("#doctorPerson");
-        sel.innerHTML = "";
-        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
-        $("#doctorDate").value = todayISO();
-        $("#doctorStart").value = "14:00";
-        $("#doctorEnd").value = "15:00";
-        $("#doctorNote").value = "";
-        $("#dlgDoctor").showModal();
-      }
-      $("#saveDoctor").addEventListener("click", () => {
-        state.doctor.push({
-          id: crypto.randomUUID(),
-          personId: $("#doctorPerson").value,
-          date: $("#doctorDate").value,
-          start: $("#doctorStart").value,
-          end: $("#doctorEnd").value,
-          note: $("#doctorNote").value || "",
-        });
-        updatePlannerDoc().then(() => $("#dlgDoctor").close()).catch(showError);
-      });
-
-      /* ===== Party (add + edit) ===== */
-      function openParty(party = null) {
-        const wrap = $("#partyPeople");
-        wrap.innerHTML = "";
-        state.people.forEach((p) =>
-          wrap.insertAdjacentHTML(
-            "beforeend",
-            `<label class="badge"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`
-          )
-        );
-        $("#partyId").value = party?.id || "";
-        $("#partyTitle").value = party?.title || "";
-        $("#partyDate").value = party?.date || todayISO();
-        $("#partyStart").value = party?.start || "13:00";
-        $("#partyEnd").value = party?.end || "16:00";
-        $("#partyNotes").value = party?.notes || "";
-        if (party?.invitees?.length) {
-          party.invitees.forEach((id) => {
-            const cb = wrap.querySelector(`input[value="${id}"]`);
-            if (cb) cb.checked = true;
-          });
-        }
-        $("#deleteParty").style.display = party ? "" : "none";
-        $("#dlgParty").showModal();
-      }
-      $("#saveParty").addEventListener("click", () => {
-        const id = $("#partyId").value || crypto.randomUUID();
-        const invitees = Array.from(
-          $("#partyPeople").querySelectorAll('input[type="checkbox"]:checked')
-        ).map((x) => x.value);
-        const obj = {
-          id,
-          title: $("#partyTitle").value.trim() || "Party",
-          date: $("#partyDate").value,
-          start: $("#partyStart").value,
-          end: $("#partyEnd").value,
-          notes: $("#partyNotes").value || "",
-          invitees,
+        const personSel = $(opts.selector);
+        personSel.innerHTML = "";
+        people.forEach(p => personSel.appendChild(new Option(p.name, p.id)));
+        
+        const renderRows = (personId) => {
+          const rows = $(opts.rowsSelector);
+          rows.innerHTML = "";
+          const plan = state[opts.stateKey][personId] || {};
+          for (let d = 1; d <= 5; d++) {
+            rows.insertAdjacentHTML("beforeend", opts.template(d, plan[d]));
+          }
+          if (opts.postRender) opts.postRender(rows);
         };
-        const idx = state.party.findIndex((p) => p.id === id);
-        if (idx >= 0) state.party[idx] = obj;
-        else state.party.push(obj);
-        updatePlannerDoc().then(() => $("#dlgParty").close()).catch(showError);
-      });
-      $("#deleteParty").addEventListener("click", () => {
-        const id = $("#partyId").value;
-        if (!id) return;
-        state.party = state.party.filter((p) => p.id !== id);
-        updatePlannerDoc().then(() => $("#dlgParty").close()).catch(showError);
-      });
-
-      /* ===== Milestone ===== */
-      function openMilestone() {
-        const sel = $("#milePerson");
-        sel.innerHTML = "";
-        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
-        $("#mileDate").value = todayISO();
-        $("#mileTitle").value = "";
-        $("#mileNotes").value = "";
-        $("#dlgMilestone").showModal();
-      }
-      $("#saveMilestone").addEventListener("click", () => {
-        state.milestone.push({
-          id: crypto.randomUUID(),
-          title: $("#mileTitle").value.trim() || "Milestone",
-          date: $("#mileDate").value,
-          personId: $("#milePerson").value,
-          notes: $("#mileNotes").value || "",
+        
+        renderRows(people[0].id);
+        personSel.onchange = (e) => renderRows(e.target.value);
+        $(opts.dialog).showModal();
+      };
+      
+      const saveWeeklyPlan = (opts) => {
+        const personId = $(opts.selector).value;
+        if (!personId) { alert(`Please select a ${opts.personType}.`); return; }
+        state[opts.stateKey][personId] = state[opts.stateKey][personId] || {};
+        $(opts.rowsSelector).querySelectorAll("[data-dow]").forEach(container => {
+          const dow = container.dataset.dow;
+          state[opts.stateKey][personId][dow] = opts.reducer(container);
         });
-        updatePlannerDoc().then(() => $("#dlgMilestone").close()).catch(showError);
-      });
-
-      /* ===== Journal ===== */
-      function openJournal() {
-        const sel = $("#journalPerson");
-        sel.innerHTML = "";
-        sel.appendChild(new Option("— (None)", ""));
-        state.people.forEach((p) => sel.appendChild(new Option(p.name, p.id)));
-        $("#journalDate").value = todayISO();
-        $("#journalTitle").value = "";
-        $("#journalNotes").value = "";
-        $("#dlgJournal").showModal();
-      }
-      $("#saveJournal").addEventListener("click", () => {
-        state.journal.push({
-          id: crypto.randomUUID(),
-          title: $("#journalTitle").value.trim() || "Journal Entry",
-          date: $("#journalDate").value,
-          personId: $("#journalPerson").value || null,
-          notes: $("#journalNotes").value || "",
+        updatePlannerDoc().then(() => $(opts.dialog).close()).catch(showError);
+      };
+      
+      const schoolTemplate = (dow, plan = {}) => `
+        <div class="grid3" data-dow="${dow}">
+          <div class="picker"><label>${weekdays[dow]}</label><div class="row" style="justify-content:space-between;"><input type="time" class="timeStart" value="${plan.start || '08:00'}"><input type="time" class="timeEnd" value="${plan.end || '15:00'}"></div></div>
+          <div class="picker"><label>Drop-off</label><select class="drop"></select></div>
+          <div class="picker"><label>Pick-up</label><select class="pick"></select></div>
+        </div>`;
+      const openSchool = () => openWeeklyPlan({ name: 'School', personType: 'child', stateKey: 'school', dialog: '#dlgSchool', selector: '#schoolChild', rowsSelector: '#schoolRows', template: schoolTemplate, postRender: (rows) => {
+        const parents = state.people.filter(p => p.type === 'parent');
+        const plan = state.school[ $('#schoolChild').value ] || {};
+        rows.querySelectorAll('[data-dow]').forEach(c => {
+          const dow = c.dataset.dow;
+          ['.drop', '.pick'].forEach(sel => {
+            const select = c.querySelector(sel);
+            parents.forEach(p => select.appendChild(new Option(p.name, p.id)));
+            const key = sel === '.drop' ? 'dropoff' : 'pickup';
+            if (plan[dow]?.[key]) select.value = plan[dow][key];
+          });
         });
-        updatePlannerDoc().then(() => $("#dlgJournal").close()).catch(showError);
-      });
+      }});
+      const saveSchool = () => saveWeeklyPlan({ personType: 'child', stateKey: 'school', dialog: '#dlgSchool', selector: '#schoolChild', rowsSelector: '#schoolRows', reducer: c => ({ start: c.querySelector(".timeStart").value || "", end: c.querySelector(".timeEnd").value || "", dropoff: c.querySelector(".drop").value || null, pickup: c.querySelector(".pick").value || null }) });
+      $('#saveSchool').addEventListener('click', saveSchool);
 
-      /* ===== Event gatherer (Sat/Sun included for date-based items) ===== */
+      const workTemplate = (dow, plan = {}) => `
+        <div class="grid2" data-dow="${dow}">
+          <div class="picker"><label>${weekdays[dow]}</label><div class="row" style="justify-content:space-between;"><input type="time" class="wStart" value="${plan.start || '09:00'}"><input type="time" class="wEnd" value="${plan.end || '17:00'}"></div></div>
+        </div>`;
+      const openWork = () => openWeeklyPlan({ name: 'Work', personType: 'parent', stateKey: 'work', dialog: '#dlgWork', selector: '#workParent', rowsSelector: '#workRows', template: workTemplate });
+      const saveWork = () => saveWeeklyPlan({ personType: 'parent', stateKey: 'work', dialog: '#dlgWork', selector: '#workParent', rowsSelector: '#workRows', reducer: c => ({ start: c.querySelector(".wStart").value || "", end: c.querySelector(".wEnd").value || "" }) });
+      $('#saveWork').addEventListener('click', saveWork);
+
+      const lunchTemplate = (dow, plan = {}) => `
+        <div class="grid2" data-dow="${dow}">
+          <div class="picker"><label>${weekdays[dow]} Meal</label><input class="meal" placeholder="e.g., Turkey sandwich" value="${plan.meal || ''}"></div>
+          <div class="picker"><label>Assigned To</label><select class="who"></select></div>
+        </div>`;
+      const openLunch = () => openWeeklyPlan({ name: 'Lunch', personType: 'child', stateKey: 'lunch', dialog: '#dlgLunch', selector: '#lunchChild', rowsSelector: '#lunchRows', template: lunchTemplate, postRender: (rows) => {
+        const parents = state.people.filter(p => p.type === 'parent');
+        const plan = state.lunch[ $('#lunchChild').value ] || {};
+        rows.querySelectorAll('[data-dow]').forEach(c => {
+          const who = c.querySelector('.who');
+          parents.forEach(p => who.appendChild(new Option(p.name, p.id)));
+          if (plan[c.dataset.dow]?.who) who.value = plan[c.dataset.dow].who;
+        });
+      }});
+      const saveLunch = () => saveWeeklyPlan({ personType: 'child', stateKey: 'lunch', dialog: '#dlgLunch', selector: '#lunchChild', rowsSelector: '#lunchRows', reducer: c => ({ meal: c.querySelector(".meal").value || "", who: c.querySelector(".who").value || null }) });
+      $('#saveLunch').addEventListener('click', saveLunch);
+      
+      /* ===== EVENT-BASED ITEMS ===== */
+      const openEvent = (kind, id = null) => {
+        const item = id ? state[kind].find(i => i.id === id) : null;
+        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
+        f.reset();
+        $(`#${kind}FormTitle`).textContent = `${item ? 'Edit' : 'New'} ${kind.charAt(0).toUpperCase() + kind.slice(1)}`;
+        f.elements.id.value = item?.id || '';
+        if (item) {
+          Object.keys(item).forEach(key => {
+            if (f.elements[key] && key !== 'participants' && key !== 'invitees') {
+              f.elements[key].value = item[key];
+            }
+          });
+        }
+        if (!item?.date) f.elements.date.value = todayISO();
+        
+        const peopleContainer = $(`#${kind}People`);
+        if (peopleContainer) {
+            peopleContainer.innerHTML = state.people.map(p => `<label style="display:inline-flex; align-items:center; background:var(--bg); border:1px solid var(--grid); padding: 4px 8px; border-radius: 8px; cursor:pointer;"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`).join('');
+            if (item?.participants || item?.invitees) {
+                (item.participants || item.invitees).forEach(id => {
+                    const cb = peopleContainer.querySelector(`input[value="${id}"]`);
+                    if (cb) cb.checked = true;
+                });
+            }
+        }
+        if (f.elements.person) {
+            f.elements.person.innerHTML = state.people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            if (item?.personId) f.elements.person.value = item.personId;
+        }
+
+        $(`#delete${kind.charAt(0).toUpperCase() + kind.slice(1)}`).style.display = item ? '' : 'none';
+        $(`#dlg${kind.charAt(0).toUpperCase() + kind.slice(1)}`).showModal();
+      };
+      
+      const saveEvent = (kind) => {
+        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
+        const id = f.elements.id.value || crypto.randomUUID();
+        let obj = { id };
+        Array.from(f.elements).forEach(el => {
+            if (el.name) obj[el.name] = el.value;
+        });
+        const peopleContainer = $(`#${kind}People`);
+        if (peopleContainer) {
+            const key = kind === 'party' ? 'invitees' : 'participants';
+            obj[key] = Array.from(peopleContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+        }
+        
+        const idx = state[kind].findIndex(i => i.id === id);
+        if (idx >= 0) state[kind][idx] = obj;
+        else state[kind].push(obj);
+        
+        updatePlannerDoc().then(() => f.closest('dialog').close()).catch(showError);
+      };
+
+      const deleteEvent = (kind) => {
+        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
+        const id = f.elements.id.value;
+        if (!id || !confirm(`Are you sure you want to delete this ${kind}?`)) return;
+        state[kind] = state[kind].filter(i => i.id !== id);
+        updatePlannerDoc().then(() => f.closest('dialog').close()).catch(showError);
+      };
+      
+      ['Meeting', 'TimeOff', 'Doctor', 'Party', 'Milestone', 'Journal'].forEach(kind => {
+        const lower = kind.toLowerCase();
+        $(`#save${kind}`).addEventListener('click', () => saveEvent(lower));
+        $(`#delete${kind}`).addEventListener('click', () => deleteEvent(lower));
+      });
+      const openMeeting = (id) => openEvent('meeting', id);
+      const openTimeOff = (id) => openEvent('timeoff', id);
+      const openDoctor = (id) => openEvent('doctor', id);
+      const openParty = (id) => openEvent('party', id);
+      const openMilestone = (id) => openEvent('milestone', id);
+      const openJournal = (id) => openEvent('journal', id);
+      
+      if ($('#journalPerson')) $('#journalPerson').insertAdjacentHTML('afterbegin', '<option value="">— (None)</option>');
+
+      /* ===== EVENT GATHERING & RENDERING ===== */
       function gatherEventsFor(iso) {
         const evts = [];
         const d = fromISO(iso);
@@ -1514,168 +1133,86 @@
           const rec = plan[dow];
           if (!rec) return;
           const child = getPerson(childId);
-          const childName = child?.name || "—";
-          if (rec.dropoff) {
-            const who = getPerson(rec.dropoff);
-            evts.push({
-              kind: "school",
-              type: "drop-off",
-              title: `Drop-off: ${childName} → ${who?.name || "—"}`,
-              date: iso,
-            });
-          }
-          if (rec.pickup) {
-            const who = getPerson(rec.pickup);
-            evts.push({
-              kind: "school",
-              type: "pick-up",
-              title: `Pick-up: ${childName} ← ${who?.name || "—"}`,
-              date: iso,
-            });
-          }
+          if(rec.start && rec.dropoff) evts.push({ kind: "school", id: childId, title: `Drop-off: ${child?.name || "—"}`, time: rec.start, meta: `→ ${getPerson(rec.dropoff)?.name || "—"}`});
+          if(rec.end && rec.pickup) evts.push({ kind: "school", id: childId, title: `Pick-up: ${child?.name || "—"}`, time: rec.end, meta: `← ${getPerson(rec.pickup)?.name || "—"}`});
         });
-        Object.keys(state.lunchMeals).forEach((childId) => {
-          const meal = state.lunchMeals[childId]?.[dow];
-          const whoId = state.lunchAssigned[childId]?.[dow];
-          if (meal || whoId) {
-            const child = getPerson(childId);
-            const childName = child?.name || "—";
-            const assignee = whoId ? getPerson(whoId)?.name || "—" : "—";
-            evts.push({
-              kind: "lunch",
-              type: "lunch",
-              title: `Lunch: ${childName} • ${meal || "—"} · Assigned to ${assignee}`,
-              date: iso,
-            });
-          }
+        Object.entries(state.lunch).forEach(([childId, plan]) => {
+          const rec = plan[dow];
+          if (!rec?.meal) return;
+          const child = getPerson(childId);
+          evts.push({ kind: "lunch", id: childId, title: `Lunch: ${child?.name || "—"}`, time: rec.meal, meta: `by ${getPerson(rec.who)?.name || "—"}`});
         });
-        state.meetings.filter((m) => m.date === iso).forEach((m) => {
-          const who =
-            (m.participants || [])
-              .map(getPerson)
-              .map((p) => p?.name)
-              .filter(Boolean)
-              .join(", ") || "—";
-          evts.push({
-            kind: "meeting",
-            type: "meeting",
-            title: `${m.title} ${m.start ? m.start + "–" + m.end : ""}${
-              m.location ? ` · @ ${m.location}` : ""
-            } • With ${who}`,
-            date: iso,
-          });
-        });
+        state.meetings.filter((m) => m.date === iso).forEach((m) => evts.push({ kind: "meeting", id: m.id, title: m.title, time: `${formatTime(m.start)}–${formatTime(m.end)}`, meta: m.loc || '' }));
         state.timeoff.forEach((t) => {
-          if (iso >= t.start && iso <= t.end) {
-            const person = getPerson(t.personId);
-            evts.push({
-              kind: "timeoff",
-              type: "time-off",
-              title: `Time off: ${person?.name || "—"}${
-                t.reason ? ` · ${t.reason}` : ""
-              }`,
-              date: iso,
-            });
-          }
+          if (iso >= t.start && iso <= t.end) evts.push({ kind: "timeoff", id: t.id, title: `Time Off: ${getPerson(t.personId)?.name || "—"}`, time: t.reason, meta: '' });
         });
-        state.doctor.filter((a) => a.date === iso).forEach((a) => {
-          const person = getPerson(a.personId);
-          evts.push({
-            kind: "doctor",
-            type: "doctor",
-            title: `Doctor: ${person?.name || "—"} ${
-              a.start ? `${a.start}–${a.end}` : ""
-            }${a.note ? ` · ${a.note}` : ""}`,
-            date: iso,
-          });
-        });
-        state.party.filter((p) => p.date === iso).forEach((p) => {
-          evts.push({
-            kind: "party",
-            type: "party",
-            id: p.id,
-            title: `${p.title} ${p.start ? `${p.start}–${p.end}` : ""}${
-              p.notes ? ` · ${p.notes}` : ""
-            }`,
-            date: iso,
-          });
-        });
+        state.doctor.filter((a) => a.date === iso).forEach((a) => evts.push({ kind: "doctor", id: a.id, title: `Doctor: ${getPerson(a.personId)?.name || "—"}`, time: `${formatTime(a.start)}–${formatTime(a.end)}`, meta: a.note || '' }));
+        state.party.filter((p) => p.date === iso).forEach((p) => evts.push({ kind: "party", id: p.id, title: p.title, time: `${formatTime(p.start)}–${formatTime(p.end)}`, meta: p.notes || '' }));
+        state.milestone.filter((m) => m.date === iso).forEach((m) => evts.push({ kind: "milestone", id: m.id, title: m.title, time: `for ${getPerson(m.personId)?.name || "—"}`, meta: m.notes || '' }));
+        state.journal.filter((j) => j.date === iso).forEach((j) => evts.push({ kind: "journal", id: j.id, title: j.title || 'Journal Entry', time: j.notes.substring(0, 50) + '...', meta: getPerson(j.personId)?.name || '' }));
+
         return evts;
       }
 
-      /* ===== Upcoming (redesigned, large day headers) ===== */
       function renderUpcoming() {
         const list = $("#upcomingList");
         list.innerHTML = "";
         const start = todayISO();
+        let hasItems = false;
+        const icons = { school: '🏫', lunch: '🥪', meeting: '📅', timeoff: '🌴', doctor: '🩺', party: '🎉', milestone: '🏆', journal: '📝' };
+
         for (let i = 0; i < 7; i++) {
           const date = addDays(start, i);
           const dayEvents = gatherEventsFor(date);
           if (dayEvents.length === 0) continue;
+          hasItems = true;
           const headerBits = humanHeader(date);
-          const header = document.createElement("div");
-          header.className = "dayHeader";
-          header.innerHTML = `<div class="dayName">${headerBits.day}</div><div class="dayDate">${headerBits.date}</div>`;
-          list.appendChild(header);
-          dayEvents.forEach((e) => {
-            const el = document.createElement("div");
-            el.className = `evt ${e.kind} ${e.type}${
-              e.type === "party" ? " clickable" : ""
-            }`;
-            const badgeColor =
-              {
-                school: "var(--c-school)",
-                lunch: "var(--c-lunch)",
-                meeting: "var(--c-meeting)",
-                timeoff: "var(--c-timeoff)",
-                doctor: "var(--c-doctor)",
-                party: "var(--c-party)",
-              }[e.kind] || "var(--ink)";
-            el.dataset.type = e.type;
-            if (e.id) el.dataset.id = e.id;
-            el.innerHTML = `
-          <div class="evtTitle">${e.title}</div>
-          <div class="evtMeta"><span class="badge" style="border-color:${badgeColor}; color:${badgeColor}">${e.type.toUpperCase()}</span></div>`;
-            list.appendChild(el);
-          });
+          const header = `<div class="dayHeader"><div class="dayName">${headerBits.day}</div><div class="dayDate">${headerBits.date}</div></div>`;
+          const eventsHtml = dayEvents.map(e => `
+            <div class="evt ${e.kind}" data-kind="${e.kind}" data-id="${e.id}">
+              <div class="evtIcon">${icons[e.kind] || '•'}</div>
+              <div class="evtContent">
+                <div class="evtTitle">${e.kind === 'school' ? `${formatTime(e.time)} ${e.title}` : e.title}</div>
+                <div class="evtMeta"><span>${e.kind !== 'school' ? e.time : ''}</span><span>${e.meta}</span></div>
+              </div>
+            </div>`).join('');
+          list.insertAdjacentHTML('beforeend', header + eventsHtml);
         }
-        if (!list.children.length) {
-          list.insertAdjacentHTML(
-            "beforeend",
-            `<div class="evt"><div class="evtTitle">No items yet</div><div class="evtMeta">Tap ＋ to add your first item.</div></div>`
-          );
+        if (!hasItems) {
+          list.innerHTML = `<div class="evt" style="text-align:center; cursor:default;">No upcoming items. Tap ＋ to add something.</div>`;
         }
-        list.onclick = (ev) => {
-          const item = ev.target.closest(".evt");
-          if (!item) return;
-          if (item.dataset.type === "party" && item.dataset.id) {
-            const p = state.party.find((x) => x.id === item.dataset.id);
-            if (p) openParty(p);
-          }
-        };
       }
-
-      /* ===== Calendar (uses local dates too) ===== */
-      let calCursor = new Date();
-      const monthLabel = (d) =>
-        d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      
+      $('#upcomingList').addEventListener('click', (ev) => {
+        const item = ev.target.closest(".evt");
+        if (!item) return;
+        const { kind, id } = item.dataset;
+        if (!kind || !id) return;
+        
+        switch (kind) {
+          case 'school': openSchool(); break;
+          case 'lunch': openLunch(); break;
+          case 'work': openWork(); break;
+          case 'meeting': openMeeting(id); break;
+          case 'timeoff': openTimeOff(id); break;
+          case 'doctor': openDoctor(id); break;
+          case 'party': openParty(id); break;
+          case 'milestone': openMilestone(id); break;
+          case 'journal': openJournal(id); break;
+        }
+      });
+      
       function buildCalendar() {
-        $("#calTitle").textContent = monthLabel(calCursor);
-        const weekdaysShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const dowRow = $("#dowRow");
-        dowRow.innerHTML = "";
-        weekdaysShort.forEach((w) =>
-          dowRow.insertAdjacentHTML("beforeend", `<div class="dow">${w}</div>`)
-        );
+        $("#calTitle").textContent = calCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+        $("#dowRow").innerHTML = weekdays.map(w => `<div class="dow">${w.substring(0,3)}</div>`).join('');
         const grid = $("#calGrid");
         grid.innerHTML = "";
-        const y = calCursor.getFullYear(),
-          m = calCursor.getMonth();
+        const y = calCursor.getFullYear(), m = calCursor.getMonth();
         const first = new Date(y, m, 1);
         const startCell = first.getDay();
         const daysInMonth = new Date(y, m + 1, 0).getDate();
-        for (let i = 0; i < startCell; i++)
-          grid.insertAdjacentHTML("beforeend", `<div></div>`);
+        for (let i = 0; i < startCell; i++) grid.insertAdjacentHTML("beforeend", `<div></div>`);
+        
         for (let d = 1; d <= daysInMonth; d++) {
           const iso = toLocalISO(new Date(y, m, d));
           const evts = gatherEventsFor(iso);
@@ -1684,66 +1221,32 @@
           if (iso === todayISO()) el.classList.add("today");
           el.innerHTML = `<div class="dayNum">${d}</div>`;
           evts.slice(0, 3).forEach((e) => {
-            const color =
-              {
-                school: "var(--c-school)",
-                lunch: "var(--c-lunch)",
-                meeting: "var(--c-meeting)",
-                timeoff: "var(--c-timeoff)",
-                doctor: "var(--c-doctor)",
-                party: "var(--c-party)",
-              }[e.kind] || "var(--ink)";
-            const span = document.createElement("div");
-            span.className = "pill" + (e.type === "party" ? " clickable" : "");
-            span.textContent = e.title;
-            span.style.borderColor = color;
-            if (e.type === "party" && e.id) {
-              span.dataset.type = "party";
-              span.dataset.id = e.id;
-            }
-            el.appendChild(span);
+            el.insertAdjacentHTML('beforeend', `<div class="pill" style="border-left-color: var(--c-${e.kind}); background: var(--c-${e.kind}-bg);">${e.title}</div>`);
           });
           if (evts.length > 3) {
-            const more = document.createElement("div");
-            more.className = "pill";
-            more.textContent = `+${evts.length - 3} more`;
-            el.appendChild(more);
+            el.insertAdjacentHTML('beforeend', `<div class="pill">+${evts.length - 3} more</div>`);
           }
           grid.appendChild(el);
         }
-        grid.onclick = (ev) => {
-          const pill = ev.target.closest(".pill");
-          if (!pill) return;
-          if (pill.dataset.type === "party" && pill.dataset.id) {
-            const p = state.party.find((x) => x.id === pill.dataset.id);
-            if (p) openParty(p);
-          }
-        };
       }
-      $("#prevMonth").addEventListener("click", () => {
-        calCursor.setMonth(calCursor.getMonth() - 1);
-        buildCalendar();
-      });
-      $("#nextMonth").addEventListener("click", () => {
-        calCursor.setMonth(calCursor.getMonth() + 1);
-        buildCalendar();
-      });
+      
+      let calCursor = new Date();
+      $("#prevMonth").addEventListener("click", () => { calCursor.setMonth(calCursor.getMonth() - 1); buildCalendar(); });
+      $("#nextMonth").addEventListener("click", () => { calCursor.setMonth(calCursor.getMonth() + 1); buildCalendar(); });
 
-      /* ===== Render all ===== */
       function renderAll() {
         renderUpcoming();
         buildCalendar();
         setMobileView(activeMobileView);
       }
-
-      /* ===== Init ===== */
+      
       try {
         document.querySelectorAll("dialog").forEach((d) => {
           d.addEventListener("click", (e) => {
-            const sheet = e.target.closest(".sheet");
-            if (!sheet) d.close();
+            if (e.target === d) d.close();
           });
         });
+        renderAll();
       } catch (e) {
         showError(e);
       }
