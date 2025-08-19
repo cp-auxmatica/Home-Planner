@@ -839,16 +839,16 @@
       import { getFirestore, doc, getDoc, setDoc, addDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
       // Firebase configuration and initialization
-      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+      const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
       const firebaseConfig = {
-        apiKey: "AIzaSyBUF1QlhzSef0xxcJ6paKwZ2gE0MRXgcVA",
-        authDomain: "home-planner-95e03.firebaseapp.com",
-        projectId: "home-planner-95e03",
-        storageBucket: "home-planner-95e03.firebasestorage.app",
-        messagingSenderId: "85328556868",
-        appId: "1:85328556868:web:7f5da0ad105b6f7b2edd11"
+        apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
+  authDomain: "home-planner-ce48b.firebaseapp.com",
+  projectId: "home-planner-ce48b",
+  storageBucket: "home-planner-ce48b.firebasestorage.app",
+  messagingSenderId: "20103999017",
+  appId: "1:20103999017:web:9be545d5a0f70008dc7638"
       };
-      const __initial_auth_token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+      const __initial_auth_token = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
