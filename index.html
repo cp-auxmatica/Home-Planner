@@ -1,1255 +1,547 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Home Planner</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>hub</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+
     <style>
-      :root {
-        --bg: #f9fafb;
-        --card: #ffffff;
-        --ink: #111827;
-        --ink-muted: #6b7280;
-        --grid: #e5e7eb;
-        --brand: #2563eb;
-        --brand-muted: #dbeafe;
-        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        /* event colors */
-        --c-school: #2563eb;
-        --c-school-bg: #eff6ff;
-        --c-lunch: #10b981;
-        --c-lunch-bg: #ecfdf5;
-        --c-meeting: #0ea5e9;
-        --c-meeting-bg: #f0f9ff;
-        --c-timeoff: #f59e0b;
-        --c-timeoff-bg: #fffbeb;
-        --c-doctor: #ef4444;
-        --c-doctor-bg: #fef2f2;
-        --c-party: #8b5cf6;
-        --c-party-bg: #f5f3ff;
-        --c-milestone: #d946ef;
-        --c-milestone-bg: #fae8ff;
-        --c-journal: #64748b;
-        --c-journal-bg: #f8fafc;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-        color: var(--ink);
-        background: var(--bg);
-        -webkit-font-smoothing: antialiased;
-      }
-      .appbar {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: var(--card);
-        border-bottom: 1px solid var(--grid);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 60px;
-        padding: 0 16px;
-      }
-      .appbar h1 {
-        font-size: 20px;
-        margin: 0;
-        font-weight: 800;
-        letter-spacing: -0.2px;
-      }
-      .appbar .actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-      }
-      .iconbtn {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        border: 1px solid var(--grid);
-        background: transparent;
-        cursor: pointer;
-        display: inline-grid;
-        place-items: center;
-        font-size: 22px;
-        line-height: 0;
-        transition: background 0.15s;
-      }
-      .iconbtn:hover {
-        background: #f9fafb;
-      }
-      .iconbtn:active {
-        transform: translateY(1px);
-      }
-      .iconbtn:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-      .wrap {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 16px;
-      }
-      .seg {
-        background: var(--card);
-        border: 1px solid var(--grid);
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: var(--shadow);
-      }
-      .tabs {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        margin: 8px 0 12px;
-      }
-      .tab {
-        flex: 1;
-        padding: 10px 14px;
-        border-radius: 12px;
-        border: 1px solid var(--grid);
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 14px;
-        background: #fff;
-      }
-      .tab.active {
-        background: var(--brand-muted);
-        color: var(--brand);
-        border-color: var(--brand);
-      }
-      .dayHeader {
-        display: flex;
-        align-items: baseline;
-        gap: 12px;
-        padding: 8px 4px 8px;
-        border-bottom: 1px solid var(--grid);
-        margin-top: 24px;
-      }
-      .dayHeader:first-child {
-        margin-top: 0;
-      }
-      .dayName {
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.2px;
-      }
-      .dayDate {
-        font-size: 16px;
-        color: var(--ink-muted);
-        font-weight: 600;
-      }
-      .list {
-        display: grid;
-        gap: 12px;
-        margin-top: 16px;
-      }
-      .evt {
-        display: flex;
-        gap: 12px;
-        border: 1px solid var(--grid);
-        border-left: 5px solid var(--grid);
-        border-radius: 14px;
-        padding: 14px;
-        background: #fff;
-        cursor: pointer;
-        transition: box-shadow 0.15s;
-      }
-      .evt:hover {
-        box-shadow: var(--shadow);
-      }
-      .evtIcon {
-        font-size: 20px;
-      }
-      .evtContent {
-        flex: 1;
-      }
-      .evtTitle {
-        font-weight: 700;
-        font-size: 16px;
-        margin-bottom: 4px;
-      }
-      .evtMeta {
-        font-size: 13px;
-        color: var(--ink-muted);
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-      .evt.school { border-left-color: var(--c-school); }
-      .evt.lunch { border-left-color: var(--c-lunch); }
-      .evt.meeting { border-left-color: var(--c-meeting); }
-      .evt.timeoff { border-left-color: var(--c-timeoff); }
-      .evt.doctor { border-left-color: var(--c-doctor); }
-      .evt.party { border-left-color: var(--c-party); }
-      .evt.milestone { border-left-color: var(--c-milestone); }
-      .evt.journal { border-left-color: var(--c-journal); }
-      
-      .calHdr {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 4px 0 16px;
-      }
-      .calHdr h3 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-      }
-      .calGrid {
-        --cols: 7;
-        display: grid;
-        grid-template-columns: repeat(var(--cols), 1fr);
-        gap: 8px;
-      }
-      .dow {
-        font-size: 12px;
-        color: var(--ink-muted);
-        text-align: center;
-        font-weight: 600;
-      }
-      .day {
-        border: 1px solid var(--grid);
-        border-radius: 12px;
-        background: #fff;
-        min-height: 80px;
-        padding: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .dayNum {
-        font-weight: 700;
-        font-size: 13px;
-      }
-      .pill {
-        font-size: 11px;
-        border-left: 3px solid var(--grid);
-        border-radius: 4px;
-        padding: 2px 6px;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: 600;
-      }
-      .pill.clickable { cursor: pointer; }
-      .today { border-color: var(--brand); }
-      .today .dayNum { color: var(--brand); }
-      
-      dialog {
-        border: none;
-        border-radius: 16px;
-        padding: 0;
-        width: min(600px, 92vw);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      }
-      dialog::backdrop {
-        background: rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(4px);
-      }
-      .sheet {
-        padding: 20px;
-      }
-      .sheet h3 {
-        margin: 0 0 20px;
-        font-size: 20px;
-        font-weight: 700;
-      }
-      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-      .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-      
-      label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--ink-muted);
-        margin-bottom: 4px;
-        display: block;
-      }
-      input, select, textarea {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--grid);
-        border-radius: 10px;
-        background: #fff;
-        font: inherit;
-        font-size: 15px;
-      }
-      textarea { min-height: 90px; }
-      .sheet .row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
-      
-      .btn {
-        padding: 10px 16px;
-        border-radius: 10px;
-        border: 1px solid var(--grid);
-        background: #fff;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 14px;
-      }
-      .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
-      .btn.warn { background: #ef4444; color: #fff; border-color: #ef4444; }
-      
-      .section { display: grid; gap: 12px; margin-top: 16px; }
-      .picker { display: flex; flex-direction: column; }
-      
-      .actionGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .action {
-        border: 1px solid var(--grid);
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-        cursor: pointer;
-        font-weight: 700;
-        transition: background 0.15s;
-      }
-      .action:hover { background: #f9fafb; }
-      .action small { display: block; color: var(--ink-muted); font-weight: 400; margin-top: 2px; }
-      
-      @media (min-width: 900px) {
-        .wrap.cols { display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 16px; }
-        .tabs { display: none; }
-      }
-      @media (max-width: 899px) { .deskOnly { display: none; } }
-      
-      #toast {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 20px;
-        background: #111827;
-        color: #fff;
-        font-weight: 700;
-        border-radius: 999px;
-        padding: 12px 18px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.25s, transform 0.25s;
-        z-index: 100;
-      }
-      #toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
-      #errorBubble {
-        position: fixed;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 60px;
-        background: #dc2626;
-        color: #fff;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-size: 13px;
-        display: none;
-        z-index: 101;
-      }
+        :root {
+            --primary: #000000; --primary-hover: #333333;
+            --secondary: #10b981; --accent: #ec4899; --error: #ef4444;
+            --bg-primary: #ffffff; --bg-secondary: #ffffff; --bg-tertiary: #f3f4f6;
+            --text-primary: #111827; --text-secondary: #374151; --text-tertiary: #6b7280;
+            --border: #e5e7eb; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 4px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 12px; --radius-sm: 8px;
+            --urgent: #ef4444; --warning: #f97316; --success: #22c55e;
+        }
+        body.dark-mode {
+            --primary: #eeeeee; --primary-hover: #ffffff;
+            --secondary: #10b981; --accent: #f472b6;
+            --bg-primary: #020617; --bg-secondary: #0f172a; --bg-tertiary: #1e293b;
+            --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-tertiary: #64748b;
+            --border: #334155; --shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
+        
+        /* --- HEADER AND NAVIGATION CUSTOMIZATIONS --- */
+        .header { 
+            background: #000000; /* Black header background */
+            border-bottom: 1px solid #333;
+            position: sticky; top: 0; z-index: 100; 
+            transition: background-color 0.3s, border-color 0.3s; 
+        }
+        .navbar { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #ffffff; } /* White logo text */
+        .top-nav { display: flex; justify-content: center; background: #000000; border-bottom: 1px solid #333; overflow-x: auto; }
+        .nav-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            background: transparent; color: #a0a0a0; /* Light gray for inactive icons */
+            border: none; border-bottom: 3px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; font-weight: 500;
+        }
+        .nav-btn i { font-size: 1.5rem; }
+        .nav-btn:hover { 
+            background: #1a1a1a; /* Dark gray on hover */
+            color: #ffffff; 
+        }
+        .nav-btn.active { 
+            color: #ffffff; /* White active icon */
+            border-bottom-color: #2575fc; /* Bright blue indicator */
+        }
+    
+        /* --- DASHBOARD GRADIENT HEADERS --- */
+        #dashboard-view .card:nth-of-type(1) .card-header {
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-bottom: none;
+        }
+        #dashboard-view .card:nth-of-type(2) .card-header {
+            background: linear-gradient(45deg, #f97794 0%, #623aa2 100%);
+            color: white;
+            border-bottom: none;
+        }
+        #dashboard-view .card:nth-of-type(3) .card-header {
+            background: linear-gradient(45deg, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);
+            color: white;
+            border-bottom: none;
+        }
+        /* --- End Customizations --- */
+    
+        .main-container { padding: 1rem; max-width: 1400px; margin: 0 auto; }
+        .view-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .view-title { font-size: 1.75rem; font-weight: 700; }
+        .card { background: var(--bg-secondary); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1.5rem; border: 1px solid var(--border); }
+        .card-header { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 0; }
+        .card-content { padding: 1rem; line-height: 1.6; color: var(--text-secondary); }
+        .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); transition: background-color 0.2s; }
+        .list-item:last-child { border-bottom: none; }
+        .list-item:hover { background-color: var(--bg-tertiary); }
+        .list-item-icon { font-size: 1.2rem; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--primary); background: var(--bg-tertiary); }
+        .list-item-content { flex: 1; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .list-item-aside { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); text-align: right; }
+        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.25rem; display: inline-block; }
+        .fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 1.5rem; border: none; box-shadow: var(--shadow-lg); position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900; cursor: pointer; transition: all 0.3s ease; }
+        body.dark-mode .fab { color: #000; }
+        .fab:hover { transform: scale(1.05) rotate(90deg); background-color: var(--primary-hover); }
+        .hidden { display: none !important; }
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;font-size:1rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-tertiary)}.btn-ghost{background:0 0;color:var(--text-secondary);border:none;padding:.5rem}.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}.btn-danger{background:var(--error);color:white}
+        body.dark-mode .btn-primary { color: #000; }
+        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}.modal-content{background:var(--bg-secondary);border-radius:var(--radius);max-width:500px;width:100%;animation:slideIn .3s ease;box-shadow:var(--shadow-lg)}.modal-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.modal-title{font-size:1.2rem;font-weight:600}.modal-body{padding:1.5rem}.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.9rem;font-weight:500;color:var(--text-primary);margin-bottom:.5rem}.form-input,.form-select,textarea.form-input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg-primary);color:var(--text-primary)}.form-input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent)}
+        .shopping-item.completed .list-item-title { text-decoration: line-through; opacity: 0.6; }
+        .checkbox{width:1.25rem;height:1.25rem;accent-color:var(--primary)}
+        #calendar-view .card-body { padding: 1rem; }
+        .fc { border: none !important; --fc-border-color: var(--border); --fc-today-bg-color: var(--bg-tertiary); }
+        .fc .fc-button { background-color: var(--primary) !important; color: white !important; }
+        body.dark-mode .fc .fc-button { color: #000 !important; }
+        .calendar-mobile-controls { display: flex; justify-content: center; gap: 0.5rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0.75rem; }
+        .calendar-mobile-controls .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
     </style>
-  </head>
-  <body>
-    <header class="appbar">
-      <h1>Home Planner</h1>
-      <div class="actions">
-        <button class="iconbtn deskOnly" id="btnToggle" title="Toggle Week/Calendar">
-          ≣
-        </button>
-        <button class="iconbtn" id="btnAdd" title="Add" disabled>＋</button>
-      </div>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar"><div class="logo">hub</div></nav>
+        <div class="top-nav">
+            <button class="nav-btn active" data-view="dashboard"><i class="fas fa-home"></i></button>
+            <button class="nav-btn" data-view="shopping"><i class="fas fa-shopping-cart"></i></button>
+            <button class="nav-btn" data-view="calendar"><i class="fas fa-calendar-alt"></i></button>
+            <button class="nav-btn" data-view="meals"><i class="fas fa-utensils"></i></button>
+            <button class="nav-btn" data-view="journal"><i class="fas fa-book"></i></button>
+            <button class="nav-btn" data-view="contacts"><i class="fas fa-address-book"></i></button>
+        </div>
     </header>
 
-    <main class="wrap cols">
-      <section class="seg" id="weekPanel">
-        <div class="deskHide" style="margin-bottom: 16px;">
-          <div class="tabs">
-            <button class="tab active" data-view="week">Upcoming</button>
-            <button class="tab" data-view="cal">Calendar</button>
-          </div>
-        </div>
-        <div class="list" id="upcomingList"></div>
-      </section>
-
-      <section class="seg" id="calPanel">
-        <div class="calHdr">
-          <button class="iconbtn" id="prevMonth" title="Previous Month">‹</button>
-          <h3 id="calTitle"></h3>
-          <button class="iconbtn" id="nextMonth" title="Next Month">›</button>
-        </div>
-        <div class="calGrid" id="dowRow"></div>
-        <div class="calGrid" id="calGrid"></div>
-      </section>
+    <main class="main-container">
+        <div id="dashboard-view" class="view"></div>
+        <div id="shopping-view" class="view hidden"></div>
+        <div id="list-detail-view" class="view hidden"></div>
+        <div id="calendar-view" class="view hidden"></div>
+        <div id="meals-view" class="view hidden"></div>
+        <div id="journal-view" class="view hidden"></div>
+        <div id="contacts-view" class="view hidden"></div>
     </main>
 
-    <dialog id="dlgAdd">
-      <form method="dialog" class="sheet">
-        <h3>Add / Manage</h3>
-        <div class="actionGrid">
-          <div class="action" data-act="people">
-            👥 Manage People <small>Edit / Delete</small>
-          </div>
-          <div class="action" data-act="person">
-            👤 New Person <small>Parent or Child</small>
-          </div>
-          <div class="action" data-act="school">
-            🏫 School Plan <small>Weekly Drop-off / Pick-up</small>
-          </div>
-          <div class="action" data-act="work">
-            💼 Work Schedule <small>Weekly Parent work hours</small>
-          </div>
-          <div class="action" data-act="lunch">
-            🥪 Lunch Plan <small>Weekly Meal + Assigned to</small>
-          </div>
-          <div class="action" data-act="meeting">
-            📅 Meeting <small>Work / PT conference</small>
-          </div>
-          <div class="action" data-act="timeoff">
-            🌴 Time Off <small>Vacation / PTO</small>
-          </div>
-          <div class="action" data-act="doctor">
-            🩺 Doctor <small>Appointment</small>
-          </div>
-          <div class="action" data-act="party">
-            🎉 Party <small>Invitees</small>
-          </div>
-          <div class="action" data-act="milestone">
-            🏆 Milestone <small>Achievement</small>
-          </div>
-          <div class="action" data-act="journal">
-            📝 Journal <small>Quick note</small>
-          </div>
-        </div>
-        <div class="row" style="margin-top: 12px; justify-content:center;">
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Close
-          </button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgPeople">
-      <form method="dialog" class="sheet">
-        <h3>Manage People</h3>
-        <div id="peopleList" class="section"></div>
-        <div class="row">
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Close
-          </button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgPerson">
-      <form method="dialog" class="sheet" id="formPerson">
-        <h3 id="personFormTitle">Person</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Name</label><input name="name" required />
-          </div>
-          <div class="picker">
-            <label>Type</label>
-            <select name="type">
-              <option value="parent">Parent</option>
-              <option value="child">Child</option>
-            </select>
-          </div>
-          <div class="picker">
-            <label>Color</label><input type="color" name="color" value="#2563eb" />
-          </div>
-          <div class="picker">
-            <label>Birth (optional)</label><input type="date" name="birth" />
-          </div>
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deletePerson" style="margin-right: auto; display: none" type="button">
-            Delete
-          </button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Cancel
-          </button>
-          <button class="btn primary" id="savePerson" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgSchool">
-      <form method="dialog" class="sheet" id="formSchool">
-        <h3>School Week Plan</h3>
-        <div class="picker">
-          <label>Child</label><select name="child" id="schoolChild"></select>
-        </div>
-        <div id="schoolRows" class="section"></div>
-        <div class="row">
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Cancel
-          </button>
-          <button class="btn primary" id="saveSchool" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgWork">
-      <form method="dialog" class="sheet" id="formWork">
-        <h3>Work Schedule</h3>
-        <div class="picker">
-          <label>Parent</label><select name="parent" id="workParent"></select>
-        </div>
-        <div id="workRows" class="section"></div>
-        <div class="row">
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Cancel
-          </button>
-          <button class="btn primary" id="saveWork" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgLunch">
-      <form method="dialog" class="sheet" id="formLunch">
-        <h3>Lunch Plan</h3>
-        <div class="picker">
-          <label>Child</label><select name="child" id="lunchChild"></select>
-        </div>
-        <div id="lunchRows" class="section"></div>
-        <div class="row">
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">
-            Cancel
-          </button>
-          <button class="btn primary" id="saveLunch" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgMeeting">
-      <form method="dialog" class="sheet" id="formMeeting">
-        <h3 id="meetingFormTitle">Meeting</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Title</label>
-            <input name="title" placeholder="e.g., 1:1, PT Conference" required/>
-          </div>
-          <div class="picker">
-            <label>Date</label><input type="date" name="date" required />
-          </div>
-          <div class="picker">
-            <label>Start</label><input type="time" name="start" value="09:00" required />
-          </div>
-          <div class="picker">
-            <label>End</label><input type="time" name="end" value="10:00" required />
-          </div>
-        </div>
-        <div class="grid2 section">
-           <div class="picker">
-            <label>Location</label><input name="loc" placeholder="Office, School, Zoom…" />
-          </div>
-          <div class="picker">
-            <label>Notes</label><input name="notes" placeholder="optional" />
-          </div>
-        </div>
-        <div class="section">
-          <label>Participants</label>
-          <div id="meetingPeople" class="row" style="justify-content: flex-start; gap: 6px; flex-wrap: wrap;"></div>
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteMeeting" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveMeeting" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgTimeOff">
-      <form method="dialog" class="sheet" id="formTimeOff">
-        <h3 id="timeoffFormTitle">Time Off</h3>
-        <input type="hidden" name="id" />
-        <div class="grid3">
-          <div class="picker">
-            <label>Person</label><select name="person" id="timeoffPerson"></select>
-          </div>
-          <div class="picker">
-            <label>Start</label><input type="date" name="start" required />
-          </div>
-          <div class="picker">
-            <label>End</label><input type="date" name="end" required />
-          </div>
-        </div>
-        <div class="picker section">
-          <label>Reason</label>
-          <input name="reason" placeholder="Vacation / PTO" />
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteTimeOff" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveTimeOff" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgDoctor">
-      <form method="dialog" class="sheet" id="formDoctor">
-        <h3 id="doctorFormTitle">Doctor Appointment</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Person</label><select name="person" id="doctorPerson"></select>
-          </div>
-          <div class="picker">
-            <label>Date</label><input type="date" name="date" required />
-          </div>
-          <div class="picker">
-            <label>Start</label><input type="time" name="start" value="14:00" />
-          </div>
-          <div class="picker">
-            <label>End</label><input type="time" name="end" value="15:00" />
-          </div>
-        </div>
-        <div class="picker section">
-          <label>Notes</label>
-          <input name="note" placeholder="optional" />
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteDoctor" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveDoctor" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgParty">
-      <form method="dialog" class="sheet" id="formParty">
-        <h3 id="partyFormTitle">Party / Event</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Title</label>
-            <input name="title" placeholder="Birthday, BBQ…" required/>
-          </div>
-          <div class="picker">
-            <label>Date</label><input type="date" name="date" required />
-          </div>
-          <div class="picker">
-            <label>Start</label><input type="time" name="start" value="13:00" required />
-          </div>
-          <div class="picker">
-            <label>End</label><input type="time" name="end" value="16:00" required />
-          </div>
-        </div>
-        <div class="picker section">
-          <label>Notes</label><input name="notes" placeholder="optional" />
-        </div>
-        <div class="section">
-          <label>Invitees</label>
-          <div id="partyPeople" class="row" style="justify-content: flex-start; gap: 6px; flex-wrap: wrap;"></div>
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteParty" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveParty" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgMilestone">
-      <form method="dialog" class="sheet" id="formMilestone">
-        <h3 id="milestoneFormTitle">Milestone</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Title</label><input name="title" required />
-          </div>
-           <div class="picker">
-            <label>Person</label><select name="person" id="milePerson"></select>
-          </div>
-        </div>
-        <div class="picker">
-           <label>Date</label><input type="date" name="date" required />
-        </div>
-        <div class="picker section">
-          <label>Notes</label><input name="notes" placeholder="optional" />
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteMilestone" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveMilestone" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <dialog id="dlgJournal">
-      <form method="dialog" class="sheet" id="formJournal">
-        <h3 id="journalFormTitle">Journal Entry</h3>
-        <input type="hidden" name="id" />
-        <div class="grid2">
-          <div class="picker">
-            <label>Title</label><input name="title" placeholder="Entry" />
-          </div>
-          <div class="picker">
-            <label>Date</label><input type="date" name="date" />
-          </div>
-        </div>
-        <div class="picker section">
-            <label>Person (optional)</label>
-            <select name="person" id="journalPerson"></select>
-        </div>
-        <div class="picker section">
-          <label>Notes</label>
-          <textarea id="journalNotes" placeholder="What happened?"></textarea>
-        </div>
-        <div class="row">
-          <button class="btn warn" id="deleteJournal" style="margin-right: auto; display: none" type="button">Delete</button>
-          <button class="btn" type="button" onclick="this.closest('dialog').close()">Cancel</button>
-          <button class="btn primary" id="saveJournal" type="button">Save</button>
-        </div>
-      </form>
-    </dialog>
-
-    <div id="toast" role="status" aria-live="polite">Saved</div>
-    <div id="errorBubble"></div>
+    <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
     
+    <div id="generic-modal" class="modal"></div>
+
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-      import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-      import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // --- FIREBASE IMPORTS ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
-      const firebaseConfig = {
-        apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
-  authDomain: "home-planner-ce48b.firebaseapp.com",
-  projectId: "home-planner-ce48b",
-  storageBucket: "home-planner-ce48b.firebasestorage.app",
-  messagingSenderId: "20103999017",
-  appId: "1:20103999017:web:9be545d5a0f70008dc7638"
-      };
+        // --- Use dynamically provided Firebase config and App ID ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // --- CORE APP LOGIC ---
+        let db, auth, userId;
+        let currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
+        let unsubscribes = []; // To hold snapshot listeners
 
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
-      
-      let userId = null;
-      let isAuthReady = false;
-
-      auth.onAuthStateChanged(async (user) => {
-          if (user) {
-              userId = user.uid;
-              isAuthReady = true;
-              initApp();
-          } else {
-              try {
-                  const userCredential = await signInAnonymously(auth);
-                  userId = userCredential.user.uid;
-                  isAuthReady = true;
-                  initApp();
-              } catch (error) {
-                  showError("Authentication failed: " + error.message);
-              }
-          }
-      });
-
-      /* ===== DATE & TIME UTILS ===== */
-      const pad = (n) => (n < 10 ? "0" : "") + n;
-      const toLocalISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-      const fromISO = (iso) => {
-        const [y, m, dd] = iso.split("-").map(Number);
-        return new Date(y, m - 1, dd);
-      };
-      const todayISO = () => toLocalISO(new Date());
-      const addDays = (iso, n) => {
-        const d = fromISO(iso);
-        d.setDate(d.getDate() + n);
-        return toLocalISO(d);
-      };
-      const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const humanHeader = (iso) => {
-        const d = fromISO(iso);
-        return {
-          day: weekdays[d.getDay()],
-          date: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-        };
-      };
-      const formatTime = (time24) => {
-        if (!time24) return '';
-        const [h, m] = time24.split(':');
-        const h12 = h % 12 || 12;
-        const ampm = h < 12 ? 'am' : 'pm';
-        return `${h12}:${m}${ampm}`;
-      }
-
-      /* ===== DOM & UI UTILS ===== */
-      const $ = (s) => document.querySelector(s),
-        $$ = (s) => Array.from(document.querySelectorAll(s));
-      function toast(msg = "Saved") {
-        const t = $("#toast");
-        t.textContent = msg;
-        t.classList.add("show");
-        clearTimeout(toast._id);
-        toast._id = setTimeout(() => t.classList.remove("show"), 1300);
-      }
-      function showError(e) {
-        const b = $("#errorBubble");
-        b.textContent = "Error: " + (e?.message || e);
-        b.style.display = "block";
-        console.error(e);
-      }
-
-      /* ===== STATE & DATA ===== */
-      const EMPTY = { people: [], school: {}, work: {}, lunch: {}, meetings: [], timeoff: [], doctor: [], party: [], milestone: [], journal: [] };
-      let state = JSON.parse(JSON.stringify(EMPTY));
-
-      async function initApp() {
-        if (!isAuthReady) return;
-        const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
-        const userDocSnap = await getDoc(userDocRef);
-        if (!userDocSnap.exists()) {
-          await setDoc(userDocRef, seed());
-        }
-        onSnapshot(userDocRef, (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                Object.keys(EMPTY).forEach(key => {
-                  state[key] = data[key] || EMPTY[key];
-                });
-                renderAll();
-                $("#btnAdd").disabled = false;
-            } else {
-                setDoc(userDocRef, seed());
+        const initFirebase = async () => {
+            if (!firebaseConfig.apiKey) {
+                console.error("Firebase config is missing!");
+                return;
             }
-        }, (error) => {
-            showError("Error fetching data: " + error.message);
-        });
-      }
-
-      function seed() {
-        const p1 = { id: crypto.randomUUID(), name: "Chris", type: "parent", color: "#2563eb" };
-        const p2 = { id: crypto.randomUUID(), name: "Pat", type: "parent", color: "#10b981" };
-        const c1 = { id: crypto.randomUUID(), name: "Alex", type: "child", color: "#f59e0b" };
-        const s = JSON.parse(JSON.stringify(EMPTY));
-        s.people = [p1, p2, c1];
-        s.meetings.push({ id: crypto.randomUUID(), title: "1:1", date: todayISO(), start: "10:00", end: "10:30", loc: "Office", notes: "Weekly check-in", participants: [p1.id] });
-        s.school[c1.id] = {
-          1: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
-          2: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
-          3: { dropoff: p2.id, pickup: p1.id, start: "08:00", end: "15:00" },
-          4: { dropoff: p1.id, pickup: p2.id, start: "08:00", end: "15:00" },
-          5: { dropoff: p1.id, pickup: p2.id, start: "08:30", end: "13:00" },
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("User is signed in with UID:", userId);
+                    await loadAppData();
+                    await seedInitialData(); // Check and seed if needed
+                    switchView('dashboard');
+                } else {
+                    console.log("User is signed out, attempting to sign in.");
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Error signing in:", error);
+                    }
+                }
+            });
         };
-        s.lunch[c1.id] = {
-          1: { meal: "PB&J", who: p1.id }, 2: { meal: "Leftovers", who: p2.id }, 3: { meal: "Pasta", who: p1.id }, 4: { meal: "Tacos", who: p2.id }, 5: { meal: "Pizza", who: p1.id }
+
+        const getCollectionPath = (collectionName) => `artifacts/${appId}/users/${userId}/${collectionName}`;
+
+        const dbOps = {
+            add: (store, data) => addDoc(collection(db, getCollectionPath(store)), data),
+            get: (store, id) => getDoc(doc(db, getCollectionPath(store), id)),
+            put: (store, id, data) => setDoc(doc(db, getCollectionPath(store), id), data),
+            update: (store, id, data) => updateDoc(doc(db, getCollectionPath(store), id), data),
+            delete: (store, id) => deleteDoc(doc(db, getCollectionPath(store), id)),
         };
-        return s;
-      }
 
-      const getPerson = (id) => state.people.find((p) => p.id === id);
+        const seedInitialData = async () => {
+            const familyMembersRef = collection(db, getCollectionPath('familyMembers'));
+            const snapshot = await getDocs(familyMembersRef);
+            if (!snapshot.empty) return; // Data already exists
 
-      async function updatePlannerDoc() {
-        if (!isAuthReady) return;
-        const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'planner');
-        try {
-          await setDoc(userDocRef, state);
-          toast("Saved");
-        } catch (e) {
-          showError("Failed to save: " + e.message);
-        }
-      }
+            console.log("Seeding initial data for new user...");
+            const today = new Date(), tomorrow = new Date(), yesterday = new Date(), nextWeek = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            yesterday.setDate(today.getDate() - 1);
+            nextWeek.setDate(today.getDate() + 7);
+            const formatDate = (date) => date.toISOString().split('T')[0];
 
-      /* ===== VIEW TOGGLE ===== */
-      let mobileMode = window.matchMedia("(max-width: 899px)").matches;
-      let activeMobileView = "week";
-      function setMobileView(view) {
-        activeMobileView = view;
-        if (mobileMode) {
-          $("#weekPanel").style.display = view === "week" ? "" : "none";
-          $("#calPanel").style.display = view === "cal" ? "" : "none";
-          $$(".tab").forEach((t) => t.classList.toggle("active", t.dataset.view === view));
-        } else {
-          $("#weekPanel").style.display = "";
-          $("#calPanel").style.display = "";
-        }
-      }
-      window.addEventListener("resize", () => {
-        mobileMode = window.matchMedia("(max-width: 899px)").matches;
-        setMobileView(activeMobileView);
-      });
-      $("#btnToggle").addEventListener("click", () => setMobileView(activeMobileView === "week" ? "cal" : "week"));
-      $$(".tab").forEach((t) => t.addEventListener("click", () => setMobileView(t.dataset.view)));
-      
-      /* ===== DIALOG OPENERS ===== */
-      $("#btnAdd").addEventListener("click", () => $("#dlgAdd").showModal());
-      $("#dlgAdd").addEventListener("click", (e) => {
-        const card = e.target.closest(".action");
-        if (!card) return;
-        $("#dlgAdd").close();
-        const action = card.dataset.act;
-        if (action === 'people') openManagePeople();
-        else if (action === 'person') openPerson();
-        else if (action === 'school') openSchool();
-        else if (action === 'work') openWork();
-        else if (action === 'lunch') openLunch();
-        else if (action === 'meeting') openMeeting();
-        else if (action === 'timeoff') openTimeOff();
-        else if (action === 'doctor') openDoctor();
-        else if (action === 'party') openParty();
-        else if (action === 'milestone') openMilestone();
-        else if (action === 'journal') openJournal();
-      });
+            const batch = writeBatch(db);
 
-      /* ===== PEOPLE ===== */
-      function openManagePeople() {
-        const list = $("#peopleList");
-        list.innerHTML = !state.people.length
-          ? '<div class="evt" style="text-align:center;">No people yet. Use "New Person".</div>'
-          : state.people.map(p => `
-              <div class="evt" style="display:block;">
-                <div class="evtTitle">${p.name}</div>
-                <div class="evtMeta" style="margin-top:8px; justify-content:space-between;">
-                  <span>${p.type.toUpperCase()}${p.birth ? ` • b. ${p.birth}` : ""}</span>
-                  <div style="display:flex; gap: 6px;">
-                    <button class="btn" data-edit="${p.id}" type="button">Edit</button>
-                  </div>
+            batch.set(doc(collection(db, getCollectionPath('familyMembers'))), { name: 'Alex' });
+            batch.set(doc(collection(db, getCollectionPath('familyMembers'))), { name: 'Sam' });
+            
+            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high', assignee: 'Sam' });
+            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high', assignee: 'Alex' });
+            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent', assignee: 'Sam' });
+            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high', assignee: 'Alex' });
+            
+            const groceryStoreRef = doc(collection(db, getCollectionPath('stores')));
+            batch.set(groceryStoreRef, { name: 'Grocery Store' });
+            batch.set(doc(collection(db, getCollectionPath('shoppingLists'))), { storeId: groceryStoreRef.id, name: 'Milk', completed: false });
+
+            batch.set(doc(collection(db, getCollectionPath('meals'))), { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
+            batch.set(doc(collection(db, getCollectionPath('journalEntries'))), { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time.' });
+
+            await batch.commit();
+            console.log("Initial data seeded.");
+        };
+        
+        const openModal = async (modalType, params = {}) => {
+            const modal = document.getElementById('generic-modal');
+            const modalContent = await MODAL_CONFIG[modalType]?.render(params);
+            if(modalContent) {
+                modal.innerHTML = modalContent;
+                modal.classList.add('active');
+                MODAL_CONFIG[modalType]?.postRender?.(params);
+            }
+        };
+        const closeModal = () => document.getElementById('generic-modal')?.classList.remove('active');
+
+        const switchView = (viewName) => {
+            currentView = viewName;
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
+            document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
+            document.getElementById('fab').classList.toggle('hidden', viewName === 'list-detail');
+            const fabActions = { 
+                'dashboard': () => openModal('task'), 'shopping': () => openModal('store'),
+                'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 
+                'journal': () => openModal('journal'), 'contacts': () => openModal('contact')
+            };
+            document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
+            refreshCurrentView();
+        };
+
+        const refreshCurrentView = () => {
+            const renderMap = { 
+                'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 
+                'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal,
+                'contacts': renderContacts
+            };
+            renderMap[currentView]?.();
+        };
+
+        const loadAppData = async () => {
+            if (!userId) return;
+            // Unsubscribe from previous listeners
+            unsubscribes.forEach(unsub => unsub());
+            unsubscribes = [];
+
+            const collections = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'];
+            
+            collections.forEach(storeName => {
+                const collRef = collection(db, getCollectionPath(storeName));
+                const unsub = onSnapshot(collRef, (snapshot) => {
+                    appData[storeName] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    console.log(`Updated ${storeName}:`, appData[storeName]);
+                    refreshCurrentView();
+                }, (error) => {
+                    console.error(`Error listening to ${storeName}: `, error);
+                });
+                unsubscribes.push(unsub);
+            });
+        };
+
+
+        const initApp = async () => {
+            try {
+                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+                await initFirebase();
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+            } catch (error) { console.error('Error initializing app:', error); }
+        };
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        const formatTime = (time) => !time ? '' : new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const formatDate = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+        const getTaskIcon = (type) => ({ 'School':'fa-school', 'Chore':'fa-broom', 'Appointment':'fa-calendar-check', 'Work': 'fa-briefcase', 'Dentist': 'fa-tooth', 'Doctor': 'fa-user-doctor' }[type] || 'fa-calendar-day');
+        
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-view');
+            const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+            const todayStr = today.toISOString().split('T')[0], tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const tasks = appData.tasks || [];
+            const meals = appData.meals || [];
+            
+            const timedEventsToday = tasks.filter(t => t.date === todayStr && t.time).sort((a,b) => a.time.localeCompare(b.time));
+            const mealsToday = meals.filter(m => m.date === todayStr);
+            const timedEventsTomorrow = tasks.filter(t => t.date === tomorrowStr && t.time);
+            const importantAppointments = tasks.filter(t => {
+                const isImportant = ['Appointment', 'Dentist', 'Doctor'].includes(t.type);
+                const isAfterTomorrow = new Date(t.date) > new Date(tomorrowStr);
+                return isImportant && isAfterTomorrow;
+            });
+            const upcoming = [...timedEventsTomorrow, ...importantAppointments].sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
+            container.innerHTML = `
+                <div class="card">
+                    <div class="card-header" style="background-color: #E0F2FE;">Today's Schedule</div>
+                    <div class="card-body">${timedEventsToday.length > 0 ? timedEventsToday.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No timed events scheduled.</p></div>`}</div>
                 </div>
-              </div>`).join('');
-        $("#dlgPeople").showModal();
-      }
-      $("#dlgPeople").addEventListener("click", (e) => {
-        const editId = e.target.dataset.edit;
-        if (editId) {
-          openPerson(editId);
+                <div class="card">
+                    <div class="card-header" style="background-color: #FEF9C3;">Today's Meals</div>
+                    <div class="card-body">${mealsToday.length > 0 ? mealsToday.map(createMealListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No meals planned.</p></div>`}</div>
+                </div>
+                <div class="card">
+                    <div class="card-header" style="background-color: #F3E8FF;">Upcoming</div>
+                    <div class="card-body">${upcoming.length > 0 ? upcoming.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">Nothing on the horizon.</p></div>`}</div>
+                </div>`;
         }
-      });
 
-      function openPerson(id = null) {
-        const p = id ? getPerson(id) : null;
-        const f = $("#formPerson");
-        f.reset();
-        $("#personFormTitle").textContent = p ? "Edit Person" : "New Person";
-        f.elements.id.value = p?.id || "";
-        f.elements.name.value = p?.name || "";
-        f.elements.type.value = p?.type || "parent";
-        f.elements.color.value = p?.color || "#2563eb";
-        f.elements.birth.value = p?.birth || "";
-        $("#deletePerson").style.display = p ? "" : "none";
-        $("#dlgPerson").showModal();
-      }
-      $("#savePerson").addEventListener("click", () => {
-        const f = $("#formPerson");
-        const id = f.elements.id.value || crypto.randomUUID();
-        const obj = { id, name: f.elements.name.value.trim() || "Unnamed", type: f.elements.type.value, color: f.elements.color.value, birth: f.elements.birth.value || "" };
-        const i = state.people.findIndex((p) => p.id === id);
-        if (i >= 0) state.people[i] = obj;
-        else state.people.push(obj);
-        updatePlannerDoc().then(() => {
-          $("#dlgPerson").close();
-          if ($("#dlgPeople").open) openManagePeople();
-        }).catch(showError);
-      });
-      $("#deletePerson").addEventListener("click", () => {
-        const id = $("#formPerson").elements.id.value;
-        if (!id || !confirm("Are you sure you want to delete this person and all their related events?")) return;
-        
-        state.people = state.people.filter((p) => p.id !== id);
-        delete state.school[id];
-        delete state.work[id];
-        delete state.lunch[id];
-        Object.values(state.school).forEach(days => Object.values(days).forEach(rec => { if (rec.dropoff === id) rec.dropoff = null; if (rec.pickup === id) rec.pickup = null; }));
-        Object.values(state.lunch).forEach(days => Object.values(days).forEach(rec => { if (rec.who === id) rec.who = null; }));
-        ['meetings', 'party'].forEach(key => state[key].forEach(evt => evt.participants = (evt.participants || []).filter(pId => pId !== id) ));
-        ['timeoff', 'doctor', 'milestone', 'journal'].forEach(key => state[key] = state[key].filter(evt => evt.personId !== id));
-
-        updatePlannerDoc().then(() => {
-          $("#dlgPerson").close();
-          if ($("#dlgPeople").open) openManagePeople();
-        }).catch(showError);
-      });
-      
-      /* ===== WEEKLY PLANS (School, Work, Lunch) ===== */
-      const openWeeklyPlan = (opts) => {
-        const people = state.people.filter(p => p.type === opts.personType);
-        if (people.length === 0) {
-          alert(`You must add a ${opts.personType} first before creating a ${opts.name} plan.`);
-          return;
+        function createTaskListItem(item) {
+            return `<div class="list-item" style="cursor: pointer;" onclick="openModal('task', {id:'${item.id}'})"><div class="list-item-icon"><i class="fas ${getTaskIcon(item.type)}"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div><div class="list-item-subtitle">${formatDate(item.date)}</div></div><div class="list-item-aside">${item.time ? formatTime(item.time) : ''}${item.assignee ? `<div class="list-item-assignee">${item.assignee}</div>` : ''}</div></div>`;
         }
-        const personSel = $(opts.selector);
-        personSel.innerHTML = "";
-        people.forEach(p => personSel.appendChild(new Option(p.name, p.id)));
         
-        const renderRows = (personId) => {
-          const rows = $(opts.rowsSelector);
-          rows.innerHTML = "";
-          const plan = state[opts.stateKey][personId] || {};
-          for (let d = 1; d <= 5; d++) {
-            rows.insertAdjacentHTML("beforeend", opts.template(d, plan[d]));
-          }
-          if (opts.postRender) opts.postRender(rows);
+        function createMealListItem(item) {
+             return `<div class="list-item" style="cursor: pointer;" onclick="openModal('meal', {id:'${item.id}'})"><div class="list-item-icon"><i class="fas fa-utensils"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div></div>`;
+        }
+
+        function renderContacts() {
+            const container = document.getElementById('contacts-view');
+            let html = `<div class="view-header"><h1 class="view-title">Contacts</h1></div>`;
+            const members = appData.familyMembers || [];
+            if (members.length > 0) {
+                html += `<div class="card"><div class="card-body">` + members.map(member => `
+                    <div class="list-item">
+                        <div class="list-item-icon"><i class="fas fa-user"></i></div>
+                        <div class="list-item-content"><div class="list-item-title">${member.name}</div></div>
+                        <button class="btn btn-ghost" onclick="deleteContact('${member.id}')"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `).join('') + `</div></div>`;
+            } else {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No contacts found. Add one with the '+' button.</p></div></div>`;
+            }
+            container.innerHTML = html;
+        }
+        window.deleteContact = async (id) => dbOps.delete('familyMembers', id);
+
+        function renderShopping() {
+            const container = document.getElementById('shopping-view');
+            let html = `<div class="view-header"><h1 class="view-title">Shopping Lists</h1></div>`;
+            const stores = (appData.stores || []).filter(store => store && store.name);
+            const shoppingLists = appData.shoppingLists || [];
+
+            if (stores.length === 0) {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No stores found. Add one with the '+' button.</p></div></div>`;
+            } else {
+                html += stores.map(store => {
+                    const items = shoppingLists.filter(i => i.storeId === store.id);
+                    const needed = items.filter(i => !i.completed).length;
+                    return `<div class="card" style="cursor: pointer;" onclick="showListDetail('${store.id}')"><div class="list-item"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
+                }).join('');
+            }
+            container.innerHTML = html;
+        }
+
+        window.showListDetail = (storeId) => {
+            currentStoreId = storeId;
+            switchView('list-detail');
         };
-        
-        renderRows(people[0].id);
-        personSel.onchange = (e) => renderRows(e.target.value);
-        $(opts.dialog).showModal();
-      };
-      
-      const saveWeeklyPlan = (opts) => {
-        const personId = $(opts.selector).value;
-        if (!personId) { alert(`Please select a ${opts.personType}.`); return; }
-        state[opts.stateKey][personId] = state[opts.stateKey][personId] || {};
-        $(opts.rowsSelector).querySelectorAll("[data-dow]").forEach(container => {
-          const dow = container.dataset.dow;
-          state[opts.stateKey][personId][dow] = opts.reducer(container);
-        });
-        updatePlannerDoc().then(() => $(opts.dialog).close()).catch(showError);
-      };
-      
-      const schoolTemplate = (dow, plan = {}) => `
-        <div class="grid3" data-dow="${dow}">
-          <div class="picker"><label>${weekdays[dow]}</label><div class="row" style="justify-content:space-between;"><input type="time" class="timeStart" value="${plan.start || '08:00'}"><input type="time" class="timeEnd" value="${plan.end || '15:00'}"></div></div>
-          <div class="picker"><label>Drop-off</label><select class="drop"></select></div>
-          <div class="picker"><label>Pick-up</label><select class="pick"></select></div>
-        </div>`;
-      const openSchool = () => openWeeklyPlan({ name: 'School', personType: 'child', stateKey: 'school', dialog: '#dlgSchool', selector: '#schoolChild', rowsSelector: '#schoolRows', template: schoolTemplate, postRender: (rows) => {
-        const parents = state.people.filter(p => p.type === 'parent');
-        const plan = state.school[ $('#schoolChild').value ] || {};
-        rows.querySelectorAll('[data-dow]').forEach(c => {
-          const dow = c.dataset.dow;
-          ['.drop', '.pick'].forEach(sel => {
-            const select = c.querySelector(sel);
-            parents.forEach(p => select.appendChild(new Option(p.name, p.id)));
-            const key = sel === '.drop' ? 'dropoff' : 'pickup';
-            if (plan[dow]?.[key]) select.value = plan[dow][key];
-          });
-        });
-      }});
-      const saveSchool = () => saveWeeklyPlan({ personType: 'child', stateKey: 'school', dialog: '#dlgSchool', selector: '#schoolChild', rowsSelector: '#schoolRows', reducer: c => ({ start: c.querySelector(".timeStart").value || "", end: c.querySelector(".timeEnd").value || "", dropoff: c.querySelector(".drop").value || null, pickup: c.querySelector(".pick").value || null }) });
-      $('#saveSchool').addEventListener('click', saveSchool);
 
-      const workTemplate = (dow, plan = {}) => `
-        <div class="grid2" data-dow="${dow}">
-          <div class="picker"><label>${weekdays[dow]}</label><div class="row" style="justify-content:space-between;"><input type="time" class="wStart" value="${plan.start || '09:00'}"><input type="time" class="wEnd" value="${plan.end || '17:00'}"></div></div>
-        </div>`;
-      const openWork = () => openWeeklyPlan({ name: 'Work', personType: 'parent', stateKey: 'work', dialog: '#dlgWork', selector: '#workParent', rowsSelector: '#workRows', template: workTemplate });
-      const saveWork = () => saveWeeklyPlan({ personType: 'parent', stateKey: 'work', dialog: '#dlgWork', selector: '#workParent', rowsSelector: '#workRows', reducer: c => ({ start: c.querySelector(".wStart").value || "", end: c.querySelector(".wEnd").value || "" }) });
-      $('#saveWork').addEventListener('click', saveWork);
-
-      const lunchTemplate = (dow, plan = {}) => `
-        <div class="grid2" data-dow="${dow}">
-          <div class="picker"><label>${weekdays[dow]} Meal</label><input class="meal" placeholder="e.g., Turkey sandwich" value="${plan.meal || ''}"></div>
-          <div class="picker"><label>Assigned To</label><select class="who"></select></div>
-        </div>`;
-      const openLunch = () => openWeeklyPlan({ name: 'Lunch', personType: 'child', stateKey: 'lunch', dialog: '#dlgLunch', selector: '#lunchChild', rowsSelector: '#lunchRows', template: lunchTemplate, postRender: (rows) => {
-        const parents = state.people.filter(p => p.type === 'parent');
-        const plan = state.lunch[ $('#lunchChild').value ] || {};
-        rows.querySelectorAll('[data-dow]').forEach(c => {
-          const who = c.querySelector('.who');
-          parents.forEach(p => who.appendChild(new Option(p.name, p.id)));
-          if (plan[c.dataset.dow]?.who) who.value = plan[c.dataset.dow].who;
-        });
-      }});
-      const saveLunch = () => saveWeeklyPlan({ personType: 'child', stateKey: 'lunch', dialog: '#dlgLunch', selector: '#lunchChild', rowsSelector: '#lunchRows', reducer: c => ({ meal: c.querySelector(".meal").value || "", who: c.querySelector(".who").value || null }) });
-      $('#saveLunch').addEventListener('click', saveLunch);
-      
-      /* ===== EVENT-BASED ITEMS ===== */
-      const openEvent = (kind, id = null) => {
-        const item = id ? state[kind].find(i => i.id === id) : null;
-        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
-        f.reset();
-        $(`#${kind}FormTitle`).textContent = `${item ? 'Edit' : 'New'} ${kind.charAt(0).toUpperCase() + kind.slice(1)}`;
-        f.elements.id.value = item?.id || '';
-        if (item) {
-          Object.keys(item).forEach(key => {
-            if (f.elements[key] && key !== 'participants' && key !== 'invitees') {
-              f.elements[key].value = item[key];
+        function renderListDetail() {
+            if (currentStoreId === null) return;
+            const container = document.getElementById('list-detail-view');
+            const store = (appData.stores || []).find(s => s.id === currentStoreId);
+            if (!store) {
+                 switchView('shopping');
+                 return;
             }
-          });
+            const items = (appData.shoppingLists || []).filter(i => i.storeId === currentStoreId);
+            const needed = items.filter(i => !i.completed);
+            const completed = items.filter(i => i.completed);
+            const createItemHtml = item => `<div class="list-item shopping-item ${item.completed ? 'completed' : ''}"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem('${item.id}')" ${item.completed ? 'checked' : ''}><div class="list-item-content" style="cursor: pointer;" onclick="openModal('shoppingItem', {id: '${item.id}'})"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem('${item.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
+            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
+            document.getElementById('add-item-form').addEventListener('submit', async e => {
+                e.preventDefault();
+                const input = document.getElementById('new-item-name');
+                if (!input.value.trim()) return;
+                await dbOps.add('shoppingLists', { storeId: currentStoreId, name: input.value.trim(), completed: false });
+                input.value = '';
+            });
         }
-        if (!item?.date) f.elements.date.value = todayISO();
         
-        const peopleContainer = $(`#${kind}People`);
-        if (peopleContainer) {
-            peopleContainer.innerHTML = state.people.map(p => `<label style="display:inline-flex; align-items:center; background:var(--bg); border:1px solid var(--grid); padding: 4px 8px; border-radius: 8px; cursor:pointer;"><input type="checkbox" value="${p.id}" style="margin-right:6px">${p.name}</label>`).join('');
-            if (item?.participants || item?.invitees) {
-                (item.participants || item.invitees).forEach(id => {
-                    const cb = peopleContainer.querySelector(`input[value="${id}"]`);
-                    if (cb) cb.checked = true;
-                });
+        window.toggleShoppingItem = async (itemId) => {
+            const item = (appData.shoppingLists || []).find(i => i.id === itemId);
+            if(item) { await dbOps.update('shoppingLists', itemId, { completed: !item.completed }); }
+        }
+        window.deleteShoppingItem = async (itemId) => {
+             await dbOps.delete('shoppingLists', itemId);
+             closeModal();
+        }
+
+        function renderJournal() {
+            const container = document.getElementById('journal-view');
+            let html = `<div class="view-header"><h1 class="view-title">Journal</h1></div>`;
+            const entries = (appData.journalEntries || []).sort((a,b) => b.date.localeCompare(a.date));
+            if (entries.length > 0) {
+                html += entries.map(entry => `<div class="card" style="cursor: pointer;" onclick="openModal('journal', {id: '${entry.id}'})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join('');
+            } else {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No journal entries yet. Use the '+' button to add one.</p></div></div>`;
+            }
+            container.innerHTML = html;
+        }
+        
+        function renderCalendar() {
+            const container = document.getElementById('calendar-view');
+            container.innerHTML = `<div class="card"><div class="card-body"><div id="calendar-container"></div></div></div>`;
+            const calendarEl = document.getElementById('calendar-container');
+            if (calendar) calendar.destroy();
+            const isMobile = window.innerWidth < 768;
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: isMobile ? 'listDay' : 'dayGridMonth',
+                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+                events: (appData.tasks || []).map(task => ({ id: task.id, title: task.name, start: task.time ? `${task.date}T${task.time}` : task.date, extendedProps: { assignee: task.assignee } })),
+                eventClick: (info) => openModal('task', { id: info.event.id }),
+                dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
+                viewDidMount: (info) => { if (isMobile) updateActiveCalendarButton(info.view.type); },
+                eventContent: (arg) => { let titleEl = document.createElement('div'); titleEl.innerHTML = arg.event.title; if (arg.event.extendedProps.assignee) { let assigneeEl = document.createElement('div'); assigneeEl.innerHTML = `<i>${arg.event.extendedProps.assignee}</i>`; assigneeEl.style.opacity = '0.8'; assigneeEl.style.fontSize = '0.8em'; return { domNodes: [titleEl, assigneeEl] }; } return { domNodes: [titleEl] }; }
+            });
+            calendar.render();
+            if (isMobile) {
+                const mobileControls = document.createElement('div');
+                mobileControls.className = 'calendar-mobile-controls';
+                mobileControls.innerHTML = `<button class="btn btn-outline" data-view="listDay">Day</button><button class="btn btn-outline" data-view="listWeek">Week</button><button class="btn btn-outline" data-view="dayGridMonth">Month</button>`;
+                calendarEl.querySelector('.fc-toolbar').insertAdjacentElement('afterend', mobileControls);
+                mobileControls.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => calendar.changeView(btn.dataset.view)));
             }
         }
-        if (f.elements.person) {
-            f.elements.person.innerHTML = state.people.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-            if (item?.personId) f.elements.person.value = item.personId;
-        }
-
-        $(`#delete${kind.charAt(0).toUpperCase() + kind.slice(1)}`).style.display = item ? '' : 'none';
-        $(`#dlg${kind.charAt(0).toUpperCase() + kind.slice(1)}`).showModal();
-      };
-      
-      const saveEvent = (kind) => {
-        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
-        const id = f.elements.id.value || crypto.randomUUID();
-        let obj = { id };
-        Array.from(f.elements).forEach(el => {
-            if (el.name) obj[el.name] = el.value;
-        });
-        const peopleContainer = $(`#${kind}People`);
-        if (peopleContainer) {
-            const key = kind === 'party' ? 'invitees' : 'participants';
-            obj[key] = Array.from(peopleContainer.querySelectorAll('input:checked')).map(cb => cb.value);
+        
+        window.updateActiveCalendarButton = (activeView) => {
+            document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => {
+                btn.classList.toggle('hidden', btn.dataset.view === activeView);
+            });
         }
         
-        const idx = state[kind].findIndex(i => i.id === id);
-        if (idx >= 0) state[kind][idx] = obj;
-        else state[kind].push(obj);
-        
-        updatePlannerDoc().then(() => f.closest('dialog').close()).catch(showError);
-      };
-
-      const deleteEvent = (kind) => {
-        const f = $(`#form${kind.charAt(0).toUpperCase() + kind.slice(1)}`);
-        const id = f.elements.id.value;
-        if (!id || !confirm(`Are you sure you want to delete this ${kind}?`)) return;
-        state[kind] = state[kind].filter(i => i.id !== id);
-        updatePlannerDoc().then(() => f.closest('dialog').close()).catch(showError);
-      };
-      
-      ['Meeting', 'TimeOff', 'Doctor', 'Party', 'Milestone', 'Journal'].forEach(kind => {
-        const lower = kind.toLowerCase();
-        $(`#save${kind}`).addEventListener('click', () => saveEvent(lower));
-        $(`#delete${kind}`).addEventListener('click', () => deleteEvent(lower));
-      });
-      const openMeeting = (id) => openEvent('meeting', id);
-      const openTimeOff = (id) => openEvent('timeoff', id);
-      const openDoctor = (id) => openEvent('doctor', id);
-      const openParty = (id) => openEvent('party', id);
-      const openMilestone = (id) => openEvent('milestone', id);
-      const openJournal = (id) => openEvent('journal', id);
-      
-      if ($('#journalPerson')) $('#journalPerson').insertAdjacentHTML('afterbegin', '<option value="">— (None)</option>');
-
-      /* ===== EVENT GATHERING & RENDERING ===== */
-      function gatherEventsFor(iso) {
-        const evts = [];
-        const d = fromISO(iso);
-        const dow = d.getDay();
-
-        Object.entries(state.school).forEach(([childId, plan]) => {
-          const rec = plan[dow];
-          if (!rec) return;
-          const child = getPerson(childId);
-          if(rec.start && rec.dropoff) evts.push({ kind: "school", id: childId, title: `Drop-off: ${child?.name || "—"}`, time: rec.start, meta: `→ ${getPerson(rec.dropoff)?.name || "—"}`});
-          if(rec.end && rec.pickup) evts.push({ kind: "school", id: childId, title: `Pick-up: ${child?.name || "—"}`, time: rec.end, meta: `← ${getPerson(rec.pickup)?.name || "—"}`});
-        });
-        Object.entries(state.lunch).forEach(([childId, plan]) => {
-          const rec = plan[dow];
-          if (!rec?.meal) return;
-          const child = getPerson(childId);
-          evts.push({ kind: "lunch", id: childId, title: `Lunch: ${child?.name || "—"}`, time: rec.meal, meta: `by ${getPerson(rec.who)?.name || "—"}`});
-        });
-        state.meetings.filter((m) => m.date === iso).forEach((m) => evts.push({ kind: "meeting", id: m.id, title: m.title, time: `${formatTime(m.start)}–${formatTime(m.end)}`, meta: m.loc || '' }));
-        state.timeoff.forEach((t) => {
-          if (iso >= t.start && iso <= t.end) evts.push({ kind: "timeoff", id: t.id, title: `Time Off: ${getPerson(t.personId)?.name || "—"}`, time: t.reason, meta: '' });
-        });
-        state.doctor.filter((a) => a.date === iso).forEach((a) => evts.push({ kind: "doctor", id: a.id, title: `Doctor: ${getPerson(a.personId)?.name || "—"}`, time: `${formatTime(a.start)}–${formatTime(a.end)}`, meta: a.note || '' }));
-        state.party.filter((p) => p.date === iso).forEach((p) => evts.push({ kind: "party", id: p.id, title: p.title, time: `${formatTime(p.start)}–${formatTime(p.end)}`, meta: p.notes || '' }));
-        state.milestone.filter((m) => m.date === iso).forEach((m) => evts.push({ kind: "milestone", id: m.id, title: m.title, time: `for ${getPerson(m.personId)?.name || "—"}`, meta: m.notes || '' }));
-        state.journal.filter((j) => j.date === iso).forEach((j) => evts.push({ kind: "journal", id: j.id, title: j.title || 'Journal Entry', time: j.notes.substring(0, 50) + '...', meta: getPerson(j.personId)?.name || '' }));
-
-        return evts;
-      }
-
-      function renderUpcoming() {
-        const list = $("#upcomingList");
-        list.innerHTML = "";
-        const start = todayISO();
-        let hasItems = false;
-        const icons = { school: '🏫', lunch: '🥪', meeting: '📅', timeoff: '🌴', doctor: '🩺', party: '🎉', milestone: '🏆', journal: '📝' };
-
-        for (let i = 0; i < 7; i++) {
-          const date = addDays(start, i);
-          const dayEvents = gatherEventsFor(date);
-          if (dayEvents.length === 0) continue;
-          hasItems = true;
-          const headerBits = humanHeader(date);
-          const header = `<div class="dayHeader"><div class="dayName">${headerBits.day}</div><div class="dayDate">${headerBits.date}</div></div>`;
-          const eventsHtml = dayEvents.map(e => `
-            <div class="evt ${e.kind}" data-kind="${e.kind}" data-id="${e.id}">
-              <div class="evtIcon">${icons[e.kind] || '•'}</div>
-              <div class="evtContent">
-                <div class="evtTitle">${e.kind === 'school' ? `${formatTime(e.time)} ${e.title}` : e.title}</div>
-                <div class="evtMeta"><span>${e.kind !== 'school' ? e.time : ''}</span><span>${e.meta}</span></div>
-              </div>
-            </div>`).join('');
-          list.insertAdjacentHTML('beforeend', header + eventsHtml);
+        function renderMealPlanner() {
+            const container = document.getElementById('meals-view');
+            let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
+            const mealsByDate = (appData.meals || []).reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
+            const sortedDates = Object.keys(mealsByDate).sort((a, b) => a.localeCompare(b));
+            if (sortedDates.length > 0) {
+                 sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; });
+            } else {
+                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
+            }
+            container.innerHTML = html;
         }
-        if (!hasItems) {
-          list.innerHTML = `<div class="evt" style="text-align:center; cursor:default;">No upcoming items. Tap ＋ to add something.</div>`;
-        }
-      }
-      
-      $('#upcomingList').addEventListener('click', (ev) => {
-        const item = ev.target.closest(".evt");
-        if (!item) return;
-        const { kind, id } = item.dataset;
-        if (!kind || !id) return;
-        
-        switch (kind) {
-          case 'school': openSchool(); break;
-          case 'lunch': openLunch(); break;
-          case 'work': openWork(); break;
-          case 'meeting': openMeeting(id); break;
-          case 'timeoff': openTimeOff(id); break;
-          case 'doctor': openDoctor(id); break;
-          case 'party': openParty(id); break;
-          case 'milestone': openMilestone(id); break;
-          case 'journal': openJournal(id); break;
-        }
-      });
-      
-      function buildCalendar() {
-        $("#calTitle").textContent = calCursor.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-        $("#dowRow").innerHTML = weekdays.map(w => `<div class="dow">${w.substring(0,3)}</div>`).join('');
-        const grid = $("#calGrid");
-        grid.innerHTML = "";
-        const y = calCursor.getFullYear(), m = calCursor.getMonth();
-        const first = new Date(y, m, 1);
-        const startCell = first.getDay();
-        const daysInMonth = new Date(y, m + 1, 0).getDate();
-        for (let i = 0; i < startCell; i++) grid.insertAdjacentHTML("beforeend", `<div></div>`);
-        
-        for (let d = 1; d <= daysInMonth; d++) {
-          const iso = toLocalISO(new Date(y, m, d));
-          const evts = gatherEventsFor(iso);
-          const el = document.createElement("div");
-          el.className = "day";
-          if (iso === todayISO()) el.classList.add("today");
-          el.innerHTML = `<div class="dayNum">${d}</div>`;
-          evts.slice(0, 3).forEach((e) => {
-            el.insertAdjacentHTML('beforeend', `<div class="pill" style="border-left-color: var(--c-${e.kind}); background: var(--c-${e.kind}-bg);">${e.title}</div>`);
-          });
-          if (evts.length > 3) {
-            el.insertAdjacentHTML('beforeend', `<div class="pill">+${evts.length - 3} more</div>`);
-          }
-          grid.appendChild(el);
-        }
-      }
-      
-      let calCursor = new Date();
-      $("#prevMonth").addEventListener("click", () => { calCursor.setMonth(calCursor.getMonth() - 1); buildCalendar(); });
-      $("#nextMonth").addEventListener("click", () => { calCursor.setMonth(calCursor.getMonth() + 1); buildCalendar(); });
+        // Make functions globally available for inline event handlers
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.switchView = switchView;
 
-      function renderAll() {
-        renderUpcoming();
-        buildCalendar();
-        setMobileView(activeMobileView);
-      }
-      
-      try {
-        document.querySelectorAll("dialog").forEach((d) => {
-          d.addEventListener("click", (e) => {
-            if (e.target === d) d.close();
-          });
-        });
-        renderAll();
-      } catch (e) {
-        showError(e);
-      }
+        const MODAL_CONFIG = {
+            'task': {
+                render: async ({id, date}) => {
+                    const task = id ? (await dbOps.get('tasks', id)).data() : {};
+                    const memberOptions = (appData.familyMembers || []).map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join('');
+                    const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
+                    const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    return `<div class="modal-content"><form id="task-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="task-id" value="${id || ''}"><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="task-name" value="${task.name || ''}" required></div><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div><div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option>${memberOptions}</select></div><div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="task-priority"><option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option><option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option><option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option></select></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('task-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const taskData = { name: document.getElementById('task-name').value, type: document.getElementById('task-type').value, date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value };
+                        if (id) await dbOps.put('tasks', id, taskData); else await dbOps.add('tasks', taskData);
+                        closeModal();
+                    });
+                    if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { await dbOps.delete('tasks', id); closeModal(); }); }
+                }
+            },
+            'contact': {
+                render: () => `<div class="modal-content"><form id="contact-form"><div class="modal-header"><h3 class="modal-title">New Contact</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="contact-name" required></div></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`,
+                postRender: () => { document.getElementById('contact-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('contact-name').value.trim(); if (name) await dbOps.add('familyMembers', {name}); closeModal(); }); }
+            },
+            'store': {
+                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
+                 postRender: () => { document.getElementById('store-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('store-name').value.trim(); if(name) await dbOps.add('stores', {name}); closeModal(); }); }
+            },
+            'shoppingItem': {
+                render: async ({id}) => {
+                    const item = (await dbOps.get('shoppingLists', id)).data();
+                    return `<div class="modal-content"><form id="shopping-item-form"><div class="modal-header"><h3 class="modal-title">Edit Item</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="shopping-item-id" value="${id || ''}"><div class="form-group"><label class="form-label">Item Name</label><input type="text" class="form-input" id="shopping-item-name" value="${item.name || ''}" required></div></div><div class="modal-footer"><button type="button" class="btn btn-danger" id="delete-shopping-item-btn">Delete</button><div style="flex:1;"></div><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('shopping-item-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const newName = document.getElementById('shopping-item-name').value.trim();
+                        if (!newName) return;
+                        await dbOps.update('shoppingLists', id, { name: newName });
+                        closeModal();
+                    });
+                    document.getElementById('delete-shopping-item-btn').addEventListener('click', () => deleteShoppingItem(id));
+                }
+            },
+            'meal': {
+                render: async ({id}) => {
+                    const meal = id ? (await dbOps.get('meals', id)).data() : {}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('meal-form').addEventListener('submit', async (e) => {
+                        e.preventDefault(); const mealData = { date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
+                        if (id) await dbOps.put('meals', id, mealData); else await dbOps.add('meals', mealData);
+                        closeModal();
+                    });
+                    if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { await dbOps.delete('meals', id); closeModal(); }); }
+                }
+            },
+            'journal': {
+                render: async ({id}) => {
+                    const entry = id ? (await dbOps.get('journalEntries', id)).data() : {};
+                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div><div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('journal-form').addEventListener('submit', async (e) => {
+                        e.preventDefault(); const entryData = { date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
+                        if (id) await dbOps.put('journalEntries', id, entryData); else await dbOps.add('journalEntries', entryData);
+                        closeModal();
+                    });
+                     if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { await dbOps.delete('journalEntries', id); closeModal(); }); }
+                }
+            }
+        };
     </script>
-  </body>
+</body>
 </html>
