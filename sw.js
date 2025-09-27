@@ -2,7 +2,7 @@ const CACHE_NAME = 'family-hub-cache-v1';
 // Add the paths to the icons to the list of URLs to cache
 const urlsToCache = [
   '/',
-  'family-planner.html',
+  'Home-Planner.html',
   'manifest.json',
   'icon-192x192.png',
   'icon-512x512.png',
