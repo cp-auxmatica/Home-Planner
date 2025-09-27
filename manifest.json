@@ -1,23 +1,22 @@
 {
-  "name": "Family Planner Hub",
-  "short_name": "FamilyHub",
-  "start_url": ".",
+  "name": "hub Family Planner",
+  "short_name": "hub",
+  "start_url": "home-planner-new.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "description": "A central hub for family organization including schedules, shopping lists, and meal plans.",
+  "background_color": "#f0f2f5",
+  "theme_color": "#f0f2f5",
+  "description": "A central planner for your family's schedule, meals, and shopping.",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
+
