@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="homenexus-light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Home Hub - Interactive Dashboard & Stores</title>
 
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -12,13 +12,13 @@
     
     <!-- PWA additions -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff"/>
+    <meta name="theme-color" content="#F7F7FD"/>
     <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
-        :root, :root[data-theme="homenexus-light"] {
+        :root {
             --primary: #5D5FEF;
             --primary-content: #ffffff;
             --secondary: #F0F0F8;
@@ -38,6 +38,25 @@
             --rounded-btn: 0.75rem;
             --border-color: #E2E2F2;
             --bc: var(--border-color);
+        }
+
+        html {
+            /* This sets the custom theme for DaisyUI */
+            --p: var(--primary);
+            --pc: var(--primary-content);
+            --s: var(--secondary);
+            --sc: var(--secondary-content);
+            --a: var(--accent);
+            --ac: var(--accent-content);
+            --n: var(--neutral);
+            --b1: var(--base-100);
+            --b2: var(--base-200);
+            --b3: var(--base-300);
+            --bc: var(--base-content);
+            --in: var(--info);
+            --su: var(--success);
+            --wa: var(--warning);
+            --er: var(--error);
         }
 
         body { 
