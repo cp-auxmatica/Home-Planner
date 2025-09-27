@@ -18,10 +18,54 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
+        :root[data-theme="homenexus-light"] {
+            --primary: #030213;
+            --primary-content: oklch(1 0 0);
+            --secondary: oklch(0.95 0.0058 264.53);
+            --secondary-content: #030213;
+            --accent: #e9ebef;
+            --accent-content: #030213;
+            --neutral: #717182;
+            --base-100: #ffffff;
+            --base-200: #f8fafc;
+            --base-300: #e9ebef;
+            --base-content: oklch(0.145 0 0);
+            --info: oklch(0.6 0.118 184.704);
+            --success: oklch(0.828 0.189 84.429);
+            --warning: oklch(0.769 0.188 70.08);
+            --error: #d4183d;
+            --rounded-box: 0.625rem;
+            --rounded-btn: 0.5rem;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --bc: var(--border-color);
+        }
+
+        :root[data-theme="homenexus-dark"] {
+            --primary: oklch(0.985 0 0);
+            --primary-content: oklch(0.205 0 0);
+            --secondary: oklch(0.269 0 0);
+            --secondary-content: oklch(0.985 0 0);
+            --accent: oklch(0.269 0 0);
+            --accent-content: oklch(0.985 0 0);
+            --neutral: oklch(0.708 0 0);
+            --base-100: oklch(0.145 0 0);
+            --base-200: #030213;
+            --base-300: oklch(0.269 0 0);
+            --base-content: oklch(0.985 0 0);
+            --info: oklch(0.696 0.17 162.48);
+            --success: oklch(0.769 0.188 70.08);
+            --warning: oklch(0.645 0.246 16.439);
+            --error: oklch(0.637 0.237 25.331);
+            --rounded-box: 0.625rem;
+            --rounded-btn: 0.5rem;
+            --border-color: oklch(0.269 0 0);
+            --bc: var(--border-color);
+        }
+
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-tap-highlight-color: transparent;
-            background: #f8fafc;
+            background-color: var(--base-200);
         }
         
         .fc-event { cursor: pointer; }
@@ -40,8 +84,8 @@
         }
         
         .fc { 
-            --fc-border-color: #e2e8f0; 
-            --fc-page-bg-color: #ffffff; 
+            --fc-border-color: var(--border-color);
+            --fc-page-bg-color: var(--base-100);
             --fc-event-bg-color: #3b82f6; 
             --fc-event-border-color: #2563eb; 
             --fc-today-bg-color: rgba(59, 130, 246, 0.1); 
@@ -58,111 +102,17 @@
         }
         
         .fc-bg-event { opacity: 0.3 !important; }
-        
-        /* Clean card design */
-        .card {
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
-            transition: all 0.2s ease;
-            background: white;
-        }
-        
-        .card:hover {
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            transform: translateY(-1px);
-        }
-        
-        /* Header styling */
-        .navbar {
-            border-bottom: 1px solid #e2e8f0;
-            background: white;
-        }
-        
-        /* Tab styling */
-        .tabs-boxed {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 6px;
-        }
-        
-        .tab {
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        
-        .tab-active {
-            background: #2563eb;
-            color: white;
-        }
-        
-        .tab:not(.tab-active):hover {
-            background: #f1f5f9;
-        }
-        
-        /* Button improvements */
-        .btn {
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-primary {
-            background: #2563eb;
-            border-color: #2563eb;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #1d4ed8;
-            border-color: #1d4ed8;
-            transform: translateY(-1px);
-        }
-        
-        /* Input improvements */
-        .input, .select, .textarea {
-            border-color: #d1d5db;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        
+
         .input:focus, .select:focus, .textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--p) 15%, transparent);
+            border-color: var(--p);
             outline: none;
         }
-        
-        /* Dashboard item styling */
-        .dashboard-item { 
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            border: 1px solid transparent;
-        }
-        
-        .dashboard-item:hover { 
-            background-color: #f8fafc;
-            border-color: #e2e8f0;
-            transform: translateX(2px);
-        }
-        
-        /* Badge improvements */
-        .badge {
-            font-weight: 500;
-            border-radius: 6px;
-        }
-        
-        /* Modal improvements */
-        .modal-box {
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        /* Empty states */
+
         .empty-state {
             text-align: center;
             padding: 2rem 1rem;
-            color: #64748b;
+            color: var(--neutral);
         }
         
         .empty-state i {
@@ -171,120 +121,21 @@
             opacity: 0.3;
             display: block;
         }
-        
-        /* Shopping list improvements */
-        .shopping-item {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            background: white;
-        }
-        
-        .shopping-item:hover {
-            border-color: #cbd5e1;
-            background: #f8fafc;
-        }
-        
-        /* Store item improvements */
-        .store-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .store-item:hover {
-            background: #f1f5f9;
-        }
-        
-        /* Collapse improvements */
-        .collapse {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-        }
-        
-        .collapse-title {
-            font-weight: 600;
-        }
-        
-        /* Meal card improvements */
-        .meal-card {
-            transition: all 0.2s ease;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-        }
-        
-        .meal-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-        
-        .meal-type {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .meal-type:hover {
-            transform: translateX(2px);
-        }
-        
-        .meal-planned {
-            background: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
-        }
-        
-        .meal-unplanned {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-        }
-        
-        /* Statistics cards for dashboard */
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        .stat-label {
-            color: #64748b;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-top: 0.5rem;
-        }
+
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="min-h-screen">
 
-    <header class="navbar bg-base-100 shadow-sm sticky top-0 z-40">
+    <header class="navbar bg-base-100 shadow-sm sticky top-0 z-40 border-b border-base-300">
         <div class="container mx-auto px-4">
             <div class="navbar-start">
-                <h1 class="text-xl md:text-2xl font-bold text-gray-800">
-                    <i class="fas fa-home mr-2 text-blue-600"></i> Home Hub
+                <h1 class="text-xl md:text-2xl font-bold text-base-content">
+                    <i class="fas fa-home mr-2 text-primary"></i> Home Hub
                 </h1>
             </div>
             <div class="navbar-end space-x-2">
                 <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()">
-                    <i class="fas fa-cog text-xl text-gray-500"></i>
+                    <i class="fas fa-cog text-xl text-base-content/50"></i>
                 </button>
                 <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()">
                     <i class="fas fa-plus md:mr-2"></i>
@@ -323,19 +174,19 @@
             <div id="dashboard-view" class="view">
                 <!-- Quick Stats -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="stat-card">
+                    <div class="stat-card card">
                         <div class="stat-number" id="today-events-count">0</div>
                         <div class="stat-label">Today's Events</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card card">
                         <div class="stat-number" id="pending-chores-count">0</div>
                         <div class="stat-label">Pending Chores</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card card">
                         <div class="stat-number" id="grocery-items-count">0</div>
                         <div class="stat-label">Grocery Items</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card card">
                         <div class="stat-number" id="planned-meals-count">0</div>
                         <div class="stat-label">This Week's Meals</div>
                     </div>
@@ -373,7 +224,7 @@
                     <div class="card bg-base-100">
                         <div class="card-body">
                             <h2 class="card-title text-lg">
-                                <i class="fas fa-tasks text-accent mr-2"></i>Today's Chores
+                                <i class="fas fa-tasks text-accent-content mr-2"></i>Today's Chores
                             </h2>
                             <div id="today-chores-widget" class="space-y-2 mt-2"></div>
                         </div>
@@ -385,7 +236,7 @@
             <div id="mealplanner-view" class="view hidden">
                 <div class="card bg-base-100 mb-6">
                     <div class="card-body">
-                        <details class="collapse collapse-arrow bg-gray-50 border border-gray-200 rounded-xl">
+                        <details class="collapse collapse-arrow bg-base-200 rounded-xl">
                             <summary class="collapse-title text-lg font-medium">Plan a New Meal</summary>
                             <div class="collapse-content">
                                 <form id="meal-page-form" class="space-y-4 pt-4">
@@ -470,14 +321,11 @@
                     <select id="taskType" class="select select-bordered" required>
                         <option disabled selected>Event Type</option>
                         <option>Appointment</option>
-                        <option>Chore</option>
-                        <option>Dentis</option>
-                        <option>Doctor</option>
-                        <option>Errand</option>
-                        <option>Event</option>
                         <option>Meeting</option>
-                        <option>Time Off</option>
                         <option>Work Schedule</option>
+                        <option>Chore</option>
+                        <option>Errand</option>
+                        <option>Time Off</option>
                     </select>
                     <select id="taskAssignee" class="select select-bordered">
                         <option disabled selected>Assign To</option>
@@ -584,6 +432,16 @@
                     <button type="submit" class="btn btn-primary">Add</button>
                 </form>
             </div>
+
+            <div class="divider"></div>
+            <div class="mt-4">
+                <h4 class="font-semibold text-md">Theme</h4>
+                <select id="theme-switcher" class="select select-bordered w-full mt-2">
+                    <option value="homenexus-light">Light</option>
+                    <option value="homenexus-dark">Dark</option>
+                    <option value="system">System Default</option>
+                </select>
+            </div>
             
             <div class="divider"></div>
             
@@ -633,6 +491,41 @@ const providedFirebaseConfig = {
   messagingSenderId: "20103999017",
   appId: "1:20103999017:web:9be545d5a0f70008dc7638"
 };
+
+/**
+ * =================================================================
+ * THEME MANAGER
+ * =================================================================
+ */
+const themeManager = {
+    init() {
+        const selector = document.getElementById('theme-switcher');
+        selector.addEventListener('change', (e) => this.setTheme(e.target.value));
+
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        selector.value = savedTheme;
+        this.setTheme(savedTheme);
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (localStorage.getItem('theme') === 'system') {
+                this.applySystemTheme();
+            }
+        });
+    },
+    setTheme(theme) {
+        localStorage.setItem('theme', theme);
+        if (theme === 'system') {
+            this.applySystemTheme();
+        } else {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+    },
+    applySystemTheme() {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'homenexus-dark' : 'homenexus-light';
+        document.documentElement.setAttribute('data-theme', systemTheme);
+    }
+};
+
 
 /**
  * =================================================================
@@ -697,7 +590,8 @@ const ui = {
         nextWeek.setDate(today.getDate() + 7);
         const weekMeals = meals.filter(m => {
             const mealDate = new Date(m.date + "T00:00:00");
-            return mealDate >= today && mealDate <= nextWeek;
+            const todayDate = new Date(todayStr + "T00:00:00");
+            return mealDate >= todayDate && mealDate <= nextWeek;
         });
 
         document.getElementById('today-events-count').textContent = todayEvents.length;
@@ -717,7 +611,7 @@ const ui = {
                     <div class="flex items-center justify-between">
                         <div>
                             <span class="font-semibold">${t.name}</span>
-                            ${t.assignee ? `<span class="text-sm text-gray-500 ml-2">${t.assignee}</span>` : ''}
+                            ${t.assignee ? `<span class="text-sm text-base-content/70 ml-2">${t.assignee}</span>` : ''}
                         </div>
                         <div class="badge ${app.getEventTypeColor(t.type,'badge')}">
                             ${t.dueTime || t.type}
@@ -769,9 +663,9 @@ const ui = {
             groceryWidget.innerHTML = '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>Your shopping list is empty.</p></div>'; 
         } else { 
             groceryWidget.innerHTML = groceries.slice(0, 4).map(item => `
-                <div class="text-sm py-1 border-l-2 border-gray-200 pl-3">${item.itemName}</div>
+                <div class="text-sm py-1 border-l-2 border-base-300 pl-3">${item.itemName}</div>
             `).join('') + (groceries.length > 4 ? `
-                <div class="text-blue-600 text-sm mt-3 font-semibold">+ ${groceries.length - 4} more items</div>
+                <div class="text-primary text-sm mt-3 font-semibold">+ ${groceries.length - 4} more items</div>
             ` : ''); 
         }
     },
@@ -799,12 +693,12 @@ const ui = {
                     <div class="shopping-item flex items-center gap-3 group" id="shopping-item-${item.id}">
                         <input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} 
                                class="checkbox checkbox-primary shopping-item-checkbox" />
-                        <div class="flex-grow ${item.isChecked ? 'line-through text-gray-400' : ''} shopping-item-name">
+                        <div class="flex-grow ${item.isChecked ? 'line-through text-base-content/50' : ''} shopping-item-name">
                             ${item.itemName}
                         </div>
                         <input type="number" step="0.01" placeholder="0.00" value="${item.price || ''}" 
                                data-id="${item.id}" class="input input-xs input-bordered w-20 text-right shopping-item-price" />
-                        <button class="btn btn-xs btn-ghost text-gray-400 opacity-0 group-hover:opacity-100" 
+                        <button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" 
                                 onclick="app.toggleEditShoppingItem('${item.id}')">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
@@ -833,7 +727,7 @@ const ui = {
             storesContainer.innerHTML = stores.map(store => { 
                 const itemsForStore = allStoreItems.filter(item => item.storeId === store.id); 
                 return `
-                    <details class="collapse collapse-arrow bg-gray-50 border border-gray-200">
+                    <details class="collapse collapse-arrow bg-base-200">
                         <summary class="collapse-title text-base font-medium flex justify-between items-center">
                             ${store.name}
                             <button class="btn btn-xs btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore('${store.id}', '${store.name}')">
@@ -851,14 +745,14 @@ const ui = {
                                     <div class="store-item flex justify-between items-center group" id="store-item-${item.id}">
                                         <div class="store-item-name">${item.itemName}</div>
                                         <div class="flex gap-1">
-                                            <button class="btn btn-xs btn-ghost text-gray-400 opacity-0 group-hover:opacity-100" 
+                                            <button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" 
                                                     onclick="app.toggleEditStoreItem('${item.id}')">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </button>
                                             <button class="btn btn-xs btn-circle btn-primary" onclick="app.handleAddToShoppingList('${item.id}')">+</button>
                                         </div>
                                     </div>
-                                `).join('') : '<p class="text-xs text-gray-500 py-2">No items added yet.</p>'}
+                                `).join('') : '<p class="text-xs text-base-content/60 py-2">No items added yet.</p>'}
                             </div>
                         </div>
                     </details>
@@ -878,7 +772,7 @@ const ui = {
         } 
         
         container.innerHTML = trips.map(trip => `
-            <details class="collapse collapse-arrow bg-gray-50 border border-gray-200">
+            <details class="collapse collapse-arrow bg-base-200">
                 <summary class="collapse-title text-base font-medium">
                     ${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}
                     <span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span>
@@ -890,8 +784,8 @@ const ui = {
                     <ul class="list-disc pl-6 space-y-1">
                         ${trip.items.map(item => `
                             <li>
-                                <span class="${item.isChecked ? '' : 'line-through text-gray-400'}">${item.itemName}</span>
-                                <span class="ml-2 text-sm font-mono text-gray-600">${item.price ? '$' + item.price.toFixed(2) : ''}</span>
+                                <span class="${item.isChecked ? '' : 'line-through text-base-content/50'}">${item.itemName}</span>
+                                <span class="ml-2 text-sm font-mono text-base-content/70">${item.price ? '$' + item.price.toFixed(2) : ''}</span>
                             </li>
                         `).join('')}
                     </ul>
@@ -970,7 +864,7 @@ const ui = {
         }
         
         container.innerHTML = sortedDates.map(date => `
-            <div class="meal-card bg-white p-4">
+            <div class="meal-card bg-base-100 p-4">
                 <h3 class="font-semibold text-base mb-3">
                     ${new Date(date+'T12:00:00').toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}
                 </h3>
@@ -995,7 +889,7 @@ const ui = {
     renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { 
         const container = document.getElementById('ingredient-list-container'); 
         const div = document.createElement('div'); 
-        div.className = 'flex items-center gap-2 bg-gray-50 p-2 rounded'; 
+        div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; 
         div.innerHTML = `
             <label class="flex-grow flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} />
@@ -1083,10 +977,10 @@ const ui = {
         const members = app.data.familyMembers || []; 
         const container = document.getElementById('family-member-list');
         if (members.length === 0) {
-            container.innerHTML = `<p class="text-gray-500 text-sm">No family members added.</p>`; 
+            container.innerHTML = `<p class="text-base-content/70 text-sm">No family members added.</p>`; 
         } else {
             container.innerHTML = members.map(member => `
-                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <div class="flex justify-between items-center p-2 bg-base-200 rounded">
                     <span>${member.name}</span>
                     <button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember('${member.id}')">
                         <i class="fas fa-trash"></i>
@@ -1233,6 +1127,7 @@ const seedInitialData = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    themeManager.init();
     initFirebase();
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
