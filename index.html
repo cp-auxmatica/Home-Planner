@@ -1,547 +1,305 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="cupcake">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Hub - Interactive Dashboard & Stores</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    
+    <!-- PWA additions -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff"/>
+    <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <style>
-        :root {
-            --primary: #000000; --primary-hover: #333333;
-            --secondary: #10b981; --accent: #ec4899; --error: #ef4444;
-            --bg-primary: #ffffff; --bg-secondary: #ffffff; --bg-tertiary: #f3f4f6;
-            --text-primary: #111827; --text-secondary: #374151; --text-tertiary: #6b7280;
-            --border: #e5e7eb; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 4px 15px -3px rgb(0 0 0 / 0.1);
-            --radius: 12px; --radius-sm: 8px;
-            --urgent: #ef4444; --warning: #f97316; --success: #22c55e;
-        }
-        body.dark-mode {
-            --primary: #eeeeee; --primary-hover: #ffffff;
-            --secondary: #10b981; --accent: #f472b6;
-            --bg-primary: #020617; --bg-secondary: #0f172a; --bg-tertiary: #1e293b;
-            --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-tertiary: #64748b;
-            --border: #334155; --shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; scroll-behavior: smooth; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
-        
-        /* --- HEADER AND NAVIGATION CUSTOMIZATIONS --- */
-        .header { 
-            background: #000000; /* Black header background */
-            border-bottom: 1px solid #333;
-            position: sticky; top: 0; z-index: 100; 
-            transition: background-color 0.3s, border-color 0.3s; 
-        }
-        .navbar { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: #ffffff; } /* White logo text */
-        .top-nav { display: flex; justify-content: center; background: #000000; border-bottom: 1px solid #333; overflow-x: auto; }
-        .nav-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
-            padding: 0.75rem 1rem;
-            background: transparent; color: #a0a0a0; /* Light gray for inactive icons */
-            border: none; border-bottom: 3px solid transparent;
-            cursor: pointer; transition: all 0.2s ease; font-weight: 500;
-        }
-        .nav-btn i { font-size: 1.5rem; }
-        .nav-btn:hover { 
-            background: #1a1a1a; /* Dark gray on hover */
-            color: #ffffff; 
-        }
-        .nav-btn.active { 
-            color: #ffffff; /* White active icon */
-            border-bottom-color: #2575fc; /* Bright blue indicator */
-        }
-    
-        /* --- DASHBOARD GRADIENT HEADERS --- */
-        #dashboard-view .card:nth-of-type(1) .card-header {
-            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            border-bottom: none;
-        }
-        #dashboard-view .card:nth-of-type(2) .card-header {
-            background: linear-gradient(45deg, #f97794 0%, #623aa2 100%);
-            color: white;
-            border-bottom: none;
-        }
-        #dashboard-view .card:nth-of-type(3) .card-header {
-            background: linear-gradient(45deg, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);
-            color: white;
-            border-bottom: none;
-        }
-        /* --- End Customizations --- */
-    
-        .main-container { padding: 1rem; max-width: 1400px; margin: 0 auto; }
-        .view-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .view-title { font-size: 1.75rem; font-weight: 700; }
-        .card { background: var(--bg-secondary); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1.5rem; border: 1px solid var(--border); }
-        .card-header { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .card-body { padding: 0; }
-        .card-content { padding: 1rem; line-height: 1.6; color: var(--text-secondary); }
-        .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); transition: background-color 0.2s; }
-        .list-item:last-child { border-bottom: none; }
-        .list-item:hover { background-color: var(--bg-tertiary); }
-        .list-item-icon { font-size: 1.2rem; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--primary); background: var(--bg-tertiary); }
-        .list-item-content { flex: 1; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-item-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
-        .list-item-aside { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); text-align: right; }
-        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.25rem; display: inline-block; }
-        .fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 1.5rem; border: none; box-shadow: var(--shadow-lg); position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900; cursor: pointer; transition: all 0.3s ease; }
-        body.dark-mode .fab { color: #000; }
-        .fab:hover { transform: scale(1.05) rotate(90deg); background-color: var(--primary-hover); }
-        .hidden { display: none !important; }
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;font-size:1rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-tertiary)}.btn-ghost{background:0 0;color:var(--text-secondary);border:none;padding:.5rem}.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}.btn-danger{background:var(--error);color:white}
-        body.dark-mode .btn-primary { color: #000; }
-        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}.modal-content{background:var(--bg-secondary);border-radius:var(--radius);max-width:500px;width:100%;animation:slideIn .3s ease;box-shadow:var(--shadow-lg)}.modal-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.modal-title{font-size:1.2rem;font-weight:600}.modal-body{padding:1.5rem}.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.9rem;font-weight:500;color:var(--text-primary);margin-bottom:.5rem}.form-input,.form-select,textarea.form-input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg-primary);color:var(--text-primary)}.form-input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent)}
-        .shopping-item.completed .list-item-title { text-decoration: line-through; opacity: 0.6; }
-        .checkbox{width:1.25rem;height:1.25rem;accent-color:var(--primary)}
-        #calendar-view .card-body { padding: 1rem; }
-        .fc { border: none !important; --fc-border-color: var(--border); --fc-today-bg-color: var(--bg-tertiary); }
-        .fc .fc-button { background-color: var(--primary) !important; color: white !important; }
-        body.dark-mode .fc .fc-button { color: #000 !important; }
-        .calendar-mobile-controls { display: flex; justify-content: center; gap: 0.5rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0.75rem; }
-        .calendar-mobile-controls .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .fc-event { cursor: pointer; }
+        .toast { z-index: 1000; }
+        .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.5rem; }
+        @media (min-width: 768px) { .fc .fc-toolbar.fc-header-toolbar { flex-direction: row; } }
+        .fc { --fc-border-color: #e5e7eb; --fc-page-bg-color: #ffffff; --fc-event-bg-color: #3b82f6; --fc-event-border-color: #2563eb; --fc-today-bg-color: rgba(253, 230, 138, 0.3); }
+        .fc .fc-button-primary { background-color: #2563eb; border-color: #2563eb; }
+        .fc .fc-button-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
+        .fc-bg-event { opacity: 0.3 !important; }
+        .dashboard-item { transition: background-color 0.2s; }
+        .dashboard-item:hover { background-color: #e5e7eb; } /* Corresponds to bg-base-300 in many themes */
     </style>
 </head>
-<body>
-    <header class="header">
-        <nav class="navbar"><div class="logo">hub</div></nav>
-        <div class="top-nav">
-            <button class="nav-btn active" data-view="dashboard"><i class="fas fa-home"></i></button>
-            <button class="nav-btn" data-view="shopping"><i class="fas fa-shopping-cart"></i></button>
-            <button class="nav-btn" data-view="calendar"><i class="fas fa-calendar-alt"></i></button>
-            <button class="nav-btn" data-view="meals"><i class="fas fa-utensils"></i></button>
-            <button class="nav-btn" data-view="journal"><i class="fas fa-book"></i></button>
-            <button class="nav-btn" data-view="contacts"><i class="fas fa-address-book"></i></button>
+<body class="bg-base-200 min-h-screen">
+
+    <header class="bg-base-100 shadow-md sticky top-0 z-40">
+        <div class="navbar container mx-auto px-4">
+            <div class="navbar-start"><h1 class="text-xl md:text-2xl font-bold text-primary"><i class="fas fa-home mr-2"></i> Home Hub</h1></div>
+            <div class="navbar-end">
+                <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()"><i class="fas fa-cog text-xl"></i></button>
+                <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()"><i class="fas fa-plus md:mr-2"></i><span class="hidden md:inline">New Event</span></button>
+            </div>
         </div>
     </header>
 
-    <main class="main-container">
-        <div id="dashboard-view" class="view"></div>
-        <div id="shopping-view" class="view hidden"></div>
-        <div id="list-detail-view" class="view hidden"></div>
-        <div id="calendar-view" class="view hidden"></div>
-        <div id="meals-view" class="view hidden"></div>
-        <div id="journal-view" class="view hidden"></div>
-        <div id="contacts-view" class="view hidden"></div>
+    <main class="container mx-auto p-4">
+        <div role="tablist" class="tabs tabs-bordered tabs-lg mb-6" id="viewTabs">
+            <a role="tab" class="tab tab-active" data-view="dashboard"><i class="fas fa-tachometer-alt mr-1"></i><span class="hidden sm:inline ml-1">Dashboard</span></a>
+            <a role="tab" class="tab" data-view="mealplanner"><i class="fas fa-utensils mr-1"></i><span class="hidden sm:inline ml-1">Meals</span></a>
+            <a role="tab" class="tab" data-view="grocerylist"><i class="fas fa-shopping-cart mr-1"></i><span class="hidden sm:inline ml-1">Groceries</span></a>
+            <a role="tab" class="tab" data-view="history"><i class="fas fa-history mr-1"></i><span class="hidden sm:inline ml-1">History</span></a>
+            <a role="tab" class="tab" data-view="fullschedule"><i class="fas fa-calendar-alt mr-1"></i><span class="hidden sm:inline ml-1">Schedule</span></a>
+        </div>
+
+        <div id="app-views">
+            <div id="dashboard-view" class="view"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-clock text-info mr-2"></i>Today's Schedule</h2><div id="today-schedule-widget" class="space-y-2"></div></div></div><div class="card bg-base-100 shadow-xl hover:bg-base-200/50 cursor-pointer" onclick="ui.switchView('grocerylist')"><div class="card-body"><h2 class="card-title"><i class="fas fa-shopping-cart text-accent mr-2"></i>Active Grocery List</h2><div id="grocery-list-widget" class="space-y-1"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title" id="dinner-widget-title"><i class="fas fa-drumstick-bite text-warning mr-2"></i>What's for Dinner?</h2><div id="dinner-widget" class="mt-2"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-tasks text-success mr-2"></i>Today's Chores</h2><div id="today-chores-widget" class="space-y-2"></div></div></div></div></div>
+            <div id="mealplanner-view" class="view hidden"><div class="card bg-base-100 shadow-xl mb-6"><div class="card-body"><details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-xl font-medium">Plan a New Meal</summary><div class="collapse-content"><form id="meal-page-form" class="space-y-4 pt-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="date" id="meal-page-date" class="input input-bordered w-full" required /><select id="meal-page-type" class="select select-bordered w-full" required><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div><input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><div class="text-right"><button type="submit" class="btn btn-primary">Save Meal & Open Editor</button></div></form></div></details></div></div><div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div></div>
+            <div id="grocerylist-view" class="view hidden grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><div id="active-list-header"></div><div id="shopping-list-container" class="space-y-2 mt-2 max-h-[30rem] overflow-y-auto"></div><div id="active-list-footer" class="hidden"><div class="divider"></div><div class="flex justify-end items-center font-bold text-lg"><span>Total:</span><span id="shopping-list-total" class="ml-2">$0.00</span></div></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">My Stores</h2><form id="add-store-form" class="join w-full mt-2"><input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item w-full" required /><button type="submit" class="btn btn-primary join-item">Add</button></form><div id="stores-container" class="mt-4 space-y-4"></div></div></div></div>
+            <div id="history-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">Shopping Trip History</h2><div id="trip-history-container" class="space-y-4 mt-4"></div></div></div></div>
+            <div id="fullschedule-view" class="view hidden"><div class="card bg-base-100 shadow-xl p-2 md:p-4"><div id="calendar"></div></div></div>
+        </div>
     </main>
-
-    <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
     
-    <div id="generic-modal" class="modal"></div>
+    <div class="toast toast-top toast-center" id="toast-container"></div>
 
-    <script type="module">
-        // --- FIREBASE IMPORTS ---
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <dialog id="task_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="task-modal-title">New Event</h3><form id="task-form" class="space-y-4 mt-4"><input type="hidden" id="taskId"><input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required /><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><select id="taskType" class="select select-bordered" required><option disabled selected>Event Type</option><option>Appointment</option><option>Meeting</option><option>Work Schedule</option><option>Chore</option><option>Errand</option><option>Time Off</option></select><select id="taskAssignee" class="select select-bordered"><option disabled selected>Assign To</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="date" id="taskDueDate" class="input input-bordered" /><input type="time" id="taskDueTime" class="input input-bordered" /></div><div class="flex items-center justify-between"><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Recurring?</span><input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" /></label></div><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Completed?</span><input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" /></label></div></div><div id="recurring-options" class="hidden"><label class="label"><span class="label-text">Repeats on:</span></label><div class="join w-full" id="recurring-day-picker"><button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button><button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button><button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button><button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button><button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button></div></div><textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Event</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <dialog id="edit_recurring_modal" class="modal"><div class="modal-box w-11/12 max-w-xs text-center"><h3 class="font-bold text-lg">Edit Recurring Event</h3><p class="py-4">Do you want to change only this event, or this and all future events in the series?</p><div class="modal-action justify-center"><button class="btn" id="edit-single-event-btn">Only This Event</button><button class="btn btn-primary" id="edit-future-events-btn">Future Events</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <dialog id="manage_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-lg">
+            <h3 class="font-bold text-lg">Manage Data & Family</h3>
+            <div class="mt-6"><h4 class="font-semibold text-md">Family Members</h4><div id="family-member-list" class="mt-2 space-y-2"></div><form id="add-family-member-form" class="flex gap-2 mt-2"><input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required /><button type="submit" class="btn btn-primary">Add</button></form></div>
+            <div class="divider"></div>
+            <div class="mt-4">
+                <h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/70">Export or import your data. This is a local backup and will not affect cloud data.</p>
+                <div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div>
+                <div class="divider">DANGER ZONE</div>
+                <button class="btn btn-error w-full" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data</button>
+            </div>
+            <div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
 
-        // --- Use dynamically provided Firebase config and App ID ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+<script type="module">
+// --- FIREBASE IMPORTS ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, collection, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+// --- GLOBAL CONFIG & STATE ---
+const OBJECT_STORES = ['tasks', 'meals', 'groceries', 'familyMembers', 'shoppingTrips', 'stores', 'storeItems'];
+let fb_db, fb_auth, userId;
+let unsubscribes = []; // To hold snapshot listeners
+
+// --- Your web app's Firebase configuration ---
+const providedFirebaseConfig = {
+  apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
+  authDomain: "home-planner-ce48b.firebaseapp.com",
+  projectId: "home-planner-ce48b",
+  storageBucket: "home-planner-ce48b.firebasestorage.app",
+  messagingSenderId: "20103999017",
+  appId: "1:20103999017:web:9be545d5a0f70008dc7638"
+};
+
+
+/**
+ * =================================================================
+ * DATABASE MODULE (db) - Firestore Implementation
+ * =================================================================
+ */
+const db = {
+    _getCollectionPath: (storeName) => {
+        if (!userId) throw new Error("User not authenticated.");
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        
-        // --- CORE APP LOGIC ---
-        let db, auth, userId;
-        let currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
-        let unsubscribes = []; // To hold snapshot listeners
+        return `artifacts/${appId}/users/${userId}/${storeName}`;
+    },
+    add: (storeName, item) => addDoc(collection(fb_db, db._getCollectionPath(storeName)), item),
+    get: (storeName, id) => getDoc(doc(fb_db, db._getCollectionPath(storeName), id)),
+    getAll: async (storeName) => { const snapshot = await getDocs(collection(fb_db, db._getCollectionPath(storeName))); return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); },
+    update: (storeName, id, item) => updateDoc(doc(fb_db, db._getCollectionPath(storeName), id), item),
+    set: (storeName, id, item) => setDoc(doc(fb_db, db._getCollectionPath(storeName), id), item),
+    delete: (storeName, id) => deleteDoc(doc(fb_db, db._getCollectionPath(storeName), id)),
+    query: async (storeName, field, op, value) => { const q = query(collection(fb_db, db._getCollectionPath(storeName)), where(field, op, value)); const snapshot = await getDocs(q); return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); },
+    clear: async (storeName) => { const allItems = await db.getAll(storeName); const batch = writeBatch(fb_db); allItems.forEach(item => batch.delete(doc(fb_db, db._getCollectionPath(storeName), item.id))); await batch.commit(); }
+};
 
-        const initFirebase = async () => {
-            if (!firebaseConfig.apiKey) {
-                console.error("Firebase config is missing!");
-                return;
-            }
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    console.log("User is signed in with UID:", userId);
-                    await loadAppData();
-                    await seedInitialData(); // Check and seed if needed
-                    switchView('dashboard');
-                } else {
-                    console.log("User is signed out, attempting to sign in.");
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) {
-                        console.error("Error signing in:", error);
-                    }
-                }
-            });
-        };
+/**
+ * =================================================================
+ * UI MODULE (ui)
+ * =================================================================
+ */
+const ui = {
+    currentView: 'dashboard', calendar: null,
+    init() { this.setupTabs(); },
+    setupTabs() { document.getElementById('viewTabs').addEventListener('click', (e) => { const tab = e.target.closest('a[role="tab"]'); if (tab) this.switchView(tab.dataset.view); }); },
+    switchView(viewName) { this.currentView = viewName; document.querySelectorAll('#viewTabs .tab').forEach(tab => tab.classList.toggle('tab-active', tab.dataset.view === viewName)); document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${viewName}-view`)); this.renderAll(); },
+    renderAll() { switch (this.currentView) { case 'dashboard': this.renderDashboard(); break; case 'mealplanner': this.renderMealPlanner(); break; case 'grocerylist': this.renderGroceryList(); break; case 'history': this.renderHistory(); break; case 'fullschedule': this.renderFullSchedule(); break; } this.renderFamilyMembers(); this.populateAssigneeDropdown(); },
 
-        const getCollectionPath = (collectionName) => `artifacts/${appId}/users/${userId}/${collectionName}`;
+    renderDashboard() {
+        const today = new Date(); const todayStr = today.toISOString().split('T')[0]; const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
+        const tasks = (app.data.tasks || []).filter(t => t.status !== 'Done'); const meals = app.data.meals || []; const groceries = (app.data.groceries || []).filter(item => !item.isChecked);
+        const scheduleContainer = document.getElementById('today-schedule-widget'); const todayEvents = tasks.filter(t => t.dueDate === todayStr && t.type !== 'Chore').sort((a,b) => (a.dueTime || '').localeCompare(b.dueTime || ''));
+        scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal('${t.id}')"><div class="flex items-center justify-between"><div><span class="font-bold">${t.name}</span><span class="text-sm text-base-content/70 ml-2">${t.assignee||''}</span></div><div class="badge ${app.getEventTypeColor(t.type,'badge')}">${t.dueTime||t.type}</div></div></div>`).join('') : '<p class="text-base-content/70">No events scheduled today.</p>';
+        const choresContainer = document.getElementById('today-chores-widget'); const todayChores = tasks.filter(t => t.dueDate === todayStr && t.type === 'Chore');
+        choresContainer.innerHTML = todayChores.length ? todayChores.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal('${t.id}')"><div class="font-bold">${t.name}</div></div>`).join('') : '<p class="text-base-content/70">No chores due today!</p>';
+        const dinnerWidgetTitle = document.getElementById('dinner-widget-title'); const dinnerContainer = document.getElementById('dinner-widget'); 
+        const tonightDinner = meals.find(m => m.date === todayStr && m.mealType === 'Dinner');
+        dinnerWidgetTitle.innerHTML = `<i class="fas fa-drumstick-bite text-warning mr-2"></i> ${dayName}'s Dinner`;
+        if (tonightDinner) { dinnerContainer.innerHTML = `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openMealModal('${tonightDinner.date}', '${tonightDinner.mealType}', '${tonightDinner.id}')"><div class="flex items-center justify-between"><div><span class="font-bold">${tonightDinner.recipeName}</span></div><div class="badge badge-warning">Dinner</div></div></div>${tonightDinner.recipeURL ? `<a href="${tonightDinner.recipeURL}" target="_blank" class="link link-primary text-sm mt-2 block">View Recipe</a>` : ''}`; } else { dinnerContainer.innerHTML = '<p class="text-base-content/70">Not planned.</p>'; }
+        const groceryWidget = document.getElementById('grocery-list-widget'); if (groceries.length > 0) { groceryWidget.innerHTML = groceries.slice(0, 5).map(item => `<div class="text-sm truncate">${item.itemName}</div>`).join('') + (groceries.length > 5 ? `<div class="text-primary text-sm mt-2 font-bold">and ${groceries.length - 5} more...</div>` : ''); } else { groceryWidget.innerHTML = '<p class="text-base-content/70">Your shopping list is empty.</p>'; }
+    },
+    
+    renderGroceryList() {
+        const shoppingList = app.data.groceries || []; const activeListHeader = document.getElementById('active-list-header'); const activeListFooter = document.getElementById('active-list-footer'); const shoppingContainer = document.getElementById('shopping-list-container');
+        if (app.activeStore) { activeListHeader.innerHTML = `<div class="card-title justify-between items-start"><h2 class="pt-1">Shopping at: ${app.activeStore.name}</h2><button class="btn btn-success" onclick="app.handleCompleteShoppingTrip()"><i class="fas fa-check-circle mr-2"></i>Complete Trip</button></div>`; shoppingContainer.innerHTML = shoppingList.map(item => `<div class="flex items-center gap-2 p-1 rounded group" id="shopping-item-${item.id}"><input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-primary shopping-item-checkbox" /><div class="flex-grow ${item.isChecked ? 'line-through text-base-content/60' : ''} shopping-item-name">${item.itemName}</div><input type="number" step="0.01" placeholder="0.00" value="${item.price || ''}" data-id="${item.id}" class="input input-xs input-bordered w-20 text-right shopping-item-price" /><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditShoppingItem('${item.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList('${item.id}')">&times;</button></div>`).join('') || '<p class="text-base-content/70 text-center py-4">List is empty. Add items from a store.</p>'; const total = shoppingList.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); document.getElementById('shopping-list-total').textContent = `$${total.toFixed(2)}`; activeListFooter.classList.remove('hidden');
+        } else { activeListHeader.innerHTML = `<h2 class="card-title">No Active List</h2>`; shoppingContainer.innerHTML = '<p class="text-base-content/70 text-center py-4">Select a store and add items to begin a shopping trip.</p>'; activeListFooter.classList.add('hidden'); }
 
-        const dbOps = {
-            add: (store, data) => addDoc(collection(db, getCollectionPath(store)), data),
-            get: (store, id) => getDoc(doc(db, getCollectionPath(store), id)),
-            put: (store, id, data) => setDoc(doc(db, getCollectionPath(store), id), data),
-            update: (store, id, data) => updateDoc(doc(db, getCollectionPath(store), id), data),
-            delete: (store, id) => deleteDoc(doc(db, getCollectionPath(store), id)),
-        };
+        const stores = app.data.stores || []; const allStoreItems = app.data.storeItems || []; const storesContainer = document.getElementById('stores-container');
+        if (stores.length === 0) { storesContainer.innerHTML = '<p class="text-base-content/70">No stores created yet. Add one to get started!</p>'; } else { storesContainer.innerHTML = stores.map(store => { const itemsForStore = allStoreItems.filter(item => item.storeId === store.id); return ` <details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-lg font-medium flex justify-between items-center">${store.name}<button class="btn btn-xs btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore('${store.id}', '${store.name}')"><i class="fas fa-trash"></i></button></summary><div class="collapse-content"><form class="join w-full my-2" onsubmit="app.addStoreItem(event, '${store.id}')"><input type="text" placeholder="Add new item to ${store.name}" class="input input-sm input-bordered join-item w-full" required /><button type="submit" class="btn btn-sm btn-secondary join-item">+</button></form><div class="space-y-1 mt-1">${itemsForStore.length > 0 ? itemsForStore.map(item => ` <div class="flex justify-between items-center p-1 rounded group" id="store-item-${item.id}"><div class="store-item-name">${item.itemName}</div><div><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditStoreItem('${item.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-circle btn-primary" onclick="app.handleAddToShoppingList('${item.id}')">+</button></div></div>`).join('') : '<p class="text-xs text-base-content/60">No items added yet.</p>'}</div></div></details> `}).join(''); }
+    },
+    
+    renderHistory() { const container = document.getElementById('trip-history-container'); const trips = app.data.shoppingTrips || []; trips.sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted)); if (trips.length === 0) { container.innerHTML = '<p class="text-base-content/70">No completed shopping trips found.</p>'; return; } container.innerHTML = trips.map(trip => `<details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-lg font-medium">${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}<span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span></summary><div class="collapse-content"><button class="btn btn-sm btn-outline btn-secondary my-2" onclick="app.reuseShoppingTrip('${trip.id}')"><i class="fas fa-redo-alt mr-2"></i>Reuse This List</button><ul class="list-disc pl-6">${trip.items.map(item => `<li><span class="${item.isChecked ? '' : 'line-through text-base-content/60'}">${item.itemName}</span><span class="ml-2 text-sm font-mono">${item.price ? '$' + item.price.toFixed(2) : '-'}</span></li>`).join('')}</ul></div></details>`).join(''); },
+    renderFullSchedule() { if (this.calendar) this.calendar.destroy(); const calendarEl = document.getElementById('calendar'); const tasks = app.data.tasks || []; const meals = app.data.meals || []; const events = [ ...tasks.map(task => { const eventObj = { id: `task-${task.id}`, title: `${task.name} (${task.assignee || 'all'})`, start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, allDay: !task.dueTime, borderColor: app.getEventTypeColor(task.type, 'calendar'), className: task.status === 'Done' ? 'opacity-50' : '' }; if (task.type === 'Time Off') { eventObj.display = 'background'; eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } else { eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } return eventObj; }), ...meals.map(meal => ({ id: `meal-${meal.id}`, title: `${meal.mealType}: ${meal.recipeName}`, start: meal.date, allDay: true, backgroundColor: '#f97316', borderColor: '#ea580c' })) ]; this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => { const [type, id] = info.event.id.split('-'); if (type === 'task') this.openTaskModal(id); else if (type === 'meal') { const mealDate = info.event.start.toISOString().split('T')[0]; const mealType = info.event.title.split(':')[0]; this.openMealModal(mealDate, mealType, id); } } }); this.calendar.render(); },
+    renderMealPlanner() { const container = document.getElementById('meal-planner-grid'); const meals = app.data.meals || []; const mealsByDate = meals.reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {}); const sortedDates = Object.keys(mealsByDate).sort(); container.innerHTML = sortedDates.map(date => `<div class="card bg-base-100 shadow"><div class="card-body p-4"><h3 class="card-title text-base">${new Date(date+'T12:00:00').toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}</h3><div class="space-y-2 mt-2">${['Breakfast', 'Lunch', 'Dinner'].map(type => { const meal = mealsByDate[date].find(m => m.mealType === type); return meal ? `<div class="p-2 rounded cursor-pointer bg-base-200" onclick="ui.openMealModal('${date}', '${type}', '${meal.id}')"><strong>${type}:</strong> ${meal.recipeName}</div>` : `<div class="p-2 rounded text-base-content/60"><strong>${type}:</strong> Unplanned</div>`; }).join('')}</div></div></div>`).join('') || '<p class="text-base-content/70 col-span-full text-center">No meals planned. Add one above to get started.</p>'; },
+    renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { const container = document.getElementById('ingredient-list-container'); const div = document.createElement('div'); div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); container.appendChild(div); },
+    async openMealModal(date, mealType, id = null) { if (!id) return; const form = document.getElementById('meal-form'); form.reset(); document.getElementById('mealId').value = ''; document.getElementById('mealDate').value = date; document.getElementById('mealType').value = mealType; document.getElementById('ingredient-list-container').innerHTML = ''; const mealDoc = await db.get('meals', id); if (!mealDoc.exists()) return; const meal = mealDoc.data(); document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`; document.getElementById('mealId').value = id; document.getElementById('recipeName').value = meal.recipeName; document.getElementById('recipeURL').value = meal.recipeURL || ''; let ingredients = meal.ingredients || []; if (typeof ingredients === 'string') { ingredients = ingredients.split('\n').filter(Boolean).map(name => ({ name, status: 'Need' })); } ingredients.forEach(ing => this.renderIngredientListItem(ing)); document.getElementById('meal_modal').showModal(); },
+    async openTaskModal(id = null, templateData = null) { const form = document.getElementById('task-form'); form.reset(); document.getElementById('taskId').value = ''; document.getElementById('recurring-options').classList.add('hidden'); document.getElementById('task-modal-title').textContent = 'New Event'; document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active')); if (id) { const taskDoc = await db.get('tasks', id); if (taskDoc.exists()){ const task = taskDoc.data(); document.getElementById('task-modal-title').textContent = 'Edit Event'; document.getElementById('taskId').value = id; document.getElementById('taskName').value = task.name; document.getElementById('taskType').value = task.type; document.getElementById('taskAssignee').value = task.assignee || ''; document.getElementById('taskDueDate').value = task.dueDate || ''; document.getElementById('taskDueTime').value = task.dueTime || ''; document.getElementById('taskIsRecurring').checked = task.isRecurring; document.getElementById('taskIsDone').checked = task.status === 'Done'; document.getElementById('taskNotes').value = task.notes || ''; if (task.isRecurring) { document.getElementById('recurring-options').classList.remove('hidden'); if (task.recurringDays) { task.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } } else if (templateData) { Object.keys(templateData).forEach(key => { const el = form.querySelector(`#task${key.charAt(0).toUpperCase() + key.slice(1)}`); if(el) el.value = templateData[key]; }); if(templateData.isRecurring) { document.getElementById('taskIsRecurring').checked = true; document.getElementById('recurring-options').classList.remove('hidden'); if(templateData.recurringDays) { templateData.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } document.getElementById('task_modal').showModal(); },
+    renderFamilyMembers() { const members = app.data.familyMembers || []; document.getElementById('family-member-list').innerHTML = members.length ? members.map(member => `<div class="flex justify-between items-center p-2 bg-base-200 rounded"><span>${member.name}</span><button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember('${member.id}')"><i class="fas fa-trash"></i></button></div>`).join('') : `<p class="text-base-content/70 text-sm">No family members added.</p>`; },
+    populateAssigneeDropdown() { const members = app.data.familyMembers || []; const select = document.getElementById('taskAssignee'); select.innerHTML = '<option value="">Unassigned</option>'; members.forEach(member => { select.innerHTML += `<option value="${member.name}">${member.name}</option>`; }); },
+    showToast(message, type = 'success') { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); const alertType = type === 'success' ? 'alert-success' : 'alert-error'; toast.className = `alert ${alertType} shadow-lg`; toast.innerHTML = `<div><span>${message}</span></div>`; container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000); }
+};
 
-        const seedInitialData = async () => {
-            const familyMembersRef = collection(db, getCollectionPath('familyMembers'));
-            const snapshot = await getDocs(familyMembersRef);
-            if (!snapshot.empty) return; // Data already exists
+/**
+ * =================================================================
+ * APPLICATION MODULE (app)
+ * =================================================================
+ */
+const app = {
+    _tempTaskData: null, activeStore: null, data: {},
+    init() { ui.init(); this.setupEventListeners(); },
+    setupEventListeners() { document.getElementById('task-form').addEventListener('submit', (e) => this.handleTaskFormSubmit(e)); document.getElementById('taskIsRecurring').addEventListener('change', e => document.getElementById('recurring-options').classList.toggle('hidden', !e.target.checked)); document.getElementById('recurring-day-picker').addEventListener('click', e => { if(e.target.matches('.btn')) e.target.classList.toggle('btn-active'); }); document.getElementById('meal-form').addEventListener('submit', (e) => this.handleMealModalSubmit(e)); document.getElementById('meal-page-form').addEventListener('submit', (e) => this.handleMealPageFormSubmit(e)); document.getElementById('add-ingredient-button').addEventListener('click', () => this.handleAddIngredient()); document.getElementById('new-ingredient-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.handleAddIngredient(); }}); document.getElementById('add-store-form').addEventListener('submit', (e) => this.addStore(e)); document.getElementById('shopping-list-container').addEventListener('change', (e) => this.handleShoppingListUpdate(e)); document.getElementById('edit-single-event-btn').addEventListener('click', () => this.handleEditSingleRecurring()); document.getElementById('edit-future-events-btn').addEventListener('click', () => this.handleEditFutureRecurring()); document.getElementById('add-family-member-form').addEventListener('submit', (e) => this.addFamilyMember(e)); },
 
-            console.log("Seeding initial data for new user...");
-            const today = new Date(), tomorrow = new Date(), yesterday = new Date(), nextWeek = new Date();
-            tomorrow.setDate(today.getDate() + 1);
-            yesterday.setDate(today.getDate() - 1);
-            nextWeek.setDate(today.getDate() + 7);
-            const formatDate = (date) => date.toISOString().split('T')[0];
+    getEventTypeColor(type, context) { const c = { 'Appointment': { badge: 'badge-info', calendar: '#3b82f6' }, 'Meeting': { badge: 'badge-primary', calendar: '#8b5cf6' }, 'Work Schedule': { badge: 'badge-neutral', calendar: '#4b5563' }, 'Chore': { badge: 'badge-success', calendar: '#22c55e' }, 'Errand': { badge: 'badge-warning', calendar: '#f59e0b' }, 'Time Off': {badge: 'badge-error', calendar: 'rgba(239, 68, 68, 0.5)' }, 'default': { badge: 'badge-ghost', calendar: '#6b7280' } }; return (c[type] || c.default)[context]; },
+    
+    async handleTaskFormSubmit(e) { e.preventDefault(); const taskId = document.getElementById('taskId').value; const isRecurring = document.getElementById('taskIsRecurring').checked; const recurringDays = isRecurring ? Array.from(document.querySelectorAll('#recurring-day-picker .btn-active')).map(btn => parseInt(btn.dataset.day)) : []; if (isRecurring && recurringDays.length === 0) { ui.showToast("Please select at least one day for recurring events.", "error"); return; } const taskData = { name: document.getElementById('taskName').value, type: document.getElementById('taskType').value, assignee: document.getElementById('taskAssignee').value, dueDate: document.getElementById('taskDueDate').value, dueTime: document.getElementById('taskDueTime').value, isRecurring, recurringDays, status: document.getElementById('taskIsDone').checked ? 'Done' : 'To Do', notes: document.getElementById('taskNotes').value, }; if (taskId) { const originalTaskDoc = await db.get('tasks', taskId); const originalTask = originalTaskDoc.data(); if (originalTask.isRecurring) { this._tempTaskData = { ...taskData, id: taskId, originalTask }; document.getElementById('edit_recurring_modal').showModal(); return; } await db.update('tasks', taskId, taskData); ui.showToast('Event updated!'); } else { taskData.seriesId = `series-${Date.now()}`; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); const batch = writeBatch(fb_db); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; const docRef = doc(collection(fb_db, db._getCollectionPath('tasks'))); batch.set(docRef, nextTask); } } await batch.commit(); } ui.showToast('Event(s) added!'); } document.getElementById('task_modal').close(); },
+    async handleEditSingleRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); const updateData = { ...taskData, isRecurring: false, recurringDays: [], seriesId: null }; delete updateData.id; delete updateData.originalTask; await db.update('tasks', taskData.id, updateData); ui.showToast("Just this event was updated."); this._tempTaskData = null; },
+    async handleEditFutureRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; const originalTask = taskData.originalTask; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); const futureEvents = await db.query('tasks', 'seriesId', '==', originalTask.seriesId); const eventsToDelete = futureEvents.filter(t => t.dueDate >= originalTask.dueDate); const batch = writeBatch(fb_db); eventsToDelete.forEach(event => batch.delete(doc(fb_db, db._getCollectionPath('tasks'), event.id))); await batch.commit(); delete taskData.id; delete taskData.originalTask; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); const addBatch = writeBatch(fb_db); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; const docRef = doc(collection(fb_db, db._getCollectionPath('tasks'))); addBatch.set(docRef, nextTask); } } await addBatch.commit(); } ui.showToast("This and all future events were updated."); this._tempTaskData = null; },
 
-            const batch = writeBatch(db);
+    // --- Grocery Handlers ---
+    async addStore(e) { e.preventDefault(); const nameInput = document.getElementById('new-store-name'); const name = nameInput.value.trim(); if (name) { await db.add('stores', { name }); nameInput.value = ''; ui.showToast("Store added!"); } },
+    async deleteStore(id, name) { if (confirm(`Delete store "${name}" and all its master items? This cannot be undone.`)) { await db.delete('stores', id); const itemsToDelete = await db.query('storeItems', 'storeId', '==', id); const batch = writeBatch(fb_db); itemsToDelete.forEach(item => batch.delete(doc(fb_db, db._getCollectionPath('storeItems'), item.id))); await batch.commit(); ui.showToast(`"${name}" deleted.`); } },
+    async addStoreItem(e, storeId) { e.preventDefault(); const input = e.target.querySelector('input'); const itemName = input.value.trim(); if(itemName) { await db.add('storeItems', { itemName, storeId, category: 'Uncategorized' }); input.value = ''; } },
+    async handleAddToShoppingList(storeItemId) { const itemDoc = await db.get('storeItems', storeItemId); if (!itemDoc.exists()) return; const item = itemDoc.data(); const storeDoc = await db.get('stores', item.storeId); if (!storeDoc.exists()) return; const store = {id: storeDoc.id, ...storeDoc.data()}; if (this.activeStore && this.activeStore.id !== store.id) { if (!confirm(`You have an active list for ${this.activeStore.name}. Clear it and start a new one for ${store.name}?`)) return; await db.clear('groceries'); } this.activeStore = store; if((app.data.groceries || []).some(i => i.itemName.toLowerCase() === item.itemName.toLowerCase())) { return ui.showToast(`${item.itemName} is already on the list.`, 'error'); } await db.add('groceries', { storeId: item.storeId, itemName: item.itemName, isChecked: false, price: null }); },
+    async handleCompleteShoppingTrip() { if (!this.activeStore) return; if (app.data.groceries.length === 0) { ui.showToast("Shopping list is empty.", "error"); return; } if (confirm(`Complete trip for ${this.activeStore.name}? This will save it to history and clear the list.`)) { const totalCost = app.data.groceries.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const newTrip = { dateCompleted: new Date().toISOString(), items: app.data.groceries, totalCost: totalCost, storeId: this.activeStore.id, storeName: this.activeStore.name }; await db.add('shoppingTrips', newTrip); await db.clear('groceries'); this.activeStore = null; ui.showToast('Shopping trip saved to history!'); } },
+    async reuseShoppingTrip(tripId) { if ((app.data.groceries || []).length > 0) { if (!confirm("This will clear your current shopping list. Continue?")) return; } await db.clear('groceries'); const tripDoc = await db.get('shoppingTrips', tripId); if (!tripDoc.exists()) return; const trip = tripDoc.data(); const storeDoc = await db.get('stores', trip.storeId); if (!storeDoc.exists()) { ui.showToast('Cannot find the original store for this trip.', 'error'); return; } this.activeStore = {id: storeDoc.id, ...storeDoc.data()}; const batch = writeBatch(fb_db); for (const item of trip.items) { const newItem = { ...item, isChecked: false, price: null }; const docRef = doc(collection(fb_db, db._getCollectionPath('groceries'))); batch.set(docRef, newItem); } await batch.commit(); ui.showToast(`Loaded list from trip to ${this.activeStore.name}.`); ui.switchView('grocerylist'); },
+    toggleEditStoreItem(id) { const itemDiv = document.getElementById(`store-item-${id}`); const nameDiv = itemDiv.querySelector('.store-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow"><button class="btn btn-sm btn-success" onclick="app.saveStoreItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
+    async saveStoreItemEdit(id) { const itemDiv = document.getElementById(`store-item-${id}`); const input = itemDiv.querySelector('input'); const newName = input.value.trim(); if (newName) { await db.update('storeItems', id, { itemName: newName }); } },
+    toggleEditShoppingItem(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const nameDiv = itemDiv.querySelector('.shopping-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow"><button class="btn btn-xs btn-success" onclick="app.saveShoppingItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
+    async saveShoppingItemEdit(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const input = itemDiv.querySelector('input'); const newName = input.value.trim(); if (newName) { await db.update('groceries', id, { itemName: newName }); } },
+    
+    // Other handlers
+    async handleShoppingListUpdate(e) { const itemId = e.target.dataset.id; if (!itemId) return; const updateData = {}; if (e.target.matches('.shopping-item-checkbox')) { updateData.isChecked = e.target.checked; } else if (e.target.matches('.shopping-item-price')) { updateData.price = parseFloat(e.target.value) || null; } await db.update('groceries', itemId, updateData); },
+    async handleRemoveFromShoppingList(id) { if (id) await db.delete('groceries', id); },
+    async handleMealModalSubmit(e) { e.preventDefault(); const mealId = document.getElementById('mealId').value; if (!mealId) return; const ingredients = []; document.querySelectorAll('#ingredient-list-container > div').forEach(div => { ingredients.push({ name: div.querySelector('.ingredient-name').textContent, status: div.querySelector('.ingredient-status').checked ? 'Need' : 'Have' }); }); const mealData = { date: document.getElementById('mealDate').value, mealType: document.getElementById('mealType').value, recipeName: document.getElementById('recipeName').value, recipeURL: document.getElementById('recipeURL').value, ingredients }; await db.set('meals', mealId, mealData); const meal = {...mealData, id: mealId}; const addedToGrocery = await this.addNeededIngredientsToGroceries(meal); let toastMessage = 'Meal saved!'; if(addedToGrocery > 0) toastMessage += ` Added ${addedToGrocery} item(s) to grocery list.`; ui.showToast(toastMessage); document.getElementById('meal_modal').close(); },
+    async handleMealPageFormSubmit(e) { e.preventDefault(); const form = document.getElementById('meal-page-form'); const date = form.querySelector('#meal-page-date').value; const mealType = form.querySelector('#meal-page-type').value; const existingMeal = (app.data.meals || []).find(m => m.date === date && m.mealType === mealType); if (existingMeal) { ui.showToast('A meal already exists for this date and time.', 'error'); return; } const meal = { date, mealType, recipeName: form.querySelector('#meal-page-recipeName').value, recipeURL: '', ingredients: [] }; const newDoc = await db.add('meals', meal); ui.showToast('Meal created! Now add ingredients.'); form.reset(); document.querySelector('#mealplanner-view details').open = false; ui.openMealModal(meal.date, meal.mealType, newDoc.id); },
+    handleAddIngredient() { const input = document.getElementById('new-ingredient-name'); const name = input.value.trim(); if (name) { ui.renderIngredientListItem({ name, status: 'Need' }); input.value = ''; input.focus(); } },
+    async addNeededIngredientsToGroceries(meal) { if (!this.activeStore) { ui.showToast("Cannot add ingredients without an active shopping list.", "error"); return 0; } let itemsAddedCount = 0; const neededIngredients = meal.ingredients.filter(ing => ing.status === 'Need'); const batch = writeBatch(fb_db); for (const ingredient of neededIngredients) { const exists = (app.data.groceries || []).some(g => g.itemName.toLowerCase() === ingredient.name.toLowerCase()); if (!exists) { const docRef = doc(collection(fb_db, db._getCollectionPath('groceries'))); batch.set(docRef, { storeId: this.activeStore.id, itemName: ingredient.name, isChecked: false, price: null, fromRecipe: meal.recipeName }); itemsAddedCount++; } } await batch.commit(); return itemsAddedCount; },
+    async handleDeleteMeal() { const mealId = document.getElementById('mealId').value; if (mealId && confirm('Are you sure you want to delete this meal?')) { await db.delete('meals', mealId); document.getElementById('meal_modal').close(); ui.showToast('Meal deleted.'); } },
+    async addFamilyMember(e) { e.preventDefault(); const nameInput = document.getElementById('new-member-name'); const name = nameInput.value.trim(); if (name) { await db.add('familyMembers', { name }); ui.showToast('Family member added.'); nameInput.value = ''; } },
+    async deleteFamilyMember(id) { if(confirm('Are you sure?')){ await db.delete('familyMembers', id); ui.showToast('Family member removed.'); } },
+    async clearAllData() { if (confirm("DANGER: This will permanently delete ALL data from the cloud for your user account. Are you sure?")) { for (const storeName of OBJECT_STORES) { await db.clear(storeName); } this.activeStore = null; ui.showToast('All cloud data has been cleared.'); document.getElementById('manage_modal').close(); } },
+    exportData() { const dataToExport = { ...this.data }; const text = JSON.stringify(dataToExport, null, 2); const blob = new Blob([text], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `home-hub-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); ui.showToast('Local data exported.'); },
+    async importData(event) { const file = event.target.files[0]; if (!file) return; if (!confirm('This will overwrite all current cloud data. Proceed?')) { event.target.value = ''; return; } const reader = new FileReader(); reader.onload = async (e) => { try { const importedData = JSON.parse(e.target.result); for (const storeName of OBJECT_STORES) { await db.clear(storeName); if (importedData[storeName]) { const batch = writeBatch(fb_db); importedData[storeName].forEach(item => { const docRef = doc(collection(fb_db, db._getCollectionPath(storeName))); const { id, ...data } = item; batch.set(docRef, data); }); await batch.commit(); } } ui.showToast('Data imported successfully!'); document.getElementById('manage_modal').close(); } catch (err) { console.error("Import error:", err); ui.showToast('Failed to import data.', 'error'); } }; reader.readAsText(file); event.target.value = ''; }
+};
 
-            batch.set(doc(collection(db, getCollectionPath('familyMembers'))), { name: 'Alex' });
-            batch.set(doc(collection(db, getCollectionPath('familyMembers'))), { name: 'Sam' });
-            
-            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high', assignee: 'Sam' });
-            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high', assignee: 'Alex' });
-            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent', assignee: 'Sam' });
-            batch.set(doc(collection(db, getCollectionPath('tasks'))), { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high', assignee: 'Alex' });
-            
-            const groceryStoreRef = doc(collection(db, getCollectionPath('stores')));
-            batch.set(groceryStoreRef, { name: 'Grocery Store' });
-            batch.set(doc(collection(db, getCollectionPath('shoppingLists'))), { storeId: groceryStoreRef.id, name: 'Milk', completed: false });
+// --- INITIALIZATION ---
+const initFirebase = async () => {
+    // Use the dynamically provided config if available, otherwise use the hardcoded one.
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : providedFirebaseConfig;
+    
+    if (!firebaseConfig.apiKey) { 
+        console.error("Firebase config is missing!"); 
+        document.body.innerHTML = '<div class="alert alert-error">Firebase configuration is missing. The app cannot start.</div>';
+        return; 
+    }
+    const fb_app = initializeApp(firebaseConfig);
+    fb_db = getFirestore(fb_app);
+    fb_auth = getAuth(fb_app);
 
-            batch.set(doc(collection(db, getCollectionPath('meals'))), { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
-            batch.set(doc(collection(db, getCollectionPath('journalEntries'))), { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time.' });
-
-            await batch.commit();
-            console.log("Initial data seeded.");
-        };
-        
-        const openModal = async (modalType, params = {}) => {
-            const modal = document.getElementById('generic-modal');
-            const modalContent = await MODAL_CONFIG[modalType]?.render(params);
-            if(modalContent) {
-                modal.innerHTML = modalContent;
-                modal.classList.add('active');
-                MODAL_CONFIG[modalType]?.postRender?.(params);
-            }
-        };
-        const closeModal = () => document.getElementById('generic-modal')?.classList.remove('active');
-
-        const switchView = (viewName) => {
-            currentView = viewName;
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
-            document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
-            document.getElementById('fab').classList.toggle('hidden', viewName === 'list-detail');
-            const fabActions = { 
-                'dashboard': () => openModal('task'), 'shopping': () => openModal('store'),
-                'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 
-                'journal': () => openModal('journal'), 'contacts': () => openModal('contact')
-            };
-            document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
-            refreshCurrentView();
-        };
-
-        const refreshCurrentView = () => {
-            const renderMap = { 
-                'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 
-                'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal,
-                'contacts': renderContacts
-            };
-            renderMap[currentView]?.();
-        };
-
-        const loadAppData = async () => {
-            if (!userId) return;
-            // Unsubscribe from previous listeners
-            unsubscribes.forEach(unsub => unsub());
-            unsubscribes = [];
-
-            const collections = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'];
-            
-            collections.forEach(storeName => {
-                const collRef = collection(db, getCollectionPath(storeName));
-                const unsub = onSnapshot(collRef, (snapshot) => {
-                    appData[storeName] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    console.log(`Updated ${storeName}:`, appData[storeName]);
-                    refreshCurrentView();
-                }, (error) => {
-                    console.error(`Error listening to ${storeName}: `, error);
-                });
-                unsubscribes.push(unsub);
-            });
-        };
-
-
-        const initApp = async () => {
+    onAuthStateChanged(fb_auth, async (user) => {
+        if (user) {
+            userId = user.uid;
+            console.log("User signed in:", userId);
+            app.init();
+            setupRealtimeListeners();
+            await seedInitialData();
+        } else {
             try {
-                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-                await initFirebase();
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-            } catch (error) { console.error('Error initializing app:', error); }
-        };
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        const formatTime = (time) => !time ? '' : new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        const formatDate = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-        const getTaskIcon = (type) => ({ 'School':'fa-school', 'Chore':'fa-broom', 'Appointment':'fa-calendar-check', 'Work': 'fa-briefcase', 'Dentist': 'fa-tooth', 'Doctor': 'fa-user-doctor' }[type] || 'fa-calendar-day');
-        
-        function renderDashboard() {
-            const container = document.getElementById('dashboard-view');
-            const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-            const todayStr = today.toISOString().split('T')[0], tomorrowStr = tomorrow.toISOString().split('T')[0];
-            const tasks = appData.tasks || [];
-            const meals = appData.meals || [];
-            
-            const timedEventsToday = tasks.filter(t => t.date === todayStr && t.time).sort((a,b) => a.time.localeCompare(b.time));
-            const mealsToday = meals.filter(m => m.date === todayStr);
-            const timedEventsTomorrow = tasks.filter(t => t.date === tomorrowStr && t.time);
-            const importantAppointments = tasks.filter(t => {
-                const isImportant = ['Appointment', 'Dentist', 'Doctor'].includes(t.type);
-                const isAfterTomorrow = new Date(t.date) > new Date(tomorrowStr);
-                return isImportant && isAfterTomorrow;
-            });
-            const upcoming = [...timedEventsTomorrow, ...importantAppointments].sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header" style="background-color: #E0F2FE;">Today's Schedule</div>
-                    <div class="card-body">${timedEventsToday.length > 0 ? timedEventsToday.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No timed events scheduled.</p></div>`}</div>
-                </div>
-                <div class="card">
-                    <div class="card-header" style="background-color: #FEF9C3;">Today's Meals</div>
-                    <div class="card-body">${mealsToday.length > 0 ? mealsToday.map(createMealListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No meals planned.</p></div>`}</div>
-                </div>
-                <div class="card">
-                    <div class="card-header" style="background-color: #F3E8FF;">Upcoming</div>
-                    <div class="card-body">${upcoming.length > 0 ? upcoming.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">Nothing on the horizon.</p></div>`}</div>
-                </div>`;
-        }
-
-        function createTaskListItem(item) {
-            return `<div class="list-item" style="cursor: pointer;" onclick="openModal('task', {id:'${item.id}'})"><div class="list-item-icon"><i class="fas ${getTaskIcon(item.type)}"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div><div class="list-item-subtitle">${formatDate(item.date)}</div></div><div class="list-item-aside">${item.time ? formatTime(item.time) : ''}${item.assignee ? `<div class="list-item-assignee">${item.assignee}</div>` : ''}</div></div>`;
-        }
-        
-        function createMealListItem(item) {
-             return `<div class="list-item" style="cursor: pointer;" onclick="openModal('meal', {id:'${item.id}'})"><div class="list-item-icon"><i class="fas fa-utensils"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div></div>`;
-        }
-
-        function renderContacts() {
-            const container = document.getElementById('contacts-view');
-            let html = `<div class="view-header"><h1 class="view-title">Contacts</h1></div>`;
-            const members = appData.familyMembers || [];
-            if (members.length > 0) {
-                html += `<div class="card"><div class="card-body">` + members.map(member => `
-                    <div class="list-item">
-                        <div class="list-item-icon"><i class="fas fa-user"></i></div>
-                        <div class="list-item-content"><div class="list-item-title">${member.name}</div></div>
-                        <button class="btn btn-ghost" onclick="deleteContact('${member.id}')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                `).join('') + `</div></div>`;
-            } else {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No contacts found. Add one with the '+' button.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
-        window.deleteContact = async (id) => dbOps.delete('familyMembers', id);
-
-        function renderShopping() {
-            const container = document.getElementById('shopping-view');
-            let html = `<div class="view-header"><h1 class="view-title">Shopping Lists</h1></div>`;
-            const stores = (appData.stores || []).filter(store => store && store.name);
-            const shoppingLists = appData.shoppingLists || [];
-
-            if (stores.length === 0) {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No stores found. Add one with the '+' button.</p></div></div>`;
-            } else {
-                html += stores.map(store => {
-                    const items = shoppingLists.filter(i => i.storeId === store.id);
-                    const needed = items.filter(i => !i.completed).length;
-                    return `<div class="card" style="cursor: pointer;" onclick="showListDetail('${store.id}')"><div class="list-item"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
-                }).join('');
-            }
-            container.innerHTML = html;
-        }
-
-        window.showListDetail = (storeId) => {
-            currentStoreId = storeId;
-            switchView('list-detail');
-        };
-
-        function renderListDetail() {
-            if (currentStoreId === null) return;
-            const container = document.getElementById('list-detail-view');
-            const store = (appData.stores || []).find(s => s.id === currentStoreId);
-            if (!store) {
-                 switchView('shopping');
-                 return;
-            }
-            const items = (appData.shoppingLists || []).filter(i => i.storeId === currentStoreId);
-            const needed = items.filter(i => !i.completed);
-            const completed = items.filter(i => i.completed);
-            const createItemHtml = item => `<div class="list-item shopping-item ${item.completed ? 'completed' : ''}"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem('${item.id}')" ${item.completed ? 'checked' : ''}><div class="list-item-content" style="cursor: pointer;" onclick="openModal('shoppingItem', {id: '${item.id}'})"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem('${item.id}')"><i class="fas fa-trash-alt"></i></button></div>`;
-            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
-            document.getElementById('add-item-form').addEventListener('submit', async e => {
-                e.preventDefault();
-                const input = document.getElementById('new-item-name');
-                if (!input.value.trim()) return;
-                await dbOps.add('shoppingLists', { storeId: currentStoreId, name: input.value.trim(), completed: false });
-                input.value = '';
-            });
-        }
-        
-        window.toggleShoppingItem = async (itemId) => {
-            const item = (appData.shoppingLists || []).find(i => i.id === itemId);
-            if(item) { await dbOps.update('shoppingLists', itemId, { completed: !item.completed }); }
-        }
-        window.deleteShoppingItem = async (itemId) => {
-             await dbOps.delete('shoppingLists', itemId);
-             closeModal();
-        }
-
-        function renderJournal() {
-            const container = document.getElementById('journal-view');
-            let html = `<div class="view-header"><h1 class="view-title">Journal</h1></div>`;
-            const entries = (appData.journalEntries || []).sort((a,b) => b.date.localeCompare(a.date));
-            if (entries.length > 0) {
-                html += entries.map(entry => `<div class="card" style="cursor: pointer;" onclick="openModal('journal', {id: '${entry.id}'})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join('');
-            } else {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No journal entries yet. Use the '+' button to add one.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
-        
-        function renderCalendar() {
-            const container = document.getElementById('calendar-view');
-            container.innerHTML = `<div class="card"><div class="card-body"><div id="calendar-container"></div></div></div>`;
-            const calendarEl = document.getElementById('calendar-container');
-            if (calendar) calendar.destroy();
-            const isMobile = window.innerWidth < 768;
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: isMobile ? 'listDay' : 'dayGridMonth',
-                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
-                events: (appData.tasks || []).map(task => ({ id: task.id, title: task.name, start: task.time ? `${task.date}T${task.time}` : task.date, extendedProps: { assignee: task.assignee } })),
-                eventClick: (info) => openModal('task', { id: info.event.id }),
-                dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
-                viewDidMount: (info) => { if (isMobile) updateActiveCalendarButton(info.view.type); },
-                eventContent: (arg) => { let titleEl = document.createElement('div'); titleEl.innerHTML = arg.event.title; if (arg.event.extendedProps.assignee) { let assigneeEl = document.createElement('div'); assigneeEl.innerHTML = `<i>${arg.event.extendedProps.assignee}</i>`; assigneeEl.style.opacity = '0.8'; assigneeEl.style.fontSize = '0.8em'; return { domNodes: [titleEl, assigneeEl] }; } return { domNodes: [titleEl] }; }
-            });
-            calendar.render();
-            if (isMobile) {
-                const mobileControls = document.createElement('div');
-                mobileControls.className = 'calendar-mobile-controls';
-                mobileControls.innerHTML = `<button class="btn btn-outline" data-view="listDay">Day</button><button class="btn btn-outline" data-view="listWeek">Week</button><button class="btn btn-outline" data-view="dayGridMonth">Month</button>`;
-                calendarEl.querySelector('.fc-toolbar').insertAdjacentElement('afterend', mobileControls);
-                mobileControls.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => calendar.changeView(btn.dataset.view)));
-            }
-        }
-        
-        window.updateActiveCalendarButton = (activeView) => {
-            document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => {
-                btn.classList.toggle('hidden', btn.dataset.view === activeView);
-            });
-        }
-        
-        function renderMealPlanner() {
-            const container = document.getElementById('meals-view');
-            let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
-            const mealsByDate = (appData.meals || []).reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
-            const sortedDates = Object.keys(mealsByDate).sort((a, b) => a.localeCompare(b));
-            if (sortedDates.length > 0) {
-                 sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; });
-            } else {
-                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
-        // Make functions globally available for inline event handlers
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-        window.switchView = switchView;
-
-        const MODAL_CONFIG = {
-            'task': {
-                render: async ({id, date}) => {
-                    const task = id ? (await dbOps.get('tasks', id)).data() : {};
-                    const memberOptions = (appData.familyMembers || []).map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join('');
-                    const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
-                    const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
-                    return `<div class="modal-content"><form id="task-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="task-id" value="${id || ''}"><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="task-name" value="${task.name || ''}" required></div><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div><div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option>${memberOptions}</select></div><div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="task-priority"><option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option><option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option><option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option></select></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('task-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const taskData = { name: document.getElementById('task-name').value, type: document.getElementById('task-type').value, date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value };
-                        if (id) await dbOps.put('tasks', id, taskData); else await dbOps.add('tasks', taskData);
-                        closeModal();
-                    });
-                    if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { await dbOps.delete('tasks', id); closeModal(); }); }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(fb_auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(fb_auth);
                 }
-            },
-            'contact': {
-                render: () => `<div class="modal-content"><form id="contact-form"><div class="modal-header"><h3 class="modal-title">New Contact</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="contact-name" required></div></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`,
-                postRender: () => { document.getElementById('contact-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('contact-name').value.trim(); if (name) await dbOps.add('familyMembers', {name}); closeModal(); }); }
-            },
-            'store': {
-                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
-                 postRender: () => { document.getElementById('store-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('store-name').value.trim(); if(name) await dbOps.add('stores', {name}); closeModal(); }); }
-            },
-            'shoppingItem': {
-                render: async ({id}) => {
-                    const item = (await dbOps.get('shoppingLists', id)).data();
-                    return `<div class="modal-content"><form id="shopping-item-form"><div class="modal-header"><h3 class="modal-title">Edit Item</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="shopping-item-id" value="${id || ''}"><div class="form-group"><label class="form-label">Item Name</label><input type="text" class="form-input" id="shopping-item-name" value="${item.name || ''}" required></div></div><div class="modal-footer"><button type="button" class="btn btn-danger" id="delete-shopping-item-btn">Delete</button><div style="flex:1;"></div><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('shopping-item-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const newName = document.getElementById('shopping-item-name').value.trim();
-                        if (!newName) return;
-                        await dbOps.update('shoppingLists', id, { name: newName });
-                        closeModal();
-                    });
-                    document.getElementById('delete-shopping-item-btn').addEventListener('click', () => deleteShoppingItem(id));
-                }
-            },
-            'meal': {
-                render: async ({id}) => {
-                    const meal = id ? (await dbOps.get('meals', id)).data() : {}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
-                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('meal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault(); const mealData = { date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
-                        if (id) await dbOps.put('meals', id, mealData); else await dbOps.add('meals', mealData);
-                        closeModal();
-                    });
-                    if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { await dbOps.delete('meals', id); closeModal(); }); }
-                }
-            },
-            'journal': {
-                render: async ({id}) => {
-                    const entry = id ? (await dbOps.get('journalEntries', id)).data() : {};
-                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div><div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('journal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault(); const entryData = { date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
-                        if (id) await dbOps.put('journalEntries', id, entryData); else await dbOps.add('journalEntries', entryData);
-                        closeModal();
-                    });
-                     if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { await dbOps.delete('journalEntries', id); closeModal(); }); }
-                }
-            }
-        };
-    </script>
+            } catch (error) { console.error("Authentication error:", error); }
+        }
+    });
+};
+
+const setupRealtimeListeners = () => {
+    unsubscribes.forEach(unsub => unsub());
+    unsubscribes = [];
+    OBJECT_STORES.forEach(storeName => {
+        const q = query(collection(fb_db, db._getCollectionPath(storeName)));
+        const unsub = onSnapshot(q, (snapshot) => {
+            app.data[storeName] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            ui.renderAll();
+        }, (error) => {
+             console.error(`Error listening to ${storeName}:`, error);
+        });
+        unsubscribes.push(unsub);
+    });
+};
+
+const seedInitialData = async () => {
+    const membersSnapshot = await getDocs(collection(fb_db, db._getCollectionPath('familyMembers')));
+    if (!membersSnapshot.empty) return;
+    
+    console.log("Seeding initial data for new user...");
+    const batch = writeBatch(fb_db);
+    const today = new Date().toISOString().split('T')[0];
+
+    const familyData = [{name: 'Mom'}, {name: 'Dad'}, {name: 'Kid'}];
+    familyData.forEach(member => {
+        const docRef = doc(collection(fb_db, db._getCollectionPath('familyMembers')));
+        batch.set(docRef, member);
+    });
+    
+    const taskData = { name: "Doctor's Appointment", type: 'Appointment', assignee: 'Mom', dueDate: today, dueTime: '10:00', isRecurring: false, recurringDays: [], status: 'To Do', notes: 'Annual check-up' };
+    batch.set(doc(collection(fb_db, db._getCollectionPath('tasks'))), taskData);
+    
+    const storeData = { name: 'Local Grocer' };
+    const storeRef = doc(collection(fb_db, db._getCollectionPath('stores')));
+    batch.set(storeRef, storeData);
+    
+    await batch.commit();
+    console.log("Initial data seeded.");
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initFirebase();
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered.', reg))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+    }
+});
+// Make key functions globally available for inline handlers
+window.ui = ui;
+window.app = app;
+</script>
+
 </body>
 </html>
