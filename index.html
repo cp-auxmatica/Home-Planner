@@ -108,7 +108,7 @@
                         <div id="meals-list" class="space-y-1"></div>
                     </div>
                     <div class="bg-white p-5 rounded-xl shadow-md">
-                        <h2 class="text-xl font-bold mb-4">Shopping Lists</h2>
+                        <h2 class="text-xl font-bold mb-4">Shopping List</h2>
                         <div id="shopping-list-hub" class="space-y-1"></div>
                     </div>
                     <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
@@ -153,7 +153,7 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gsta
 import { getFirestore, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- GLOBAL CONFIG & STATE ---
-const OBJECT_STORES = ['schedule', 'meals', 'stores', 'storeItems', 'shoppingList', 'health', 'contacts'];
+const OBJECT_STORES = ['schedule', 'meals', 'stores', 'storeItems', 'shoppingList', 'health', 'contacts', 'meta'];
 let fb_db, fb_auth, userId;
 let unsubscribes = [];
 let currentPageId = 'hub';
@@ -597,15 +597,17 @@ async function initFirebase() {
     fb_db = getFirestore(fbApp);
     fb_auth = getAuth(fbApp);
 
-    onAuthStateChanged(fb_auth, async (user) => {
-        if (user) {
-            userId = user.uid;
-            setupRealtimeListeners();
-            await seedInitialData();
-            app.navigate('hub');
-        } else {
-            await signInAnonymously(fb_auth);
-        }
+    return new Promise((resolve) => {
+        onAuthStateChanged(fb_auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                setupRealtimeListeners();
+                await seedInitialData();
+                resolve();
+            } else {
+                await signInAnonymously(fb_auth);
+            }
+        });
     });
 }
 
@@ -623,8 +625,8 @@ function setupRealtimeListeners() {
 }
 
 async function seedInitialData() {
-    const contactsDoc = await getDocs(collection(fb_db, db._getCollectionPath('contacts')));
-    if (!contactsDoc.empty) return;
+    const metaDoc = await db.get('meta', 'status');
+    if (metaDoc.exists() && metaDoc.data().seeded) return;
     
     console.log("Seeding initial data...");
     const todayISO = app.toISODate(new Date());
@@ -643,12 +645,17 @@ async function seedInitialData() {
             batch.set(docRef, item);
         }
     }
+    // Set seeded flag
+    const metaRef = doc(fb_db, db._getCollectionPath('meta'), 'status');
+    batch.set(metaRef, { seeded: true });
+    
     await batch.commit();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     ui.init();
     await initFirebase();
+    app.navigate('hub');
 });
 </script>
 </body>
