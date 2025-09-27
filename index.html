@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>hub - Family Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -184,14 +184,29 @@
             border: 2px dashed #cbd5e1;
             border-radius: 12px;
         }
+
+        /* Mobile Calendar Adjustments */
+        @media (max-width: 768px) {
+            .fc .fc-toolbar-title {
+                font-size: 1.25em !important;
+            }
+            .fc .fc-button {
+                padding: 0.3em 0.5em !important;
+            }
+            .fc .fc-list-event-title, .fc-event-title {
+                font-size: 0.9em !important;
+            }
+            .fc-theme-standard .fc-list-day-cushion {
+                padding: 8px !important;
+            }
+        }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
-    <div class="max-w-4xl mx-auto p-4 md:p-6 pb-24">
-        <header class="py-6 mb-4 text-center">
+    <div class="max-w-4xl mx-auto p-4 pb-24">
+        <header class="py-4 mb-4">
             <h1 class="hub-title text-5xl md:text-6xl text-white">hub</h1>
-            <p class="text-white/80 text-sm mt-2">Your family's central command center</p>
         </header>
 
         <nav class="nav-container rounded-2xl p-3 my-6 sticky top-4 z-10">
@@ -219,23 +234,23 @@
 
         <main id="main-content">
             <div id="hub-page" class="page">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="card p-6 rounded-2xl col-span-1 md:col-span-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card p-4 rounded-2xl col-span-1 md:col-span-2">
                         <h2 class="text-2xl font-bold mb-2 text-gray-800">Today's Schedule</h2>
-                        <p id="current-date" class="text-sm text-gray-500 mb-6"></p>
-                        <div id="schedule-list" class="space-y-3"></div>
+                        <p id="current-date" class="text-sm text-gray-500 mb-4"></p>
+                        <div id="schedule-list" class="space-y-2"></div>
                     </div>
-                    <div class="card p-6 rounded-2xl">
+                    <div class="card p-4 rounded-2xl">
                         <h2 class="text-xl font-bold mb-4 text-gray-800">Today's Meals</h2>
-                        <div id="meals-list" class="space-y-3"></div>
+                        <div id="meals-list" class="space-y-2"></div>
                     </div>
-                    <div class="card p-6 rounded-2xl">
+                    <div class="card p-4 rounded-2xl">
                         <h2 class="text-xl font-bold mb-4 text-gray-800">Shopping List</h2>
-                        <div id="shopping-list-hub" class="space-y-3"></div>
+                        <div id="shopping-list-hub" class="space-y-2"></div>
                     </div>
-                    <div class="card p-6 rounded-2xl col-span-1 md:col-span-2">
+                    <div class="card p-4 rounded-2xl col-span-1 md:col-span-2">
                         <h2 class="text-xl font-bold mb-4 text-gray-800">Upcoming Events</h2>
-                        <div id="upcoming-list" class="space-y-3"></div>
+                        <div id="upcoming-list" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -462,7 +477,7 @@ const ui = {
         const shoppingList = data.shoppingList || [];
         const neededCount = shoppingList.filter(i => !i.done).length;
         document.getElementById('shopping-list-hub').innerHTML = `
-            <div class="list-item p-4 rounded-xl" data-page-nav="shopping">
+            <div class="list-item p-3 rounded-xl" data-page-nav="shopping">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-shopping-cart-simple text-xl text-orange-500"></i>
@@ -493,7 +508,7 @@ const ui = {
         };
         
         return `
-            <div class="list-item p-4 rounded-xl" data-id="${item.id}" data-type="${item.category === 'Birthday' ? 'contacts' : 'schedule'}">
+            <div class="list-item p-3 rounded-xl" data-id="${item.id}" data-type="${item.category === 'Birthday' ? 'contacts' : 'schedule'}">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-${categoryIcons[item.category] || 'question'} text-xl text-indigo-500"></i>
@@ -517,7 +532,7 @@ const ui = {
             'Breakfast': 'coffee', 'Lunch': 'hamburger', 'Dinner': 'pot', 'Snack': 'cookie' 
         };
         return `
-            <div class="list-item p-4 rounded-xl" data-id="${item.id}" data-type="meals">
+            <div class="list-item p-3 rounded-xl" data-id="${item.id}" data-type="meals">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-${mealIcons[item.label] || 'utensils'} text-xl text-orange-500"></i>
@@ -546,22 +561,22 @@ const ui = {
             </div>`;
         
         pageEl.innerHTML = `
-            <div class="card p-6 rounded-2xl mb-6">
+            <div class="card p-4 rounded-2xl mb-6">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">Active Shopping List</h2>
                     <button id="clear-list-btn" class="text-sm bg-red-100 hover:bg-red-200 text-red-700 font-semibold px-4 py-2 rounded-xl transition-colors">Complete & Clear</button>
                 </div>
                 <div id="active-list-container">${listHtml}</div>
             </div>
-            <div class="card p-6 rounded-2xl">
+            <div class="card p-4 rounded-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">Stores</h2>
-                <div id="stores-container" class="space-y-3"></div>
+                <div id="stores-container" class="space-y-2"></div>
             </div>`;
         
         const storesContainer = document.getElementById('stores-container');
         const stores = data.stores || [];
         storesContainer.innerHTML = stores.length ? stores.map(store => `
-            <div class="list-item p-4 rounded-xl border" data-store-id="${store.id}">
+            <div class="list-item p-3 rounded-xl border" data-store-id="${store.id}">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-storefront text-xl text-indigo-500"></i>
@@ -611,7 +626,7 @@ const ui = {
         const storeItems = (data.storeItems || []).filter(item => item.storeId === storeId);
         
         pageEl.innerHTML = `
-            <div class="card p-6 rounded-2xl">
+            <div class="card p-4 rounded-2xl">
                 <div class="flex items-center gap-4 mb-6">
                     <button class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors" onclick="app.navigate('shopping')">
                         <i class="ph-bold ph-arrow-left text-xl"></i>
@@ -622,9 +637,9 @@ const ui = {
                     </button>
                 </div>
                 <p class="text-gray-600 mb-6">Manage your master item list for this store. Click the + button to add items to your shopping list.</p>
-                <div id="store-items-list" class="space-y-3">
+                <div id="store-items-list" class="space-y-2">
                     ${storeItems.length ? storeItems.map(item => `
-                        <div class="flex justify-between items-center p-4 rounded-xl border hover:border-blue-200 transition-colors">
+                        <div class="flex justify-between items-center p-3 rounded-xl border hover:border-blue-200 transition-colors">
                             <div class="flex-grow">
                                 <p class="font-semibold text-gray-800">${item.name}</p>
                                 <p class="text-xs text-gray-500 mt-1">${item.category}</p>
@@ -649,11 +664,17 @@ const ui = {
     
     renderCalendarPage() {
         const pageEl = document.getElementById('calendar-page');
-        pageEl.innerHTML = `<div class="card p-4 rounded-2xl"><div id="calendar-container"></div></div>`;
+        pageEl.innerHTML = `<div class="card p-2 sm:p-4 rounded-2xl"><div id="calendar-container"></div></div>`;
         const calendarEl = document.getElementById('calendar-container');
+        const isMobile = window.innerWidth < 768;
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
-            headerToolbar: { 
+            initialView: isMobile ? 'listWeek' : 'dayGridMonth',
+            headerToolbar: isMobile ? { 
+                left: 'prev,next', 
+                center: 'title', 
+                right: 'today'
+            } : { 
                 left: 'prev,next today', 
                 center: 'title', 
                 right: 'dayGridMonth,timeGridWeek,listWeek' 
@@ -687,9 +708,9 @@ const ui = {
         const healthItems = data.health || [];
         
         pageEl.innerHTML = `
-            <div class="card p-6 rounded-2xl">
+            <div class="card p-4 rounded-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">Health & Medications</h2>
-                <div class="space-y-3">
+                <div class="space-y-2">
                     ${healthItems.length ? healthItems.map(item => this.createHealthListItem(item)).join('') :
                         `<div class="empty-state p-8 text-center">
                             <i class="ph-bold ph-first-aid-kit text-5xl text-gray-400 mb-4"></i>
@@ -713,7 +734,7 @@ const ui = {
         };
 
         return `
-            <div class="list-item p-4 rounded-xl" data-id="${med.id}" data-type="health">
+            <div class="list-item p-3 rounded-xl" data-id="${med.id}" data-type="health">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-pill text-xl text-red-500"></i>
@@ -734,7 +755,7 @@ const ui = {
         const sortedDates = Object.keys(groupedMeals).sort();
         
         pageEl.innerHTML = `
-            <div class="card p-6 rounded-2xl">
+            <div class="card p-4 rounded-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">Meal Planning</h2>
                 <div class="space-y-6">
                     ${sortedDates.length ? sortedDates.map(date => `
@@ -766,9 +787,9 @@ const ui = {
         const contacts = data.contacts || [];
         
         pageEl.innerHTML = `
-            <div class="card p-6 rounded-2xl">
+            <div class="card p-4 rounded-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">Family Contacts</h2>
-                <div class="space-y-3">
+                <div class="space-y-2">
                     ${contacts.length ? contacts.map(contact => this.createContactListItem(contact)).join('') :
                         `<div class="empty-state p-8 text-center">
                             <i class="ph-bold ph-users text-5xl text-gray-400 mb-4"></i>
@@ -795,7 +816,7 @@ const ui = {
         };
 
         return `
-            <div class="list-item p-4 rounded-xl" data-id="${contact.id}" data-type="contacts">
+            <div class="list-item p-3 rounded-xl" data-id="${contact.id}" data-type="contacts">
                 <div class="flex items-center w-full">
                     <div class="icon-container">
                         <i class="ph-bold ph-user text-xl text-purple-500"></i>
@@ -1005,4 +1026,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html> 
+</html>
