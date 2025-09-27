@@ -1,7 +1,7 @@
 {
   "name": "hub Family Planner",
   "short_name": "hub",
-  "start_url": "Home-Planner.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#f0f2f5",
   "theme_color": "#f0f2f5",
