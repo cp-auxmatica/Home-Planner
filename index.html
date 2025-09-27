@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cupcake">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +7,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     
     <!-- PWA additions -->
@@ -18,68 +16,598 @@
     <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            background: #f8fafc;
+        }
+        
         .fc-event { cursor: pointer; }
         .toast { z-index: 1000; }
-        .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.5rem; }
-        @media (min-width: 768px) { .fc .fc-toolbar.fc-header-toolbar { flex-direction: row; } }
-        .fc { --fc-border-color: #e5e7eb; --fc-page-bg-color: #ffffff; --fc-event-bg-color: #3b82f6; --fc-event-border-color: #2563eb; --fc-today-bg-color: rgba(253, 230, 138, 0.3); }
-        .fc .fc-button-primary { background-color: #2563eb; border-color: #2563eb; }
-        .fc .fc-button-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
+        
+        .fc .fc-toolbar.fc-header-toolbar { 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 0.5rem; 
+        }
+        
+        @media (min-width: 768px) { 
+            .fc .fc-toolbar.fc-header-toolbar { 
+                flex-direction: row; 
+            } 
+        }
+        
+        .fc { 
+            --fc-border-color: #e2e8f0; 
+            --fc-page-bg-color: #ffffff; 
+            --fc-event-bg-color: #3b82f6; 
+            --fc-event-border-color: #2563eb; 
+            --fc-today-bg-color: rgba(59, 130, 246, 0.1); 
+        }
+        
+        .fc .fc-button-primary { 
+            background-color: #2563eb; 
+            border-color: #2563eb; 
+        }
+        
+        .fc .fc-button-primary:hover { 
+            background-color: #1d4ed8; 
+            border-color: #1d4ed8; 
+        }
+        
         .fc-bg-event { opacity: 0.3 !important; }
-        .dashboard-item { transition: background-color 0.2s; }
-        .dashboard-item:hover { background-color: #e5e7eb; } /* Corresponds to bg-base-300 in many themes */
+        
+        /* Clean card design */
+        .card {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            transform: translateY(-1px);
+        }
+        
+        /* Header styling */
+        .navbar {
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+        }
+        
+        /* Tab styling */
+        .tabs-boxed {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 6px;
+        }
+        
+        .tab {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-active {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .tab:not(.tab-active):hover {
+            background: #f1f5f9;
+        }
+        
+        /* Button improvements */
+        .btn {
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        
+        /* Input improvements */
+        .input, .select, .textarea {
+            border-color: #d1d5db;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .input:focus, .select:focus, .textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+            outline: none;
+        }
+        
+        /* Dashboard item styling */
+        .dashboard-item { 
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            border: 1px solid transparent;
+        }
+        
+        .dashboard-item:hover { 
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+            transform: translateX(2px);
+        }
+        
+        /* Badge improvements */
+        .badge {
+            font-weight: 500;
+            border-radius: 6px;
+        }
+        
+        /* Modal improvements */
+        .modal-box {
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+            display: block;
+        }
+        
+        /* Shopping list improvements */
+        .shopping-item {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .shopping-item:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+        
+        /* Store item improvements */
+        .store-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .store-item:hover {
+            background: #f1f5f9;
+        }
+        
+        /* Collapse improvements */
+        .collapse {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        
+        .collapse-title {
+            font-weight: 600;
+        }
+        
+        /* Meal card improvements */
+        .meal-card {
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        
+        .meal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .meal-type {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .meal-type:hover {
+            transform: translateX(2px);
+        }
+        
+        .meal-planned {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .meal-unplanned {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Statistics cards for dashboard */
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
 
-    <header class="bg-base-100 shadow-md sticky top-0 z-40">
-        <div class="navbar container mx-auto px-4">
-            <div class="navbar-start"><h1 class="text-xl md:text-2xl font-bold text-primary"><i class="fas fa-home mr-2"></i> Home Hub</h1></div>
-            <div class="navbar-end">
-                <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()"><i class="fas fa-cog text-xl"></i></button>
-                <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()"><i class="fas fa-plus md:mr-2"></i><span class="hidden md:inline">New Event</span></button>
+    <header class="navbar bg-base-100 shadow-sm sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="navbar-start">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                    <i class="fas fa-home mr-2 text-blue-600"></i> Home Hub
+                </h1>
+            </div>
+            <div class="navbar-end space-x-2">
+                <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()">
+                    <i class="fas fa-cog text-xl text-gray-500"></i>
+                </button>
+                <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()">
+                    <i class="fas fa-plus md:mr-2"></i>
+                    <span class="hidden md:inline">New Event</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto p-4">
-        <div role="tablist" class="tabs tabs-bordered tabs-lg mb-6" id="viewTabs">
-            <a role="tab" class="tab tab-active" data-view="dashboard"><i class="fas fa-tachometer-alt mr-1"></i><span class="hidden sm:inline ml-1">Dashboard</span></a>
-            <a role="tab" class="tab" data-view="mealplanner"><i class="fas fa-utensils mr-1"></i><span class="hidden sm:inline ml-1">Meals</span></a>
-            <a role="tab" class="tab" data-view="grocerylist"><i class="fas fa-shopping-cart mr-1"></i><span class="hidden sm:inline ml-1">Groceries</span></a>
-            <a role="tab" class="tab" data-view="history"><i class="fas fa-history mr-1"></i><span class="hidden sm:inline ml-1">History</span></a>
-            <a role="tab" class="tab" data-view="fullschedule"><i class="fas fa-calendar-alt mr-1"></i><span class="hidden sm:inline ml-1">Schedule</span></a>
+    <main class="container mx-auto p-4 max-w-7xl">
+        <div class="tabs tabs-boxed mb-6" id="viewTabs">
+            <a role="tab" class="tab tab-active" data-view="dashboard">
+                <i class="fas fa-tachometer-alt mr-2"></i>
+                <span class="hidden sm:inline">Dashboard</span>
+            </a>
+            <a role="tab" class="tab" data-view="mealplanner">
+                <i class="fas fa-utensils mr-2"></i>
+                <span class="hidden sm:inline">Meals</span>
+            </a>
+            <a role="tab" class="tab" data-view="grocerylist">
+                <i class="fas fa-shopping-cart mr-2"></i>
+                <span class="hidden sm:inline">Groceries</span>
+            </a>
+            <a role="tab" class="tab" data-view="history">
+                <i class="fas fa-history mr-2"></i>
+                <span class="hidden sm:inline">History</span>
+            </a>
+            <a role="tab" class="tab" data-view="fullschedule">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                <span class="hidden sm:inline">Schedule</span>
+            </a>
         </div>
 
         <div id="app-views">
-            <div id="dashboard-view" class="view"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-clock text-info mr-2"></i>Today's Schedule</h2><div id="today-schedule-widget" class="space-y-2"></div></div></div><div class="card bg-base-100 shadow-xl hover:bg-base-200/50 cursor-pointer" onclick="ui.switchView('grocerylist')"><div class="card-body"><h2 class="card-title"><i class="fas fa-shopping-cart text-accent mr-2"></i>Active Grocery List</h2><div id="grocery-list-widget" class="space-y-1"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title" id="dinner-widget-title"><i class="fas fa-drumstick-bite text-warning mr-2"></i>What's for Dinner?</h2><div id="dinner-widget" class="mt-2"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-tasks text-success mr-2"></i>Today's Chores</h2><div id="today-chores-widget" class="space-y-2"></div></div></div></div></div>
-            <div id="mealplanner-view" class="view hidden"><div class="card bg-base-100 shadow-xl mb-6"><div class="card-body"><details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-xl font-medium">Plan a New Meal</summary><div class="collapse-content"><form id="meal-page-form" class="space-y-4 pt-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="date" id="meal-page-date" class="input input-bordered w-full" required /><select id="meal-page-type" class="select select-bordered w-full" required><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div><input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><div class="text-right"><button type="submit" class="btn btn-primary">Save Meal & Open Editor</button></div></form></div></details></div></div><div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div></div>
-            <div id="grocerylist-view" class="view hidden grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><div id="active-list-header"></div><div id="shopping-list-container" class="space-y-2 mt-2 max-h-[30rem] overflow-y-auto"></div><div id="active-list-footer" class="hidden"><div class="divider"></div><div class="flex justify-end items-center font-bold text-lg"><span>Total:</span><span id="shopping-list-total" class="ml-2">$0.00</span></div></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">My Stores</h2><form id="add-store-form" class="join w-full mt-2"><input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item w-full" required /><button type="submit" class="btn btn-primary join-item">Add</button></form><div id="stores-container" class="mt-4 space-y-4"></div></div></div></div>
-            <div id="history-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">Shopping Trip History</h2><div id="trip-history-container" class="space-y-4 mt-4"></div></div></div></div>
-            <div id="fullschedule-view" class="view hidden"><div class="card bg-base-100 shadow-xl p-2 md:p-4"><div id="calendar"></div></div></div>
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card">
+                        <div class="stat-number" id="today-events-count">0</div>
+                        <div class="stat-label">Today's Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="pending-chores-count">0</div>
+                        <div class="stat-label">Pending Chores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="grocery-items-count">0</div>
+                        <div class="stat-label">Grocery Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="planned-meals-count">0</div>
+                        <div class="stat-label">This Week's Meals</div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title text-lg">
+                                <i class="fas fa-clock text-info mr-2"></i>Today's Schedule
+                            </h2>
+                            <div id="today-schedule-widget" class="space-y-2 mt-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 hover:shadow-md cursor-pointer" onclick="ui.switchView('grocerylist')">
+                        <div class="card-body">
+                            <h2 class="card-title text-lg">
+                                <i class="fas fa-shopping-cart text-success mr-2"></i>Active Grocery List
+                            </h2>
+                            <div id="grocery-list-widget" class="space-y-1 mt-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title text-lg" id="dinner-widget-title">
+                                <i class="fas fa-drumstick-bite text-warning mr-2"></i>What's for Dinner?
+                            </h2>
+                            <div id="dinner-widget" class="mt-3"></div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100">
+                        <div class="card-body">
+                            <h2 class="card-title text-lg">
+                                <i class="fas fa-tasks text-accent mr-2"></i>Today's Chores
+                            </h2>
+                            <div id="today-chores-widget" class="space-y-2 mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Planner View -->
+            <div id="mealplanner-view" class="view hidden">
+                <div class="card bg-base-100 mb-6">
+                    <div class="card-body">
+                        <details class="collapse collapse-arrow bg-gray-50 border border-gray-200 rounded-xl">
+                            <summary class="collapse-title text-lg font-medium">Plan a New Meal</summary>
+                            <div class="collapse-content">
+                                <form id="meal-page-form" class="space-y-4 pt-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input type="date" id="meal-page-date" class="input input-bordered w-full" required />
+                                        <select id="meal-page-type" class="select select-bordered w-full" required>
+                                            <option>Breakfast</option>
+                                            <option>Lunch</option>
+                                            <option>Dinner</option>
+                                        </select>
+                                    </div>
+                                    <input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required />
+                                    <div class="text-right">
+                                        <button type="submit" class="btn btn-primary">Save Meal & Open Editor</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                <div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- Grocery List View -->
+            <div id="grocerylist-view" class="view hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card bg-base-100">
+                    <div class="card-body">
+                        <div id="active-list-header"></div>
+                        <div id="shopping-list-container" class="space-y-3 mt-4 max-h-96 overflow-y-auto pr-2"></div>
+                        <div id="active-list-footer" class="hidden">
+                            <div class="divider"></div>
+                            <div class="flex justify-between items-center font-bold text-lg">
+                                <span>Total:</span>
+                                <span id="shopping-list-total" class="text-success">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-base-100">
+                    <div class="card-body">
+                        <h2 class="card-title">My Stores</h2>
+                        <form id="add-store-form" class="join w-full mt-4">
+                            <input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item flex-1" required />
+                            <button type="submit" class="btn btn-primary join-item">Add</button>
+                        </form>
+                        <div id="stores-container" class="mt-6 space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History View -->
+            <div id="history-view" class="view hidden">
+                <div class="card bg-base-100">
+                    <div class="card-body">
+                        <h2 class="card-title">Shopping Trip History</h2>
+                        <div id="trip-history-container" class="space-y-4 mt-6"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Schedule View -->
+            <div id="fullschedule-view" class="view hidden">
+                <div class="card bg-base-100 p-4">
+                    <div id="calendar"></div>
+                </div>
+            </div>
         </div>
     </main>
     
     <div class="toast toast-top toast-center" id="toast-container"></div>
 
-    <dialog id="task_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="task-modal-title">New Event</h3><form id="task-form" class="space-y-4 mt-4"><input type="hidden" id="taskId"><input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required /><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><select id="taskType" class="select select-bordered" required><option disabled selected>Event Type</option><option>Appointment</option><option>Meeting</option><option>Work Schedule</option><option>Chore</option><option>Errand</option><option>Time Off</option></select><select id="taskAssignee" class="select select-bordered"><option disabled selected>Assign To</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="date" id="taskDueDate" class="input input-bordered" /><input type="time" id="taskDueTime" class="input input-bordered" /></div><div class="flex items-center justify-between"><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Recurring?</span><input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" /></label></div><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Completed?</span><input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" /></label></div></div><div id="recurring-options" class="hidden"><label class="label"><span class="label-text">Repeats on:</span></label><div class="join w-full" id="recurring-day-picker"><button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button><button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button><button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button><button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button><button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button></div></div><textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Event</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="edit_recurring_modal" class="modal"><div class="modal-box w-11/12 max-w-xs text-center"><h3 class="font-bold text-lg">Edit Recurring Event</h3><p class="py-4">Do you want to change only this event, or this and all future events in the series?</p><div class="modal-action justify-center"><button class="btn" id="edit-single-event-btn">Only This Event</button><button class="btn btn-primary" id="edit-future-events-btn">Future Events</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <!-- Modals -->
+    <dialog id="task_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-lg">
+            <h3 class="font-bold text-lg mb-4" id="task-modal-title">New Event</h3>
+            <form id="task-form" class="space-y-4">
+                <input type="hidden" id="taskId">
+                <input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required />
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <select id="taskType" class="select select-bordered" required>
+                        <option disabled selected>Event Type</option>
+                        <option>Appointment</option>
+                        <option>Meeting</option>
+                        <option>Work Schedule</option>
+                        <option>Chore</option>
+                        <option>Errand</option>
+                        <option>Time Off</option>
+                    </select>
+                    <select id="taskAssignee" class="select select-bordered">
+                        <option disabled selected>Assign To</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <input type="date" id="taskDueDate" class="input input-bordered" />
+                    <input type="time" id="taskDueTime" class="input input-bordered" />
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">Recurring?</span>
+                            <input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" />
+                        </label>
+                    </div>
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">Completed?</span>
+                            <input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" />
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="recurring-options" class="hidden">
+                    <label class="label">
+                        <span class="label-text">Repeats on:</span>
+                    </label>
+                    <div class="join w-full" id="recurring-day-picker">
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button>
+                        <button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button>
+                    </div>
+                </div>
+                
+                <textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea>
+                
+                <div class="modal-action">
+                    <button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <dialog id="edit_recurring_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-xs text-center">
+            <h3 class="font-bold text-lg">Edit Recurring Event</h3>
+            <p class="py-4">Do you want to change only this event, or this and all future events in the series?</p>
+            <div class="modal-action justify-center">
+                <button class="btn" id="edit-single-event-btn">Only This Event</button>
+                <button class="btn btn-primary" id="edit-future-events-btn">Future Events</button>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <dialog id="meal_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-lg">
+            <h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3>
+            <form id="meal-form" class="space-y-4 mt-4">
+                <input type="hidden" id="mealId">
+                <input type="hidden" id="mealDate">
+                <input type="hidden" id="mealType">
+                <input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required />
+                <input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" />
+                <div class="divider">Ingredients</div>
+                <div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
+                <div class="join w-full">
+                    <input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" />
+                    <button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button>
+                </div>
+                <div class="modal-action">
+                    <button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button>
+                    <button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
     <dialog id="manage_modal" class="modal">
         <div class="modal-box w-11/12 max-w-lg">
             <h3 class="font-bold text-lg">Manage Data & Family</h3>
-            <div class="mt-6"><h4 class="font-semibold text-md">Family Members</h4><div id="family-member-list" class="mt-2 space-y-2"></div><form id="add-family-member-form" class="flex gap-2 mt-2"><input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required /><button type="submit" class="btn btn-primary">Add</button></form></div>
-            <div class="divider"></div>
-            <div class="mt-4">
-                <h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/70">Export or import your data. This is a local backup and will not affect cloud data.</p>
-                <div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div>
-                <div class="divider">DANGER ZONE</div>
-                <button class="btn btn-error w-full" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data</button>
+            <div class="mt-6">
+                <h4 class="font-semibold text-md">Family Members</h4>
+                <div id="family-member-list" class="mt-2 space-y-2"></div>
+                <form id="add-family-member-form" class="flex gap-2 mt-2">
+                    <input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required />
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
             </div>
-            <div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div>
+            
+            <div class="divider"></div>
+            
+            <div class="mt-4">
+                <h4 class="font-semibold text-md">Backup & Restore</h4>
+                <p class="text-sm text-gray-500">Export or import your data. This is a local backup and will not affect cloud data.</p>
+                <div class="flex gap-4 mt-4">
+                    <button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button>
+                    <label class="btn btn-accent flex-1">
+                        Import
+                        <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" />
+                    </label>
+                </div>
+                
+                <div class="divider">DANGER ZONE</div>
+                <button class="btn btn-error w-full" onclick="app.clearAllData()">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data
+                </button>
+            </div>
+            
+            <div class="modal-action">
+                <button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button>
+            </div>
         </div>
-        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
     </dialog>
 
 <script type="module">
@@ -102,7 +630,6 @@ const providedFirebaseConfig = {
   messagingSenderId: "20103999017",
   appId: "1:20103999017:web:9be545d5a0f70008dc7638"
 };
-
 
 /**
  * =================================================================
@@ -134,41 +661,456 @@ const ui = {
     currentView: 'dashboard', calendar: null,
     init() { this.setupTabs(); },
     setupTabs() { document.getElementById('viewTabs').addEventListener('click', (e) => { const tab = e.target.closest('a[role="tab"]'); if (tab) this.switchView(tab.dataset.view); }); },
-    switchView(viewName) { this.currentView = viewName; document.querySelectorAll('#viewTabs .tab').forEach(tab => tab.classList.toggle('tab-active', tab.dataset.view === viewName)); document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${viewName}-view`)); this.renderAll(); },
-    renderAll() { switch (this.currentView) { case 'dashboard': this.renderDashboard(); break; case 'mealplanner': this.renderMealPlanner(); break; case 'grocerylist': this.renderGroceryList(); break; case 'history': this.renderHistory(); break; case 'fullschedule': this.renderFullSchedule(); break; } this.renderFamilyMembers(); this.populateAssigneeDropdown(); },
+    switchView(viewName) { 
+        this.currentView = viewName; 
+        document.querySelectorAll('#viewTabs .tab').forEach(tab => tab.classList.toggle('tab-active', tab.dataset.view === viewName)); 
+        document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${viewName}-view`)); 
+        this.renderAll(); 
+    },
+    renderAll() { 
+        switch (this.currentView) { 
+            case 'dashboard': this.renderDashboard(); break; 
+            case 'mealplanner': this.renderMealPlanner(); break; 
+            case 'grocerylist': this.renderGroceryList(); break; 
+            case 'history': this.renderHistory(); break; 
+            case 'fullschedule': this.renderFullSchedule(); break; 
+        } 
+        this.renderFamilyMembers(); 
+        this.populateAssigneeDropdown(); 
+    },
 
     renderDashboard() {
-        const today = new Date(); const todayStr = today.toISOString().split('T')[0]; const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
-        const tasks = (app.data.tasks || []).filter(t => t.status !== 'Done'); const meals = app.data.meals || []; const groceries = (app.data.groceries || []).filter(item => !item.isChecked);
-        const scheduleContainer = document.getElementById('today-schedule-widget'); const todayEvents = tasks.filter(t => t.dueDate === todayStr && t.type !== 'Chore').sort((a,b) => (a.dueTime || '').localeCompare(b.dueTime || ''));
-        scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal('${t.id}')"><div class="flex items-center justify-between"><div><span class="font-bold">${t.name}</span><span class="text-sm text-base-content/70 ml-2">${t.assignee||''}</span></div><div class="badge ${app.getEventTypeColor(t.type,'badge')}">${t.dueTime||t.type}</div></div></div>`).join('') : '<p class="text-base-content/70">No events scheduled today.</p>';
-        const choresContainer = document.getElementById('today-chores-widget'); const todayChores = tasks.filter(t => t.dueDate === todayStr && t.type === 'Chore');
-        choresContainer.innerHTML = todayChores.length ? todayChores.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal('${t.id}')"><div class="font-bold">${t.name}</div></div>`).join('') : '<p class="text-base-content/70">No chores due today!</p>';
-        const dinnerWidgetTitle = document.getElementById('dinner-widget-title'); const dinnerContainer = document.getElementById('dinner-widget'); 
+        const today = new Date(); 
+        const todayStr = today.toISOString().split('T')[0]; 
+        const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
+        const tasks = (app.data.tasks || []).filter(t => t.status !== 'Done'); 
+        const meals = app.data.meals || []; 
+        const groceries = (app.data.groceries || []).filter(item => !item.isChecked);
+
+        // Update stats
+        const todayEvents = tasks.filter(t => t.dueDate === todayStr && t.type !== 'Chore');
+        const todayChores = tasks.filter(t => t.dueDate === todayStr && t.type === 'Chore');
+        const nextWeek = new Date();
+        nextWeek.setDate(today.getDate() + 7);
+        const weekMeals = meals.filter(m => {
+            const mealDate = new Date(m.date + "T00:00:00");
+            return mealDate >= today && mealDate <= nextWeek;
+        });
+
+        document.getElementById('today-events-count').textContent = todayEvents.length;
+        document.getElementById('pending-chores-count').textContent = todayChores.length;
+        document.getElementById('grocery-items-count').textContent = groceries.length;
+        document.getElementById('planned-meals-count').textContent = weekMeals.length;
+
+        // Today's Schedule
+        const scheduleContainer = document.getElementById('today-schedule-widget');
+        const sortedEvents = todayEvents.sort((a,b) => (a.dueTime || '').localeCompare(b.dueTime || ''));
+        
+        if (sortedEvents.length === 0) {
+            scheduleContainer.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-check"></i><p>No events scheduled today.</p></div>';
+        } else {
+            scheduleContainer.innerHTML = sortedEvents.map(t => `
+                <div class="dashboard-item p-3 cursor-pointer" onclick="ui.openTaskModal('${t.id}')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-semibold">${t.name}</span>
+                            ${t.assignee ? `<span class="text-sm text-gray-500 ml-2">${t.assignee}</span>` : ''}
+                        </div>
+                        <div class="badge ${app.getEventTypeColor(t.type,'badge')}">
+                            ${t.dueTime || t.type}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Today's Chores
+        const choresContainer = document.getElementById('today-chores-widget');
+        if (todayChores.length === 0) {
+            choresContainer.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>No chores due today!</p></div>';
+        } else {
+            choresContainer.innerHTML = todayChores.map(t => `
+                <div class="dashboard-item p-3 cursor-pointer" onclick="ui.openTaskModal('${t.id}')">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">${t.name}</span>
+                        ${t.assignee ? `<span class="badge badge-ghost">${t.assignee}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Dinner Widget
+        const dinnerWidgetTitle = document.getElementById('dinner-widget-title'); 
+        const dinnerContainer = document.getElementById('dinner-widget'); 
         const tonightDinner = meals.find(m => m.date === todayStr && m.mealType === 'Dinner');
-        dinnerWidgetTitle.innerHTML = `<i class="fas fa-drumstick-bite text-warning mr-2"></i> ${dayName}'s Dinner`;
-        if (tonightDinner) { dinnerContainer.innerHTML = `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openMealModal('${tonightDinner.date}', '${tonightDinner.mealType}', '${tonightDinner.id}')"><div class="flex items-center justify-between"><div><span class="font-bold">${tonightDinner.recipeName}</span></div><div class="badge badge-warning">Dinner</div></div></div>${tonightDinner.recipeURL ? `<a href="${tonightDinner.recipeURL}" target="_blank" class="link link-primary text-sm mt-2 block">View Recipe</a>` : ''}`; } else { dinnerContainer.innerHTML = '<p class="text-base-content/70">Not planned.</p>'; }
-        const groceryWidget = document.getElementById('grocery-list-widget'); if (groceries.length > 0) { groceryWidget.innerHTML = groceries.slice(0, 5).map(item => `<div class="text-sm truncate">${item.itemName}</div>`).join('') + (groceries.length > 5 ? `<div class="text-primary text-sm mt-2 font-bold">and ${groceries.length - 5} more...</div>` : ''); } else { groceryWidget.innerHTML = '<p class="text-base-content/70">Your shopping list is empty.</p>'; }
+        
+        dinnerWidgetTitle.innerHTML = `<i class="fas fa-drumstick-bite text-warning mr-2"></i>${dayName}'s Dinner`;
+        
+        if (tonightDinner) { 
+            dinnerContainer.innerHTML = `
+                <div class="dashboard-item p-3 cursor-pointer" onclick="ui.openMealModal('${tonightDinner.date}', '${tonightDinner.mealType}', '${tonightDinner.id}')">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">${tonightDinner.recipeName}</span>
+                        <div class="badge badge-warning">Dinner</div>
+                    </div>
+                </div>
+                ${tonightDinner.recipeURL ? `<a href="${tonightDinner.recipeURL}" target="_blank" class="link link-primary text-sm mt-3 block">View Recipe</a>` : ''}
+            `; 
+        } else { 
+            dinnerContainer.innerHTML = '<div class="empty-state"><i class="fas fa-utensils"></i><p>Not planned yet.</p></div>'; 
+        }
+
+        // Grocery Widget
+        const groceryWidget = document.getElementById('grocery-list-widget'); 
+        if (groceries.length === 0) { 
+            groceryWidget.innerHTML = '<div class="empty-state"><i class="fas fa-shopping-cart"></i><p>Your shopping list is empty.</p></div>'; 
+        } else { 
+            groceryWidget.innerHTML = groceries.slice(0, 4).map(item => `
+                <div class="text-sm py-1 border-l-2 border-gray-200 pl-3">${item.itemName}</div>
+            `).join('') + (groceries.length > 4 ? `
+                <div class="text-blue-600 text-sm mt-3 font-semibold">+ ${groceries.length - 4} more items</div>
+            ` : ''); 
+        }
     },
     
     renderGroceryList() {
-        const shoppingList = app.data.groceries || []; const activeListHeader = document.getElementById('active-list-header'); const activeListFooter = document.getElementById('active-list-footer'); const shoppingContainer = document.getElementById('shopping-list-container');
-        if (app.activeStore) { activeListHeader.innerHTML = `<div class="card-title justify-between items-start"><h2 class="pt-1">Shopping at: ${app.activeStore.name}</h2><button class="btn btn-success" onclick="app.handleCompleteShoppingTrip()"><i class="fas fa-check-circle mr-2"></i>Complete Trip</button></div>`; shoppingContainer.innerHTML = shoppingList.map(item => `<div class="flex items-center gap-2 p-1 rounded group" id="shopping-item-${item.id}"><input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-primary shopping-item-checkbox" /><div class="flex-grow ${item.isChecked ? 'line-through text-base-content/60' : ''} shopping-item-name">${item.itemName}</div><input type="number" step="0.01" placeholder="0.00" value="${item.price || ''}" data-id="${item.id}" class="input input-xs input-bordered w-20 text-right shopping-item-price" /><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditShoppingItem('${item.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList('${item.id}')">&times;</button></div>`).join('') || '<p class="text-base-content/70 text-center py-4">List is empty. Add items from a store.</p>'; const total = shoppingList.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); document.getElementById('shopping-list-total').textContent = `$${total.toFixed(2)}`; activeListFooter.classList.remove('hidden');
-        } else { activeListHeader.innerHTML = `<h2 class="card-title">No Active List</h2>`; shoppingContainer.innerHTML = '<p class="text-base-content/70 text-center py-4">Select a store and add items to begin a shopping trip.</p>'; activeListFooter.classList.add('hidden'); }
+        const shoppingList = app.data.groceries || []; 
+        const activeListHeader = document.getElementById('active-list-header'); 
+        const activeListFooter = document.getElementById('active-list-footer'); 
+        const shoppingContainer = document.getElementById('shopping-list-container');
+        
+        if (app.activeStore) { 
+            activeListHeader.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="card-title">Shopping at: ${app.activeStore.name}</h2>
+                    <button class="btn btn-success btn-sm" onclick="app.handleCompleteShoppingTrip()">
+                        <i class="fas fa-check-circle mr-2"></i>Complete Trip
+                    </button>
+                </div>
+            `; 
+            
+            if (shoppingList.length === 0) {
+                shoppingContainer.innerHTML = '<div class="empty-state"><i class="fas fa-shopping-basket"></i><p>Add items from your stores to begin shopping.</p></div>';
+            } else {
+                shoppingContainer.innerHTML = shoppingList.map(item => `
+                    <div class="shopping-item flex items-center gap-3 group" id="shopping-item-${item.id}">
+                        <input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} 
+                               class="checkbox checkbox-primary shopping-item-checkbox" />
+                        <div class="flex-grow ${item.isChecked ? 'line-through text-gray-400' : ''} shopping-item-name">
+                            ${item.itemName}
+                        </div>
+                        <input type="number" step="0.01" placeholder="0.00" value="${item.price || ''}" 
+                               data-id="${item.id}" class="input input-xs input-bordered w-20 text-right shopping-item-price" />
+                        <button class="btn btn-xs btn-ghost text-gray-400 opacity-0 group-hover:opacity-100" 
+                                onclick="app.toggleEditShoppingItem('${item.id}')">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList('${item.id}')">&times;</button>
+                    </div>
+                `).join('');
+            }
+            
+            const total = shoppingList.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); 
+            document.getElementById('shopping-list-total').textContent = `$${total.toFixed(2)}`; 
+            activeListFooter.classList.remove('hidden');
+        } else { 
+            activeListHeader.innerHTML = `<h2 class="card-title">No Active List</h2>`; 
+            shoppingContainer.innerHTML = '<div class="empty-state"><i class="fas fa-store"></i><p>Select a store and add items to begin a shopping trip.</p></div>'; 
+            activeListFooter.classList.add('hidden'); 
+        }
 
-        const stores = app.data.stores || []; const allStoreItems = app.data.storeItems || []; const storesContainer = document.getElementById('stores-container');
-        if (stores.length === 0) { storesContainer.innerHTML = '<p class="text-base-content/70">No stores created yet. Add one to get started!</p>'; } else { storesContainer.innerHTML = stores.map(store => { const itemsForStore = allStoreItems.filter(item => item.storeId === store.id); return ` <details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-lg font-medium flex justify-between items-center">${store.name}<button class="btn btn-xs btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore('${store.id}', '${store.name}')"><i class="fas fa-trash"></i></button></summary><div class="collapse-content"><form class="join w-full my-2" onsubmit="app.addStoreItem(event, '${store.id}')"><input type="text" placeholder="Add new item to ${store.name}" class="input input-sm input-bordered join-item w-full" required /><button type="submit" class="btn btn-sm btn-secondary join-item">+</button></form><div class="space-y-1 mt-1">${itemsForStore.length > 0 ? itemsForStore.map(item => ` <div class="flex justify-between items-center p-1 rounded group" id="store-item-${item.id}"><div class="store-item-name">${item.itemName}</div><div><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditStoreItem('${item.id}')"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-circle btn-primary" onclick="app.handleAddToShoppingList('${item.id}')">+</button></div></div>`).join('') : '<p class="text-xs text-base-content/60">No items added yet.</p>'}</div></div></details> `}).join(''); }
+        // Render Stores
+        const stores = app.data.stores || []; 
+        const allStoreItems = app.data.storeItems || []; 
+        const storesContainer = document.getElementById('stores-container');
+        
+        if (stores.length === 0) { 
+            storesContainer.innerHTML = '<div class="empty-state"><i class="fas fa-store-alt"></i><p>No stores created yet. Add one to get started!</p></div>'; 
+        } else { 
+            storesContainer.innerHTML = stores.map(store => { 
+                const itemsForStore = allStoreItems.filter(item => item.storeId === store.id); 
+                return `
+                    <details class="collapse collapse-arrow bg-gray-50 border border-gray-200">
+                        <summary class="collapse-title text-base font-medium flex justify-between items-center">
+                            ${store.name}
+                            <button class="btn btn-xs btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore('${store.id}', '${store.name}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </summary>
+                        <div class="collapse-content">
+                            <form class="join w-full my-3" onsubmit="app.addStoreItem(event, '${store.id}')">
+                                <input type="text" placeholder="Add item to ${store.name}" 
+                                       class="input input-sm input-bordered join-item flex-1" required />
+                                <button type="submit" class="btn btn-sm btn-secondary join-item">Add</button>
+                            </form>
+                            <div class="space-y-2">
+                                ${itemsForStore.length > 0 ? itemsForStore.map(item => `
+                                    <div class="store-item flex justify-between items-center group" id="store-item-${item.id}">
+                                        <div class="store-item-name">${item.itemName}</div>
+                                        <div class="flex gap-1">
+                                            <button class="btn btn-xs btn-ghost text-gray-400 opacity-0 group-hover:opacity-100" 
+                                                    onclick="app.toggleEditStoreItem('${item.id}')">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-circle btn-primary" onclick="app.handleAddToShoppingList('${item.id}')">+</button>
+                                        </div>
+                                    </div>
+                                `).join('') : '<p class="text-xs text-gray-500 py-2">No items added yet.</p>'}
+                            </div>
+                        </div>
+                    </details>
+                `; 
+            }).join(''); 
+        }
     },
     
-    renderHistory() { const container = document.getElementById('trip-history-container'); const trips = app.data.shoppingTrips || []; trips.sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted)); if (trips.length === 0) { container.innerHTML = '<p class="text-base-content/70">No completed shopping trips found.</p>'; return; } container.innerHTML = trips.map(trip => `<details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-lg font-medium">${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}<span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span></summary><div class="collapse-content"><button class="btn btn-sm btn-outline btn-secondary my-2" onclick="app.reuseShoppingTrip('${trip.id}')"><i class="fas fa-redo-alt mr-2"></i>Reuse This List</button><ul class="list-disc pl-6">${trip.items.map(item => `<li><span class="${item.isChecked ? '' : 'line-through text-base-content/60'}">${item.itemName}</span><span class="ml-2 text-sm font-mono">${item.price ? '$' + item.price.toFixed(2) : '-'}</span></li>`).join('')}</ul></div></details>`).join(''); },
-    renderFullSchedule() { if (this.calendar) this.calendar.destroy(); const calendarEl = document.getElementById('calendar'); const tasks = app.data.tasks || []; const meals = app.data.meals || []; const events = [ ...tasks.map(task => { const eventObj = { id: `task-${task.id}`, title: `${task.name} (${task.assignee || 'all'})`, start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, allDay: !task.dueTime, borderColor: app.getEventTypeColor(task.type, 'calendar'), className: task.status === 'Done' ? 'opacity-50' : '' }; if (task.type === 'Time Off') { eventObj.display = 'background'; eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } else { eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } return eventObj; }), ...meals.map(meal => ({ id: `meal-${meal.id}`, title: `${meal.mealType}: ${meal.recipeName}`, start: meal.date, allDay: true, backgroundColor: '#f97316', borderColor: '#ea580c' })) ]; this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => { const [type, id] = info.event.id.split('-'); if (type === 'task') this.openTaskModal(id); else if (type === 'meal') { const mealDate = info.event.start.toISOString().split('T')[0]; const mealType = info.event.title.split(':')[0]; this.openMealModal(mealDate, mealType, id); } } }); this.calendar.render(); },
-    renderMealPlanner() { const container = document.getElementById('meal-planner-grid'); const meals = app.data.meals || []; const mealsByDate = meals.reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {}); const sortedDates = Object.keys(mealsByDate).sort(); container.innerHTML = sortedDates.map(date => `<div class="card bg-base-100 shadow"><div class="card-body p-4"><h3 class="card-title text-base">${new Date(date+'T12:00:00').toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}</h3><div class="space-y-2 mt-2">${['Breakfast', 'Lunch', 'Dinner'].map(type => { const meal = mealsByDate[date].find(m => m.mealType === type); return meal ? `<div class="p-2 rounded cursor-pointer bg-base-200" onclick="ui.openMealModal('${date}', '${type}', '${meal.id}')"><strong>${type}:</strong> ${meal.recipeName}</div>` : `<div class="p-2 rounded text-base-content/60"><strong>${type}:</strong> Unplanned</div>`; }).join('')}</div></div></div>`).join('') || '<p class="text-base-content/70 col-span-full text-center">No meals planned. Add one above to get started.</p>'; },
-    renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { const container = document.getElementById('ingredient-list-container'); const div = document.createElement('div'); div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); container.appendChild(div); },
-    async openMealModal(date, mealType, id = null) { if (!id) return; const form = document.getElementById('meal-form'); form.reset(); document.getElementById('mealId').value = ''; document.getElementById('mealDate').value = date; document.getElementById('mealType').value = mealType; document.getElementById('ingredient-list-container').innerHTML = ''; const mealDoc = await db.get('meals', id); if (!mealDoc.exists()) return; const meal = mealDoc.data(); document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`; document.getElementById('mealId').value = id; document.getElementById('recipeName').value = meal.recipeName; document.getElementById('recipeURL').value = meal.recipeURL || ''; let ingredients = meal.ingredients || []; if (typeof ingredients === 'string') { ingredients = ingredients.split('\n').filter(Boolean).map(name => ({ name, status: 'Need' })); } ingredients.forEach(ing => this.renderIngredientListItem(ing)); document.getElementById('meal_modal').showModal(); },
-    async openTaskModal(id = null, templateData = null) { const form = document.getElementById('task-form'); form.reset(); document.getElementById('taskId').value = ''; document.getElementById('recurring-options').classList.add('hidden'); document.getElementById('task-modal-title').textContent = 'New Event'; document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active')); if (id) { const taskDoc = await db.get('tasks', id); if (taskDoc.exists()){ const task = taskDoc.data(); document.getElementById('task-modal-title').textContent = 'Edit Event'; document.getElementById('taskId').value = id; document.getElementById('taskName').value = task.name; document.getElementById('taskType').value = task.type; document.getElementById('taskAssignee').value = task.assignee || ''; document.getElementById('taskDueDate').value = task.dueDate || ''; document.getElementById('taskDueTime').value = task.dueTime || ''; document.getElementById('taskIsRecurring').checked = task.isRecurring; document.getElementById('taskIsDone').checked = task.status === 'Done'; document.getElementById('taskNotes').value = task.notes || ''; if (task.isRecurring) { document.getElementById('recurring-options').classList.remove('hidden'); if (task.recurringDays) { task.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } } else if (templateData) { Object.keys(templateData).forEach(key => { const el = form.querySelector(`#task${key.charAt(0).toUpperCase() + key.slice(1)}`); if(el) el.value = templateData[key]; }); if(templateData.isRecurring) { document.getElementById('taskIsRecurring').checked = true; document.getElementById('recurring-options').classList.remove('hidden'); if(templateData.recurringDays) { templateData.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } document.getElementById('task_modal').showModal(); },
-    renderFamilyMembers() { const members = app.data.familyMembers || []; document.getElementById('family-member-list').innerHTML = members.length ? members.map(member => `<div class="flex justify-between items-center p-2 bg-base-200 rounded"><span>${member.name}</span><button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember('${member.id}')"><i class="fas fa-trash"></i></button></div>`).join('') : `<p class="text-base-content/70 text-sm">No family members added.</p>`; },
-    populateAssigneeDropdown() { const members = app.data.familyMembers || []; const select = document.getElementById('taskAssignee'); select.innerHTML = '<option value="">Unassigned</option>'; members.forEach(member => { select.innerHTML += `<option value="${member.name}">${member.name}</option>`; }); },
-    showToast(message, type = 'success') { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); const alertType = type === 'success' ? 'alert-success' : 'alert-error'; toast.className = `alert ${alertType} shadow-lg`; toast.innerHTML = `<div><span>${message}</span></div>`; container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000); }
+    renderHistory() { 
+        const container = document.getElementById('trip-history-container'); 
+        const trips = app.data.shoppingTrips || []; 
+        trips.sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted)); 
+        
+        if (trips.length === 0) { 
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><p>No completed shopping trips found.</p></div>'; 
+            return; 
+        } 
+        
+        container.innerHTML = trips.map(trip => `
+            <details class="collapse collapse-arrow bg-gray-50 border border-gray-200">
+                <summary class="collapse-title text-base font-medium">
+                    ${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}
+                    <span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span>
+                </summary>
+                <div class="collapse-content">
+                    <button class="btn btn-sm btn-outline btn-secondary my-3" onclick="app.reuseShoppingTrip('${trip.id}')">
+                        <i class="fas fa-redo-alt mr-2"></i>Reuse This List
+                    </button>
+                    <ul class="list-disc pl-6 space-y-1">
+                        ${trip.items.map(item => `
+                            <li>
+                                <span class="${item.isChecked ? '' : 'line-through text-gray-400'}">${item.itemName}</span>
+                                <span class="ml-2 text-sm font-mono text-gray-600">${item.price ? '$' + item.price.toFixed(2) : ''}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </details>
+        `).join(''); 
+    },
+
+    renderFullSchedule() { 
+        if (this.calendar) this.calendar.destroy(); 
+        const calendarEl = document.getElementById('calendar'); 
+        const tasks = app.data.tasks || []; 
+        const meals = app.data.meals || []; 
+        
+        const events = [ 
+            ...tasks.map(task => { 
+                const eventObj = { 
+                    id: `task-${task.id}`, 
+                    title: `${task.name} (${task.assignee || 'all'})`, 
+                    start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, 
+                    allDay: !task.dueTime, 
+                    borderColor: app.getEventTypeColor(task.type, 'calendar'), 
+                    className: task.status === 'Done' ? 'opacity-50' : '' 
+                }; 
+                if (task.type === 'Time Off') { 
+                    eventObj.display = 'background'; 
+                    eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); 
+                } else { 
+                    eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); 
+                } 
+                return eventObj; 
+            }), 
+            ...meals.map(meal => ({ 
+                id: `meal-${meal.id}`, 
+                title: `${meal.mealType}: ${meal.recipeName}`, 
+                start: meal.date, 
+                allDay: true, 
+                backgroundColor: '#f97316', 
+                borderColor: '#ea580c' 
+            })) 
+        ]; 
+        
+        this.calendar = new FullCalendar.Calendar(calendarEl, { 
+            initialView: 'dayGridMonth', 
+            headerToolbar: { 
+                left: 'prev,next today', 
+                center: 'title', 
+                right: 'dayGridMonth,timeGridWeek,listWeek' 
+            }, 
+            events: events, 
+            eventClick: (info) => { 
+                const [type, id] = info.event.id.split('-'); 
+                if (type === 'task') this.openTaskModal(id); 
+                else if (type === 'meal') { 
+                    const mealDate = info.event.start.toISOString().split('T')[0]; 
+                    const mealType = info.event.title.split(':')[0]; 
+                    this.openMealModal(mealDate, mealType, id); 
+                } 
+            } 
+        }); 
+        this.calendar.render(); 
+    },
+
+    renderMealPlanner() { 
+        const container = document.getElementById('meal-planner-grid'); 
+        const meals = app.data.meals || []; 
+        const mealsByDate = meals.reduce((acc, meal) => { 
+            (acc[meal.date] = acc[meal.date] || []).push(meal); 
+            return acc; 
+        }, {}); 
+        const sortedDates = Object.keys(mealsByDate).sort(); 
+        
+        if (sortedDates.length === 0) {
+            container.innerHTML = '<div class="col-span-full empty-state"><i class="fas fa-utensils"></i><p>No meals planned. Add one above to get started.</p></div>';
+            return;
+        }
+        
+        container.innerHTML = sortedDates.map(date => `
+            <div class="meal-card bg-white p-4">
+                <h3 class="font-semibold text-base mb-3">
+                    ${new Date(date+'T12:00:00').toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}
+                </h3>
+                <div class="space-y-2">
+                    ${['Breakfast', 'Lunch', 'Dinner'].map(type => { 
+                        const meal = mealsByDate[date].find(m => m.mealType === type); 
+                        return meal ? `
+                            <div class="meal-type meal-planned" onclick="ui.openMealModal('${date}', '${type}', '${meal.id}')">
+                                <strong>${type}:</strong> ${meal.recipeName}
+                            </div>
+                        ` : `
+                            <div class="meal-type meal-unplanned">
+                                <strong>${type}:</strong> Unplanned
+                            </div>
+                        `; 
+                    }).join('')}
+                </div>
+            </div>
+        `).join(''); 
+    },
+
+    renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { 
+        const container = document.getElementById('ingredient-list-container'); 
+        const div = document.createElement('div'); 
+        div.className = 'flex items-center gap-2 bg-gray-50 p-2 rounded'; 
+        div.innerHTML = `
+            <label class="flex-grow flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} />
+                <span class="ingredient-name">${ingredient.name}</span>
+            </label>
+            <button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>
+        `; 
+        div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); 
+        container.appendChild(div); 
+    },
+
+    async openMealModal(date, mealType, id = null) { 
+        if (!id) return; 
+        const form = document.getElementById('meal-form'); 
+        form.reset(); 
+        document.getElementById('mealId').value = ''; 
+        document.getElementById('mealDate').value = date; 
+        document.getElementById('mealType').value = mealType; 
+        document.getElementById('ingredient-list-container').innerHTML = ''; 
+        
+        const mealDoc = await db.get('meals', id); 
+        if (!mealDoc.exists()) return; 
+        const meal = mealDoc.data(); 
+        
+        document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`; 
+        document.getElementById('mealId').value = id; 
+        document.getElementById('recipeName').value = meal.recipeName; 
+        document.getElementById('recipeURL').value = meal.recipeURL || ''; 
+        
+        let ingredients = meal.ingredients || []; 
+        if (typeof ingredients === 'string') { 
+            ingredients = ingredients.split('\n').filter(Boolean).map(name => ({ name, status: 'Need' })); 
+        } 
+        ingredients.forEach(ing => this.renderIngredientListItem(ing)); 
+        
+        document.getElementById('meal_modal').showModal(); 
+    },
+
+    async openTaskModal(id = null, templateData = null) { 
+        const form = document.getElementById('task-form'); 
+        form.reset(); 
+        document.getElementById('taskId').value = ''; 
+        document.getElementById('recurring-options').classList.add('hidden'); 
+        document.getElementById('task-modal-title').textContent = 'New Event'; 
+        document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active')); 
+        
+        if (id) { 
+            const taskDoc = await db.get('tasks', id); 
+            if (taskDoc.exists()){ 
+                const task = taskDoc.data(); 
+                document.getElementById('task-modal-title').textContent = 'Edit Event'; 
+                document.getElementById('taskId').value = id; 
+                document.getElementById('taskName').value = task.name; 
+                document.getElementById('taskType').value = task.type; 
+                document.getElementById('taskAssignee').value = task.assignee || ''; 
+                document.getElementById('taskDueDate').value = task.dueDate || ''; 
+                document.getElementById('taskDueTime').value = task.dueTime || ''; 
+                document.getElementById('taskIsRecurring').checked = task.isRecurring; 
+                document.getElementById('taskIsDone').checked = task.status === 'Done'; 
+                document.getElementById('taskNotes').value = task.notes || ''; 
+                if (task.isRecurring) { 
+                    document.getElementById('recurring-options').classList.remove('hidden'); 
+                    if (task.recurringDays) { 
+                        task.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); 
+                    } 
+                } 
+            } 
+        } else if (templateData) { 
+            Object.keys(templateData).forEach(key => { 
+                const el = form.querySelector(`#task${key.charAt(0).toUpperCase() + key.slice(1)}`); 
+                if(el) el.value = templateData[key]; 
+            }); 
+            if(templateData.isRecurring) { 
+                document.getElementById('taskIsRecurring').checked = true; 
+                document.getElementById('recurring-options').classList.remove('hidden'); 
+                if(templateData.recurringDays) { 
+                    templateData.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); 
+                } 
+            } 
+        } 
+        document.getElementById('task_modal').showModal(); 
+    },
+
+    renderFamilyMembers() { 
+        const members = app.data.familyMembers || []; 
+        const container = document.getElementById('family-member-list');
+        if (members.length === 0) {
+            container.innerHTML = `<p class="text-gray-500 text-sm">No family members added.</p>`; 
+        } else {
+            container.innerHTML = members.map(member => `
+                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                    <span>${member.name}</span>
+                    <button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember('${member.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+    },
+
+    populateAssigneeDropdown() { 
+        const members = app.data.familyMembers || []; 
+        const select = document.getElementById('taskAssignee'); 
+        select.innerHTML = '<option value="">Unassigned</option>'; 
+        members.forEach(member => { 
+            select.innerHTML += `<option value="${member.name}">${member.name}</option>`; 
+        }); 
+    },
+
+    showToast(message, type = 'success') { 
+        const container = document.getElementById('toast-container'); 
+        const toast = document.createElement('div'); 
+        const alertType = type === 'success' ? 'alert-success' : 'alert-error'; 
+        toast.className = `alert ${alertType} shadow-lg`; 
+        toast.innerHTML = `<div><i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i><span>${message}</span></div>`; 
+        container.appendChild(toast); 
+        setTimeout(() => { toast.remove(); }, 3000); 
+    }
 };
 
 /**
@@ -194,9 +1136,9 @@ const app = {
     async handleAddToShoppingList(storeItemId) { const itemDoc = await db.get('storeItems', storeItemId); if (!itemDoc.exists()) return; const item = itemDoc.data(); const storeDoc = await db.get('stores', item.storeId); if (!storeDoc.exists()) return; const store = {id: storeDoc.id, ...storeDoc.data()}; if (this.activeStore && this.activeStore.id !== store.id) { if (!confirm(`You have an active list for ${this.activeStore.name}. Clear it and start a new one for ${store.name}?`)) return; await db.clear('groceries'); } this.activeStore = store; if((app.data.groceries || []).some(i => i.itemName.toLowerCase() === item.itemName.toLowerCase())) { return ui.showToast(`${item.itemName} is already on the list.`, 'error'); } await db.add('groceries', { storeId: item.storeId, itemName: item.itemName, isChecked: false, price: null }); },
     async handleCompleteShoppingTrip() { if (!this.activeStore) return; if (app.data.groceries.length === 0) { ui.showToast("Shopping list is empty.", "error"); return; } if (confirm(`Complete trip for ${this.activeStore.name}? This will save it to history and clear the list.`)) { const totalCost = app.data.groceries.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const newTrip = { dateCompleted: new Date().toISOString(), items: app.data.groceries, totalCost: totalCost, storeId: this.activeStore.id, storeName: this.activeStore.name }; await db.add('shoppingTrips', newTrip); await db.clear('groceries'); this.activeStore = null; ui.showToast('Shopping trip saved to history!'); } },
     async reuseShoppingTrip(tripId) { if ((app.data.groceries || []).length > 0) { if (!confirm("This will clear your current shopping list. Continue?")) return; } await db.clear('groceries'); const tripDoc = await db.get('shoppingTrips', tripId); if (!tripDoc.exists()) return; const trip = tripDoc.data(); const storeDoc = await db.get('stores', trip.storeId); if (!storeDoc.exists()) { ui.showToast('Cannot find the original store for this trip.', 'error'); return; } this.activeStore = {id: storeDoc.id, ...storeDoc.data()}; const batch = writeBatch(fb_db); for (const item of trip.items) { const newItem = { ...item, isChecked: false, price: null }; const docRef = doc(collection(fb_db, db._getCollectionPath('groceries'))); batch.set(docRef, newItem); } await batch.commit(); ui.showToast(`Loaded list from trip to ${this.activeStore.name}.`); ui.switchView('grocerylist'); },
-    toggleEditStoreItem(id) { const itemDiv = document.getElementById(`store-item-${id}`); const nameDiv = itemDiv.querySelector('.store-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow"><button class="btn btn-sm btn-success" onclick="app.saveStoreItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
+    toggleEditStoreItem(id) { const itemDiv = document.getElementById(`store-item-${id}`); const nameDiv = itemDiv.querySelector('.store-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-xs input-bordered w-full/2 grow"><button class="btn btn-xs btn-success" onclick="app.saveStoreItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
     async saveStoreItemEdit(id) { const itemDiv = document.getElementById(`store-item-${id}`); const input = itemDiv.querySelector('input'); const newName = input.value.trim(); if (newName) { await db.update('storeItems', id, { itemName: newName }); } },
-    toggleEditShoppingItem(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const nameDiv = itemDiv.querySelector('.shopping-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow"><button class="btn btn-xs btn-success" onclick="app.saveShoppingItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
+    toggleEditShoppingItem(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const nameDiv = itemDiv.querySelector('.shopping-item-name'); const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-xs input-bordered w-full/2 grow"><button class="btn btn-xs btn-success" onclick="app.saveShoppingItemEdit('${id}')"><i class="fas fa-check"></i></button>`; nameDiv.querySelector('input').focus(); },
     async saveShoppingItemEdit(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const input = itemDiv.querySelector('input'); const newName = input.value.trim(); if (newName) { await db.update('groceries', id, { itemName: newName }); } },
     
     // Other handlers
@@ -221,7 +1163,7 @@ const initFirebase = async () => {
     
     if (!firebaseConfig.apiKey) { 
         console.error("Firebase config is missing!"); 
-        document.body.innerHTML = '<div class="alert alert-error">Firebase configuration is missing. The app cannot start.</div>';
+        document.body.innerHTML = '<div class="alert alert-error m-4">Firebase configuration is missing. The app cannot start.</div>';
         return; 
     }
     const fb_app = initializeApp(firebaseConfig);
@@ -303,3 +1245,4 @@ window.app = app;
 
 </body>
 </html>
+
