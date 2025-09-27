@@ -3,328 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Home Hub - Interactive Dashboard & Stores</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <title>hub - Family Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     
     <!-- PWA additions -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#F7F7FD"/>
+    <meta name="theme-color" content="#f0f2f5"/>
     <link rel="apple-touch-icon" href="icon-192x192.png">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            --primary: #5D5FEF;
-            --primary-content: #ffffff;
-            --secondary: #F0F0F8;
-            --secondary-content: #5A5A72;
-            --accent: #E2E2F2;
-            --accent-content: #414158;
-            --neutral: #717182;
-            --base-100: #ffffff;
-            --base-200: #F7F7FD;
-            --base-300: #E2E2F2;
-            --base-content: #030213;
-            --info: #3ABFF8;
-            --success: #36D399;
-            --warning: #FBBD23;
-            --error: #F87272;
-            --rounded-box: 1rem;
-            --rounded-btn: 0.75rem;
-            --border-color: #E2E2F2;
-            --bc: var(--border-color);
-        }
-
-        html {
-            /* This sets the custom theme for DaisyUI */
-            --p: var(--primary);
-            --pc: var(--primary-content);
-            --s: var(--secondary);
-            --sc: var(--secondary-content);
-            --a: var(--accent);
-            --ac: var(--accent-content);
-            --n: var(--neutral);
-            --b1: var(--base-100);
-            --b2: var(--base-200);
-            --b3: var(--base-300);
-            --bc: var(--base-content);
-            --in: var(--info);
-            --su: var(--success);
-            --wa: var(--warning);
-            --er: var(--error);
-        }
-
         body { 
             font-family: 'Inter', sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-            background-color: var(--base-200);
-            padding-bottom: 90px;
+            background-color: #f0f2f5;
         }
+        .hub-title { font-family: 'Pacifico', cursive; }
+        .page { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .fc-event { cursor: pointer; }
-        .toast { z-index: 1000; }
+        .nav-icon {
+            transition: color 0.2s;
+        }
+        .nav-icon.active i { color: #3b82f6; }
+        .nav-icon.active::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -8px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 24px; 
+            height: 4px; 
+            background-color: #3b82f6; 
+            border-radius: 2px; 
+        }
+        .list-item { 
+            transition: background-color 0.2s; 
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+        }
+        .list-item:hover { background-color: #f8fafc; }
+        .shopping-item-done { text-decoration: line-through; color: #9ca3af; }
         
-        .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.5rem; }
-        @media (min-width: 768px) { .fc .fc-toolbar.fc-header-toolbar { flex-direction: row; } }
-        
-        .fc { 
-            --fc-border-color: var(--border-color);
-            --fc-page-bg-color: var(--base-100);
-            --fc-event-bg-color: var(--primary); 
-            --fc-event-border-color: var(--primary); 
-            --fc-today-bg-color: color-mix(in srgb, var(--primary) 10%, transparent); 
+        .list-item .icon-container {
+            flex-shrink: 0;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            height: 40px; /* Aligns icons consistently */
         }
-        
-        .fc .fc-button-primary { 
-            background-color: var(--primary); 
-            border-color: var(--primary); 
-        }
-        
-        .fc .fc-button-primary:hover { 
-            background-color: color-mix(in srgb, var(--primary) 90%, black); 
-            border-color: color-mix(in srgb, var(--primary) 90%, black); 
-        }
-        
-        .fc-bg-event { opacity: 0.3 !important; }
-
-        .input:focus, .select:focus, .textarea:focus {
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
-            border-color: var(--primary);
-            outline: none;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: var(--neutral);
-        }
-        
-        .empty-state i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.3;
-            display: block;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: color-mix(in srgb, var(--base-100) 80%, transparent);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border-color);
-            z-index: 50;
-            padding: 0.5rem 1rem;
-            padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-        }
-
-        .bottom-nav-item {
-            transition: color 0.2s ease;
-        }
-        .bottom-nav-item.active {
-            color: var(--primary);
-        }
-
     </style>
 </head>
-<body class="min-h-screen">
+<body class="antialiased text-gray-800">
 
-    <header class="bg-base-200 pt-6 pb-4 px-4 sticky top-0 z-30">
-        <div class="container mx-auto flex justify-between items-center">
-             <div>
-                <h1 class="text-2xl font-bold text-base-content">Hub Home</h1>
-                <p id="header-date" class="text-base-content/60"></p>
+    <div class="max-w-4xl mx-auto p-4 md:p-6 pb-24">
+        <header class="py-3 mb-2 flex justify-between items-center">
+            <h1 class="hub-title text-4xl text-orange-500">hub</h1>
+        </header>
+
+        <nav class="bg-white rounded-2xl shadow-md p-2 my-4 sticky top-4 z-10">
+            <div class="flex justify-around items-center">
+                 <button class="nav-icon relative p-2" data-page="hub"><i data-lucide="home" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="calendar"><i data-lucide="calendar-days" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="shopping"><i data-lucide="shopping-cart" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="health"><i data-lucide="heart-pulse" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="meals"><i data-lucide="utensils-crossed" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="contacts"><i data-lucide="users" class="text-gray-500 w-7 h-7"></i></button>
             </div>
-            <button class="btn btn-primary" onclick="ui.openTaskModal()">
-                <i class="fas fa-plus"></i> Add
-            </button>
-        </div>
-    </header>
+        </nav>
 
-    <main class="container mx-auto p-4 max-w-7xl">
-        <div id="app-views">
-            <!-- Dashboard View -->
-            <div id="dashboard-view" class="view space-y-6">
-                 <div class="card bg-base-100">
-                    <div class="card-body">
-                        <h2 class="card-title text-base font-bold mb-2">Today's Schedule</h2>
-                        <div id="today-schedule-widget" class="space-y-4"></div>
+        <main id="main-content">
+            <div id="hub-page" class="page">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
+                        <h2 class="text-xl font-bold mb-1">Today's Schedule</h2>
+                        <p id="current-date" class="text-sm text-gray-500 mb-4"></p>
+                        <div id="schedule-list" class="space-y-2"></div>
                     </div>
-                </div>
-                 <div class="card bg-base-100">
-                    <div class="card-body">
-                        <h2 class="card-title text-base font-bold mb-2">Today's Menu</h2>
-                        <div id="today-menu-widget" class="grid grid-cols-3 gap-4"></div>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Meals for Today</h2>
+                        <div id="meals-list" class="space-y-1"></div>
                     </div>
-                </div>
-                 <div class="card bg-base-100">
-                    <div class="card-body">
-                        <h2 class="card-title text-base font-bold mb-2">Coming Up</h2>
-                        <div id="coming-up-widget" class="space-y-4"></div>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Shopping Lists</h2>
+                        <div id="shopping-list-hub" class="space-y-1"></div>
                     </div>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                     <div class="card bg-base-100 text-center p-4">
-                        <div class="text-2xl font-bold" id="stat-today">0</div>
-                        <div class="text-sm text-base-content/60">Today</div>
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
+                        <h2 class="text-xl font-bold mb-4">Upcoming</h2>
+                        <div id="upcoming-list" class="space-y-1"></div>
                     </div>
-                     <div class="card bg-base-100 text-center p-4">
-                        <div class="text-2xl font-bold" id="stat-meals">0/3</div>
-                        <div class="text-sm text-base-content/60">Meals</div>
-                    </div>
-                     <div class="card bg-base-100 text-center p-4">
-                        <div class="text-2xl font-bold" id="stat-week">0</div>
-                        <div class="text-sm text-base-content/60">This Week</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Calendar View -->
-            <div id="calendar-view" class="view hidden">
-                <div class="card bg-base-100 p-4">
-                    <div id="calendar"></div>
                 </div>
             </div>
             
-            <!-- Meals View -->
-            <div id="meals-view" class="view hidden">
-                <div class="card bg-base-100 mb-6">
-                    <div class="card-body">
-                        <details class="collapse collapse-arrow bg-base-200 rounded-xl">
-                            <summary class="collapse-title text-lg font-medium">Plan a New Meal</summary>
-                            <div class="collapse-content">
-                                <form id="meal-page-form" class="space-y-4 pt-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <input type="date" id="meal-page-date" class="input input-bordered w-full" required />
-                                        <select id="meal-page-type" class="select select-bordered w-full" required>
-                                            <option>Breakfast</option>
-                                            <option>Lunch</option>
-                                            <option>Dinner</option>
-                                        </select>
-                                    </div>
-                                    <input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required />
-                                    <div class="text-right">
-                                        <button type="submit" class="btn btn-primary">Save Meal & Open Editor</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </details>
-                    </div>
-                </div>
-                <div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
+            <div id="shopping-page" class="page hidden"></div>
+            <div id="calendar-page" class="page hidden"></div>
+            <div id="health-page" class="page hidden"></div>
+            <div id="meals-page" class="page hidden"></div>
+            <div id="contacts-page" class="page hidden"></div>
+        </main>
+    </div>
 
-            <!-- Shopping View -->
-            <div id="shopping-view" class="view space-y-6">
-                <!-- This will be dynamically filled by ui.renderGroceryList or ui.renderStoreDetail -->
-            </div>
-            
-            <!-- Family View -->
-            <div id="family-view" class="view hidden">
-                <div class="card bg-base-100">
-                    <div class="card-body">
-                         <div class="flex justify-between items-center">
-                            <h2 class="card-title">Family Members</h2>
-                            <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()">
-                                <i class="fas fa-cog text-xl text-base-content/50"></i>
-                            </button>
-                        </div>
-                         <form id="add-family-member-form" class="flex gap-2 my-4">
-                            <input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required />
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </form>
-                        <div id="family-member-list" class="space-y-2"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <button id="add-item-btn" class="fixed bottom-8 right-8 bg-orange-500 hover:bg-orange-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-110 z-20">
+        <i data-lucide="plus" class="w-8 h-8"></i>
+    </button>
     
-    <footer class="bottom-nav">
-        <div class="flex justify-around items-center text-base-content/70" id="bottom-nav-bar">
-             <button class="bottom-nav-item flex flex-col items-center gap-1 active" data-view="dashboard">
-                <i class="fas fa-home text-xl"></i>
-                <span class="text-xs font-medium">Home</span>
-            </button>
-            <button class="bottom-nav-item flex flex-col items-center gap-1" data-view="calendar">
-                <i class="fas fa-calendar-alt text-xl"></i>
-                <span class="text-xs font-medium">Calendar</span>
-            </button>
-            <button class="bottom-nav-item flex flex-col items-center gap-1" data-view="meals">
-                <i class="fas fa-utensils text-xl"></i>
-                <span class="text-xs font-medium">Meals</span>
-            </button>
-            <button class="bottom-nav-item flex flex-col items-center gap-1" data-view="shopping">
-                <i class="fas fa-shopping-cart text-xl"></i>
-                <span class="text-xs font-medium">Shopping</span>
-            </button>
-             <button class="bottom-nav-item flex flex-col items-center gap-1" data-view="family">
-                <i class="fas fa-users text-xl"></i>
-                <span class="text-xs font-medium">Family</span>
-            </button>
-        </div>
-    </footer>
-    
-    <div class="toast toast-top toast-center" id="toast-container"></div>
-
-    <!-- Modals -->
-    <dialog id="task_modal" class="modal">
-        <div class="modal-box w-11/12 max-w-lg">
-            <h3 class="font-bold text-lg mb-4" id="task-modal-title">New Event</h3>
-            <form id="task-form" class="space-y-4">
-                <input type="hidden" id="taskId">
-                <input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required />
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <select id="taskType" class="select select-bordered" required>
-                        <option disabled selected>Event Type</option>
-                        <option>Appointment</option><option>Meeting</option><option>Work Schedule</option><option>Chore</option><option>Errand</option><option>Time Off</option><option>School</option><option>Team</option><option>Restaurant</option>
-                    </select>
-                    <select id="taskAssignee" class="select select-bordered"><option disabled selected>Assign To</option></select>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input type="date" id="taskDueDate" class="input input-bordered" /><input type="time" id="taskDueTime" class="input input-bordered" />
-                </div>
-                <div class="flex items-center justify-between">
-                    <div class="form-control"><label class="cursor-pointer label"><span class="label-text">Recurring?</span><input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" /></label></div>
-                    <div class="form-control"><label class="cursor-pointer label"><span class="label-text">Completed?</span><input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" /></label></div>
-                </div>
-                <div id="recurring-options" class="hidden">
-                    <label class="label"><span class="label-text">Repeats on:</span></label>
-                    <div class="join w-full" id="recurring-day-picker"><button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button><button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button><button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button><button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button><button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button></div>
-                </div>
-                <textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea>
-                <div class="modal-action">
-                    <button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Event</button>
-                </div>
+    <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <h3 id="modal-title" class="text-2xl font-bold mb-6 flex-shrink-0">Edit Item</h3>
+            <form id="edit-form" class="space-y-4 flex-grow overflow-y-auto">
+                <div id="modal-form-content"></div>
             </form>
+            <div class="flex justify-between items-center pt-4 mt-4 border-t border-gray-200 flex-shrink-0">
+                <button type="button" id="delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</button>
+                <div class="space-x-4">
+                    <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+                    <button type="submit" form="edit-form" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+                </div>
+            </div>
         </div>
-        <form method="dialog" class="modal-backdrop"><button>close</button></form>
-    </dialog>
-
-    <dialog id="edit_recurring_modal" class="modal"><div class="modal-box w-11/12 max-w-xs text-center"><h3 class="font-bold text-lg">Edit Recurring Event</h3><p class="py-4">Change this event only, or this and all future events?</p><div class="modal-action justify-center"><button class="btn" id="edit-single-event-btn">Only This Event</button><button class="btn btn-primary" id="edit-future-events-btn">Future Events</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-
-    <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-
-    <dialog id="manage_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg">Settings</h3><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/60">Export or import your data. This is a local backup and will not affect cloud data.</p><div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div><div class="divider"></div><button class="btn btn-error w-full mt-4" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data</button></div><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    </div>
 
 <script type="module">
 // --- FIREBASE IMPORTS ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, addDoc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, collection, query, where, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- GLOBAL CONFIG & STATE ---
-const OBJECT_STORES = ['tasks', 'meals', 'groceries', 'familyMembers', 'shoppingTrips', 'stores', 'storeItems'];
+const OBJECT_STORES = ['schedule', 'meals', 'shopping', 'health', 'contacts'];
 let fb_db, fb_auth, userId;
 let unsubscribes = [];
+let currentPageId = 'hub';
+let activeShoppingListId = null;
 
 const providedFirebaseConfig = {
   apiKey: "AIzaSyBByUjZqNeA6k6p8PeeoUFENRTZLkjeT6s",
@@ -335,438 +150,444 @@ const providedFirebaseConfig = {
   appId: "1:20103999017:web:9be545d5a0f70008dc7638"
 };
 
+// --- DATABASE MODULE ---
 const db = {
-    _getCollectionPath: (storeName) => {
-        if (!userId) throw new Error("User not authenticated.");
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        return `artifacts/${appId}/users/${userId}/${storeName}`;
-    },
+    _getCollectionPath: (storeName) => `artifacts/${typeof __app_id !== 'undefined' ? __app_id : 'default-app'}/users/${userId}/${storeName}`,
     add: (storeName, item) => addDoc(collection(fb_db, db._getCollectionPath(storeName)), item),
     get: (storeName, id) => getDoc(doc(fb_db, db._getCollectionPath(storeName), id)),
-    getAll: async (storeName) => { const s = await getDocs(collection(fb_db, db._getCollectionPath(storeName))); return s.docs.map(doc => ({ id: doc.id, ...doc.data() })); },
     update: (storeName, id, item) => updateDoc(doc(fb_db, db._getCollectionPath(storeName), id), item),
-    set: (storeName, id, item) => setDoc(doc(fb_db, db._getCollectionPath(storeName), id), item),
     delete: (storeName, id) => deleteDoc(doc(fb_db, db._getCollectionPath(storeName), id)),
-    query: async (storeName, field, op, value) => { const q = query(collection(fb_db, db._getCollectionPath(storeName)), where(field, op, value)); const s = await getDocs(q); return s.docs.map(doc => ({ id: doc.id, ...doc.data() })); },
-    clear: async (storeName) => { const allItems = await db.getAll(storeName); const batch = writeBatch(fb_db); allItems.forEach(item => batch.delete(doc(fb_db, db._getCollectionPath(storeName), item.id))); await batch.commit(); }
 };
 
+// --- UI MODULE ---
 const ui = {
-    currentView: 'dashboard', calendar: null,
-    init() { this.setupEventListeners(); this.setHeaderDate(); },
-    setupEventListeners() { document.getElementById('bottom-nav-bar').addEventListener('click', (e) => { const item = e.target.closest('.bottom-nav-item'); if (item) this.switchView(item.dataset.view); }); },
-    setHeaderDate() {
-        const today = new Date();
-        document.getElementById('header-date').textContent = today.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    modal: document.getElementById('edit-modal'),
+    modalTitle: document.getElementById('modal-title'),
+    formContent: document.getElementById('modal-form-content'),
+    editForm: document.getElementById('edit-form'),
+    deleteBtn: document.getElementById('delete-btn'),
+    cancelBtn: document.getElementById('cancel-btn'),
+    
+    init() {
+        this.editForm.onsubmit = (e) => app.handleFormSubmit(e);
+        this.deleteBtn.onclick = () => app.handleDelete();
+        this.cancelBtn.onclick = () => this.closeModal();
+        this.modal.onclick = (e) => { if (e.target === this.modal) this.closeModal(); };
+        
+        document.querySelectorAll('.nav-icon').forEach(btn => btn.onclick = () => app.navigate(btn.dataset.page));
+        document.getElementById('add-item-btn').onclick = () => app.handleAddItem();
+        document.getElementById('main-content').addEventListener('click', (e) => app.handleMainContentClick(e));
     },
-    switchView(viewName) { 
-        this.currentView = viewName; 
-        document.querySelectorAll('.bottom-nav-item').forEach(item => item.classList.toggle('active', item.dataset.view === viewName)); 
-        document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${viewName}-view`)); 
-        this.renderAll(); 
+
+    openModal(type, id = null, extraParams = {}) {
+        const isNew = id === null;
+        this.modal.dataset.type = type;
+        this.modal.dataset.id = id;
+        this.deleteBtn.classList.toggle('hidden', isNew);
+        this.modalTitle.textContent = `${isNew ? 'Add New' : 'Edit'} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+        this.formContent.innerHTML = this.getFormFields(type, id, extraParams);
+        this.modal.classList.remove('hidden');
     },
-    renderAll() { 
+
+    closeModal() { this.modal.classList.add('hidden'); },
+
+    getFormFields(type, id, extraParams = {}) {
+        let item = {};
+        if (id) {
+            if (type === 'shoppingItem') {
+                const list = app.data.shopping.find(l => l.id === activeShoppingListId);
+                item = list?.items.find(i => i.id === id) || {};
+            } else {
+                item = app.data[type]?.find(d => d.id === id) || {};
+            }
+        }
+
+        const createField = (label, id, type, value = '', props = '') => `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><input type="${type}" id="${id}" value="${value}" ${props} class="block w-full border-gray-300 rounded-md shadow-sm p-2 border"></div>`;
+        const createSelect = (label, id, options, selected = '') => `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><select id="${id}" class="block w-full border-gray-300 rounded-md shadow-sm p-2 border">${options.map(o => `<option value="${o}" ${o === selected ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`;
+        const personOptions = (app.data.contacts || []).map(c => c.name);
+        
+        switch(type) {
+            case 'schedule':
+                const categoryIcons = { 'General': 'calendar-plus', 'School': 'graduation-cap', 'Health': 'stethoscope', 'Dentist': 'tooth', 'Work': 'briefcase', 'Sport': 'trophy', 'Social': 'users', 'Chore': 'trash-2' };
+                return createField('Event Title', 'edit-title', 'text', item.title || '', 'required') +
+                       createSelect('Category', 'edit-category', Object.keys(categoryIcons), item.category) +
+                       createSelect('Assigned To', 'edit-person', personOptions, item.person) +
+                       '<div class="grid grid-cols-2 gap-4">' +
+                       createField('Start Date', 'edit-start-date', 'date', item.startDate || extraParams.startDate || app.toISODate(new Date()), 'required') +
+                       createField('Start Time', 'edit-start-time', 'time', item.startTime || '') + '</div>' +
+                       '<div class="grid grid-cols-2 gap-4">' +
+                       createField('End Date', 'edit-end-date', 'date', item.endDate || item.startDate || extraParams.startDate || app.toISODate(new Date())) +
+                       createField('End Time', 'edit-end-time', 'time', item.endTime || '') + '</div>';
+            case 'shopping':
+                return createField('List Name', 'edit-list-name', 'text', item.name || '', 'required') +
+                       createSelect('Icon', 'edit-list-icon', ['shopping-cart', 'wrench', 'gift', 'package'], item.icon || 'shopping-cart');
+            case 'shoppingItem':
+                return createField('Item Name', 'edit-item-text', 'text', item.text || '', 'required');
+            case 'health':
+                return createSelect('Person', 'edit-health-person', personOptions, item.person) +
+                       createField('Medication/Item', 'edit-health-name', 'text', item.name || '', 'required') +
+                       createField('Dosage', 'edit-health-dosage', 'text', item.dosage || '') +
+                       createField('Time', 'edit-health-time', 'time', item.time || '');
+            case 'meals':
+                return createField('Date', 'edit-meal-date', 'date', item.date || app.toISODate(new Date()), 'required') +
+                       createSelect('Label', 'edit-meal-label', ['Breakfast', 'Lunch', 'Dinner', 'Snack'], item.label) +
+                       createField('Meal Title', 'edit-meal-title', 'text', item.title || '', 'required');
+            case 'contacts':
+                return createField('Name', 'edit-contact-name', 'text', item.name || '', 'required');
+        }
+        return '';
+    },
+
+    refreshUI() {
         const renderMap = {
-            'dashboard': this.renderDashboard, 'meals': this.renderMealPlanner, 'shopping': this.renderGroceryList,
-            'calendar': this.renderFullSchedule, 'family': this.renderFamilyMembers,
+            'hub': this.renderHubPage, 'calendar': this.renderCalendarPage, 'shopping': this.renderShoppingPage,
+            'health': this.renderHealthPage, 'meals': this.renderMealsPage, 'contacts': this.renderContactsPage
         };
-        renderMap[this.currentView]?.call(this);
-        if(this.currentView !== 'family') this.renderFamilyMembers(); // Render family for modals
-        this.populateAssigneeDropdown(); 
-    },
-
-    renderDashboard() {
-        const today = new Date();
-        const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-        const todayStr = today.toISOString().split('T')[0];
-        
-        const tasks = app.data.tasks || [];
-        const meals = app.data.meals || [];
-        
-        const scheduleContainer = document.getElementById('today-schedule-widget');
-        const todayEvents = tasks.filter(t => t.dueDate === todayStr).sort((a,b) => (a.dueTime || "23:59").localeCompare(b.dueTime || "23:59"));
-        scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => this.createScheduleItem(t)).join('') : '<div class="empty-state"><i class="fas fa-check-circle"></i><p>Nothing scheduled for today.</p></div>';
-
-        const menuContainer = document.getElementById('today-menu-widget');
-        menuContainer.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(type => {
-            const meal = meals.find(m => m.date === todayStr && m.mealType === type);
-            return this.createMenuCard(meal, type, todayStr);
-        }).join('');
-
-        const comingUpContainer = document.getElementById('coming-up-widget');
-        const upcomingEvents = tasks.filter(t => new Date(t.dueDate) > today).sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, 3);
-        comingUpContainer.innerHTML = upcomingEvents.length ? upcomingEvents.map(t => this.createScheduleItem(t, true)).join('') : '<div class="empty-state"><i class="fas fa-coffee"></i><p>Nothing on the horizon.</p></div>';
-
-        document.getElementById('stat-today').textContent = todayEvents.length;
-        const mealsToday = meals.filter(m => m.date === todayStr).length;
-        document.getElementById('stat-meals').textContent = `${mealsToday}/3`;
-        const nextWeek = new Date(); nextWeek.setDate(today.getDate() + 7);
-        const weekEvents = tasks.filter(t => new Date(t.dueDate) > today && new Date(t.dueDate) <= nextWeek).length;
-        document.getElementById('stat-week').textContent = weekEvents;
+        if (activeShoppingListId) {
+            this.renderSpecificShoppingList();
+        } else {
+            renderMap[currentPageId]?.call(this);
+        }
+        lucide.createIcons();
     },
     
-    createScheduleItem(task, isUpcoming = false) {
-        const eventDetails = app.getEventTypeDetails(task.type);
-        const time = task.dueTime ? new Date(`1970-01-01T${task.dueTime}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false}) : 'All Day';
-        let dateInfo = '';
+    renderHubPage() {
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        const todayEvents = (app.data.schedule || []).filter(item => item.startDate === app.toISODate(new Date())).sort((a,b) => (a.startTime || '').localeCompare(b.startTime || ''));
+        const scheduleListEl = document.getElementById('schedule-list');
+        scheduleListEl.innerHTML = todayEvents.length ? todayEvents.map(item => this.createScheduleListItem(item)).join('') : `<p class="text-gray-500 p-3">No events scheduled for today.</p>`;
+
+        const upcomingEvents = (app.data.schedule || []).filter(item => item.startDate > app.toISODate(new Date())).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+        const upcomingListEl = document.getElementById('upcoming-list');
+        upcomingListEl.innerHTML = upcomingEvents.length ? upcomingEvents.slice(0, 3).map(item => this.createScheduleListItem(item, true)).join('') : `<p class="text-gray-500 p-3">No upcoming events.</p>`;
+
+        const todaysMeals = (app.data.meals || []).filter(meal => meal.date === app.toISODate(new Date()));
+        const mealsListEl = document.getElementById('meals-list');
+        mealsListEl.innerHTML = todaysMeals.length ? todaysMeals.map(this.createMealListItem).join('') : `<p class="text-gray-500 p-3">No meals planned for today.</p>`;
+        
+        const shoppingHubEl = document.getElementById('shopping-list-hub');
+        shoppingHubEl.innerHTML = (app.data.shopping || []).length ? (app.data.shopping || []).map(this.createShoppingListCard).join('') : `<p class="text-gray-500 p-3">No shopping lists.</p>`;
+    },
+
+    createScheduleListItem(item, isUpcoming = false) {
+        const categoryIcons = { 'General': 'calendar-plus', 'School': 'graduation-cap', 'Health': 'stethoscope', 'Dentist': 'tooth', 'Work': 'briefcase', 'Sport': 'trophy', 'Social': 'users', 'Chore': 'trash-2' };
+        const formatTime = (t) => t ? new Date(`1970-01-01T${t}`).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'}) : '';
+        const getPersonBadgeClass = (p) => ({'Dad':'bg-blue-100 text-blue-800','Mom':'bg-pink-100 text-pink-800','Leo':'bg-green-100 text-green-800'}[p] || 'bg-gray-100 text-gray-800');
+        
+        let timeOrDate = `<span class="font-bold">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</span>`;
         if (isUpcoming) {
-            const eventDate = new Date(task.dueDate + "T00:00:00");
-            const tomorrow = new Date(); tomorrow.setDate(new Date().getDate() + 1);
-            dateInfo = (eventDate.toDateString() === tomorrow.toDateString()) ? 'Tomorrow' : eventDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+             timeOrDate = `<p class="text-sm font-bold text-gray-600">${new Date(item.startDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>`;
         }
-        const assignees = (task.assignee || '').split(',').map(a => a.trim()).filter(Boolean);
-        const assigneeHtml = assignees.map(a => `<div class="avatar placeholder w-6 h-6"><div class="bg-secondary text-secondary-content rounded-full"><span>${a.charAt(0).toUpperCase()}</span></div></div>`).join('');
 
-        return `<div class="flex items-center gap-4 cursor-pointer p-2" onclick="ui.openTaskModal('${task.id}')">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style="background-color: ${eventDetails.bgColor}; color: ${eventDetails.fgColor};">
-                <i class="fas ${eventDetails.icon}"></i>
-            </div>
-            <div class="flex-grow">
-                <p class="font-semibold text-base-content">${task.name}</p>
-                <p class="text-sm text-base-content/60">${task.notes || eventDetails.defaultNote}</p>
-            </div>
-            <div class="flex-shrink-0 text-right">
-                <p class="font-medium text-sm text-base-content">${isUpcoming ? dateInfo : time}</p>
-                 <div class="flex justify-end gap-1 mt-1">${assigneeHtml}</div>
+        return `<div class="list-item justify-between p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
+            <div class="flex items-start w-full">
+                <div class="icon-container"><i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500"></i></div>
+                <div class="flex-grow"><p class="font-semibold">${timeOrDate} ${item.title}</p></div>
+                <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
             </div>
         </div>`;
     },
 
-    createMenuCard(meal, type, date) {
-        const details = app.getMealTypeDetails(type);
-        return `<div class="card bg-base-200 text-center p-3 cursor-pointer" onclick="${meal ? `ui.openMealModal('${meal.date}', '${meal.mealType}', '${meal.id}')` : `ui.openMealModal(null, null, null, {date: '${date}', mealType: '${type}'})`}">
-            <i class="fas ${details.icon} text-lg mx-auto mb-2" style="color: ${details.color}"></i>
-            <p class="text-sm font-semibold text-base-content">${type}</p>
-            <p class="text-xs text-base-content/60 truncate">${meal ? meal.recipeName : 'Unplanned'}</p>
-            ${meal && meal.assignee ? `<div class="avatar placeholder w-5 h-5 mx-auto mt-2"><div class="bg-secondary text-secondary-content rounded-full"><span>${meal.assignee.charAt(0).toUpperCase()}</span></div></div>` : '<div class="h-5 mt-2"></div>'}
+    createMealListItem(item) {
+        const mealIcons = { 'Breakfast': 'croissant', 'Lunch': 'salad', 'Dinner': 'beef', 'Snack': 'cookie' };
+        return `<div class="list-item p-3 rounded-lg" data-id="${item.id}" data-type="meals">
+            <div class="flex items-center w-full">
+                <div class="icon-container"><i data-lucide="${mealIcons[item.label] || 'utensils'}" class="w-7 h-7 text-orange-500"></i></div>
+                <div class="flex-grow"><p class="font-bold">${item.title}</p><p class="text-sm text-gray-500">${item.label}</p></div>
+            </div>
+        </div>`;
+    },
+
+    createShoppingListCard(list) {
+        const neededCount = list.items.filter(i => !i.done).length;
+        return `<div class="list-item p-3 rounded-lg" data-list-id="${list.id}">
+            <div class="flex items-center w-full">
+                <div class="icon-container"><i data-lucide="${list.icon}" class="w-6 h-6 text-gray-500"></i></div>
+                <span class="font-medium flex-grow">${list.name}</span>
+                <span class="text-sm text-gray-500 mr-2">${neededCount} items</span>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+            </div>
         </div>`;
     },
     
-    renderGroceryList() {
-        const container = document.getElementById('shopping-view');
-        const activeListHtml = `<div class="card bg-base-100"><div class="card-body" id="active-list-card"></div></div>`;
-        const storesHtml = `<div class="card bg-base-100"><div class="card-body" id="stores-card"></div></div>`;
-        container.innerHTML = activeListHtml + storesHtml;
+    renderShoppingPage() {
+        const pageEl = document.getElementById('shopping-page');
+        pageEl.innerHTML = `<div class="bg-white p-5 rounded-xl shadow-md"><h2 class="text-2xl font-bold mb-4">Shopping Lists</h2><div id="shopping-lists-container" class="space-y-4"></div></div>`;
+        const container = document.getElementById('shopping-lists-container');
+        container.innerHTML = (app.data.shopping || []).length ? (app.data.shopping || []).map(list => this.createShoppingListCard(list)).join('') : `<p class="text-gray-500 p-3">No shopping lists. Use the '+' button to add one.</p>`;
+    },
+    
+    renderSpecificShoppingList() {
+        const pageEl = document.getElementById('shopping-page');
+        const list = (app.data.shopping || []).find(l => l.id === activeShoppingListId);
+        if (!list) { app.navigate('shopping'); return; }
+        
+        pageEl.innerHTML = `<div class="bg-white p-5 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">${list.name}</h2>
+                <button id="back-to-shopping-btn" class="text-sm text-blue-600 font-semibold flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Lists</button>
+            </div>
+            <div id="specific-shopping-list" class="space-y-2 mb-4"></div>
+            <form id="add-shopping-item-form" class="flex gap-2">
+                <input type="text" id="new-shopping-item-text" class="flex-grow border-gray-300 rounded-md shadow-sm p-2 border" placeholder="Add new item..." required>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Add</button>
+            </form>
+        </div>`;
+            
+        document.getElementById('back-to-shopping-btn').onclick = () => app.navigate('shopping', true);
 
-        this.renderActiveShoppingList();
-        this.renderStoresList();
+        const listEl = document.getElementById('specific-shopping-list');
+        const items = list.items.sort((a, b) => a.done - b.done);
+        listEl.innerHTML = items.map(item => `
+            <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 space-x-3 list-item" data-item-id="${item.id}">
+                <input type="checkbox" class="h-6 w-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${item.done ? 'checked' : ''}>
+                <span class="flex-grow text-lg ${item.done ? 'shopping-item-done' : ''}">${item.text}</span>
+                <button class="edit-shopping-item-btn text-gray-400 hover:text-blue-600"><i data-lucide="pencil" class="w-5 h-5"></i></button>
+            </div>`).join('');
+
+        document.getElementById('add-shopping-item-form').addEventListener('submit', (e) => app.handleAddShoppingItem(e));
+    },
+    
+    renderCalendarPage() {
+        const pageEl = document.getElementById('calendar-page');
+        pageEl.innerHTML = `<div class="bg-white p-2 sm:p-4 rounded-xl shadow-md"><div id="calendar-container"></div></div>`;
+        const calendarEl = document.getElementById('calendar-container');
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
+            events: (app.data.schedule || []).map(task => ({ id: task.id, title: task.title, start: task.startTime ? `${task.startDate}T${task.startTime}` : task.startDate, end: task.endTime ? `${task.endDate}T${task.endTime}` : null, allDay: !task.startTime, extendedProps: { person: task.person }, className: `border-l-4 border-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-500 bg-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-50`})),
+            eventClick: (info) => ui.openModal('schedule', info.event.id),
+            dateClick: (info) => ui.openModal('schedule', null, { startDate: info.dateStr.split('T')[0] })
+        });
+        calendar.render();
     },
 
-    renderActiveShoppingList() {
-        const container = document.getElementById('active-list-card');
-        const shoppingList = app.data.groceries || [];
-        
-        let header = `<h2 class="card-title">Active Shopping List</h2>`;
-        if (app.activeStore) {
-            header = `<div class="flex justify-between items-start">
-                        <h2 class="card-title">Shopping at: ${app.activeStore.name}</h2>
-                        <button class="btn btn-success btn-sm" onclick="app.handleCompleteShoppingTrip()"><i class="fas fa-check-circle mr-2"></i>Done</button>
-                      </div>`;
-        }
-
-        let itemsHtml = '<div class="empty-state"><i class="fas fa-shopping-basket"></i><p>Your list is empty. Select a store to add items.</p></div>';
-        if (shoppingList.length > 0) {
-            itemsHtml = `<div class="space-y-3 mt-4 max-h-96 overflow-y-auto pr-2">${shoppingList.map(item => `
-                <div class="flex items-center gap-3 p-2 rounded-lg bg-base-200 group" id="shopping-item-${item.id}">
-                    <input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-primary shopping-item-checkbox" />
-                    <div class="flex-grow ${item.isChecked ? 'line-through text-base-content/50' : ''} shopping-item-name">${item.itemName}</div>
-                    <input type="number" step="0.01" placeholder="$0.00" value="${item.price || ''}" data-id="${item.id}" class="input input-xs input-bordered w-24 text-right shopping-item-price" />
-                    <button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList('${item.id}')">&times;</button>
-                </div>`).join('')}</div>`;
-        }
-
-        const total = shoppingList.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
-        const footer = shoppingList.length > 0 ? `<div class="divider"></div><div class="flex justify-between items-center font-bold text-lg"><span>Total:</span><span class="text-success">$${total.toFixed(2)}</span></div>` : '';
-        
-        container.innerHTML = header + itemsHtml + footer;
-    },
-
-    renderStoresList() {
-        const container = document.getElementById('stores-card');
-        const stores = app.data.stores || [];
-        let storesHtml = '<div class="empty-state"><i class="fas fa-store"></i><p>No stores yet. Add one!</p></div>';
-
-        if (stores.length > 0) {
-            storesHtml = `<div class="space-y-2">${stores.map(store => `
-                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200 cursor-pointer hover:bg-base-300" onclick="ui.openStoreView('${store.id}')">
-                    <span class="font-semibold">${store.name}</span>
-                    <i class="fas fa-chevron-right text-base-content/40"></i>
-                </div>`).join('')}</div>`;
-        }
-
-        container.innerHTML = `<h2 class="card-title">My Stores</h2>
-                               <form id="add-store-form" class="join w-full my-4">
-                                   <input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item flex-1" required />
-                                   <button type="submit" class="btn btn-primary join-item">Add</button>
-                               </form>` + storesHtml;
-        
-        document.getElementById('add-store-form').addEventListener('submit', (e) => app.addStore(e));
-    },
-
-    openStoreView(storeId) {
-        app.currentStoreId = storeId;
-        this.renderStoreDetail();
-    },
-
-    renderStoreDetail() {
-        const container = document.getElementById('shopping-view');
-        const store = (app.data.stores || []).find(s => s.id === app.currentStoreId);
-        if (!store) return;
-
-        const storeItems = (app.data.storeItems || []).filter(item => item.storeId === store.id);
-        let itemsHtml = '<div class="empty-state"><i class="fas fa-tags"></i><p>No items in this store yet.</p></div>';
-        if (storeItems.length > 0) {
-            itemsHtml = `<div class="space-y-2">${storeItems.map(item => `
-                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200 group">
-                    <span>${item.itemName}</span>
-                    <div>
-                        <button class="btn btn-xs btn-ghost text-error opacity-0 group-hover:opacity-100" onclick="app.deleteStoreItem('${item.id}')"><i class="fas fa-trash"></i></button>
-                        <button class="btn btn-sm btn-primary" onclick="app.handleAddToShoppingList('${item.id}')"><i class="fas fa-plus"></i> Add</button>
-                    </div>
-                </div>`).join('')}</div>`;
-        }
-        
-        container.innerHTML = `
-            <div class="card bg-base-100">
-                <div class="card-body">
-                    <div class="flex items-center gap-4 mb-4">
-                        <button class="btn btn-ghost btn-circle" onclick="ui.renderGroceryList()"><i class="fas fa-arrow-left"></i></button>
-                        <h2 class="card-title">${store.name}</h2>
-                    </div>
-                    <form id="add-store-item-form" class="space-y-4 p-4 rounded-lg bg-base-200">
-                         <h3 class="font-semibold">Add New Item</h3>
-                         <input type="text" id="new-store-item-name" placeholder="Item name (e.g., Milk, Bread)" class="input input-bordered w-full" required />
-                         <button type="submit" class="btn btn-secondary w-full">Add Item to Store</button>
-                    </form>
-                    <div class="divider">Store Items</div>
-                    ${itemsHtml}
+    renderHealthPage() {
+        const pageEl = document.getElementById('health-page');
+        const healthAppointments = (app.data.schedule || []).filter(t => ['Health', 'Dentist'].includes(t.category)).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+        pageEl.innerHTML = `
+            <h2 class="text-2xl font-bold mb-4">Health Hub</h2>
+            <div class="bg-white p-5 rounded-xl shadow-md mb-6">
+                <h3 class="text-xl font-bold mb-4">Upcoming Appointments</h3>
+                <div class="space-y-2">
+                    ${healthAppointments.length > 0 ? healthAppointments.map(item => this.createScheduleListItem(item, true)).join('') : '<p class="text-gray-500">No health appointments scheduled.</p>'}
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+                <h3 class="text-xl font-bold mb-4">Medication Schedule</h3>
+                <div class="space-y-2">
+                    ${(app.data.health || []).length > 0 ? (app.data.health || []).map(med => this.createHealthListItem(med)).join('') : '<p class="text-gray-500">No medications logged.</p>'}
                 </div>
             </div>`;
-        document.getElementById('add-store-item-form').addEventListener('submit', (e) => app.addStoreItem(e));
     },
 
-    renderFullSchedule() { 
-        if (this.calendar) this.calendar.destroy(); 
-        const calendarEl = document.getElementById('calendar'); 
-        const tasks = app.data.tasks || []; 
-        const meals = app.data.meals || []; 
-        const events = [ ...tasks.map(task => ({ id: `task-${task.id}`, title: task.name, start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, allDay: !task.dueTime, backgroundColor: app.getEventTypeDetails(task.type).bgColor, borderColor: app.getEventTypeDetails(task.type).bgColor, textColor: app.getEventTypeDetails(task.type).fgColor, className: task.status === 'Done' ? 'opacity-50' : '' })), ...meals.map(meal => ({ id: `meal-${meal.id}`, title: `${meal.mealType}: ${meal.recipeName}`, start: meal.date, allDay: true, backgroundColor: '#FBBD23', borderColor: '#FBBD23' })) ]; 
-        this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => { const [type, id] = info.event.id.split('-'); if (type === 'task') this.openTaskModal(id); else if (type === 'meal') { const mealDate = info.event.start.toISOString().split('T')[0]; const mealType = info.event.title.split(':')[0]; this.openMealModal(mealDate, mealType, id); } } }); 
-        this.calendar.render(); 
+    createHealthListItem(med) {
+        const getPersonBadgeClass = (p) => ({'Dad':'bg-blue-100 text-blue-800','Mom':'bg-pink-100 text-pink-800','Leo':'bg-green-100 text-green-800'}[p] || 'bg-gray-100 text-gray-800');
+        return `<div class="list-item p-3" data-id="${med.id}" data-type="health">
+            <div class="icon-container"><i data-lucide="pill" class="w-7 h-7 text-green-500"></i></div>
+            <div class="flex-grow"><p class="font-bold text-lg">${med.name} <span class="text-sm font-normal text-gray-500">(${med.dosage})</span></p><p class="text-gray-600">${med.time}</p></div>
+            <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(med.person)}">${med.person}</span>
+        </div>`;
+    },
+
+    renderMealsPage() {
+        const pageEl = document.getElementById('meals-page');
+        const mealsByDate = (app.data.meals || []).reduce((acc, meal) => {
+            const date = meal.date;
+            if (!acc[date]) acc[date] = [];
+            acc[date].push(meal);
+            return acc;
+        }, {});
+        const sortedDates = Object.keys(mealsByDate).sort((a, b) => new Date(b) - new Date(a));
+        pageEl.innerHTML = `<h2 class="text-2xl font-bold mb-4">Meal Planner</h2>` + (sortedDates.length > 0 ? sortedDates.map(date => `
+            <div class="bg-white p-5 rounded-xl shadow-md mb-4">
+                <h3 class="text-lg font-bold mb-3">${new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h3>
+                <div class="space-y-2">${mealsByDate[date].map(item => this.createMealListItem(item)).join('')}</div>
+            </div>`).join('') : '<p class="text-gray-500 p-4">No meals planned.</p>');
     },
     
-    renderMealPlanner() { 
-        const container = document.getElementById('meal-planner-grid'); 
-        const meals = app.data.meals || []; 
-        const mealsByDate = meals.reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {}); 
-        const sortedDates = Object.keys(mealsByDate).sort(); 
-        if (sortedDates.length === 0) {
-            container.innerHTML = '<div class="col-span-full empty-state"><i class="fas fa-utensils"></i><p>No meals planned. Add one above to get started.</p></div>';
-            return;
-        }
-        container.innerHTML = sortedDates.map(date => `<div class="card bg-base-100 p-4"><h3 class="font-semibold text-base mb-3">${new Date(date+'T12:00:00').toLocaleDateString(undefined, {weekday: 'long', month: 'short', day: 'numeric'})}</h3><div class="space-y-2">${['Breakfast', 'Lunch', 'Dinner'].map(type => { const meal = mealsByDate[date].find(m => m.mealType === type); return this.createMenuCard(meal, type, date); }).join('')}</div></div>`).join(''); 
-    },
-
-    renderFamilyMembers() { 
-        const members = app.data.familyMembers || []; 
-        const container = document.getElementById('family-member-list');
-        if (!container) return;
-        if (members.length === 0) {
-            container.innerHTML = `<p class="text-base-content/70 text-sm">No family members added.</p>`; 
-        } else {
-            container.innerHTML = members.map(member => `<div class="flex justify-between items-center p-2 bg-base-200 rounded"><span>${member.name}</span><button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember('${member.id}')"><i class="fas fa-trash"></i></button></div>`).join('');
-        }
-    },
-
-    populateAssigneeDropdown() { 
-        const members = app.data.familyMembers || []; 
-        const select = document.getElementById('taskAssignee'); 
-        select.innerHTML = '<option value="">Unassigned</option>'; 
-        members.forEach(member => { select.innerHTML += `<option value="${member.name}">${member.name}</option>`; }); 
-    },
-    
-    async openTaskModal(id = null, templateData = null) { 
-        const form = document.getElementById('task-form'); form.reset();
-        document.getElementById('taskId').value = '';
-        document.getElementById('recurring-options').classList.add('hidden');
-        document.getElementById('task-modal-title').textContent = 'New Event';
-        document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active'));
-        if (id) {
-            const taskDoc = await db.get('tasks', id);
-            if (taskDoc.exists()) {
-                const task = taskDoc.data();
-                document.getElementById('task-modal-title').textContent = 'Edit Event';
-                document.getElementById('taskId').value = id;
-                document.getElementById('taskName').value = task.name || '';
-                document.getElementById('taskType').value = task.type || '';
-                document.getElementById('taskAssignee').value = task.assignee || '';
-                document.getElementById('taskDueDate').value = task.dueDate || '';
-                document.getElementById('taskDueTime').value = task.dueTime || '';
-                document.getElementById('taskIsRecurring').checked = task.isRecurring || false;
-                document.getElementById('taskIsDone').checked = task.status === 'Done';
-                document.getElementById('taskNotes').value = task.notes || '';
-                 if (task.isRecurring) {
-                    document.getElementById('recurring-options').classList.remove('hidden');
-                    task.recurringDays?.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active'));
-                }
-            }
-        }
-        document.getElementById('task_modal').showModal(); 
-    },
-    
-    async openMealModal(date, mealType, id = null, templateData = null) {
-        const form = document.getElementById('meal-form'); form.reset();
-        document.getElementById('ingredient-list-container').innerHTML = '';
-        if (id) {
-            const mealDoc = await db.get('meals', id);
-            if (mealDoc.exists()) {
-                const meal = {id, ...mealDoc.data()};
-                document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`;
-                document.getElementById('mealId').value = meal.id;
-                document.getElementById('mealDate').value = meal.date;
-                document.getElementById('mealType').value = meal.mealType;
-                document.getElementById('recipeName').value = meal.recipeName;
-                document.getElementById('recipeURL').value = meal.recipeURL || '';
-                (meal.ingredients || []).forEach(ing => ui.renderIngredientListItem(ing));
-            }
-        } else {
-             document.getElementById('meal-modal-title').textContent = 'Plan New Meal';
-             if(templateData) {
-                document.getElementById('mealDate').value = templateData.date;
-                document.getElementById('mealType').value = templateData.mealType;
-             }
-        }
-        document.getElementById('meal_modal').showModal();
-    },
-
-     renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { 
-        const container = document.getElementById('ingredient-list-container'); 
-        const div = document.createElement('div'); 
-        div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; 
-        div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; 
-        div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); 
-        container.appendChild(div); 
-    },
-
-    showToast(message, type = 'success') { 
-        const container = document.getElementById('toast-container'); 
-        const toast = document.createElement('div'); 
-        const alertType = type === 'success' ? 'alert-success' : 'alert-error'; 
-        toast.className = `alert ${alertType} shadow-lg`; 
-        toast.innerHTML = `<div><i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i><span>${message}</span></div>`; 
-        container.appendChild(toast); 
-        setTimeout(() => { toast.remove(); }, 3000); 
+    renderContactsPage() {
+        const pageEl = document.getElementById('contacts-page');
+        pageEl.innerHTML = `<h2 class="text-2xl font-bold mb-4">Family & Contacts</h2>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+                <div class="space-y-2">
+                ${(app.data.contacts || []).map(contact => `
+                    <div class="list-item p-3" data-id="${contact.id}" data-type="contacts">
+                        <div class="icon-container"><i data-lucide="user-circle" class="w-8 h-8 text-gray-500"></i></div>
+                        <div class="flex-grow"><p class="font-bold text-lg">${contact.name}</p></div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
     }
 };
 
+
+// --- APP LOGIC ---
 const app = {
-    _tempTaskData: null, activeStore: null, data: {}, currentStoreId: null,
-    init() { ui.init(); this.setupEventListeners(); },
-    setupEventListeners() {
-        document.getElementById('task-form').addEventListener('submit', (e) => this.handleTaskFormSubmit(e));
-        document.getElementById('meal-page-form').addEventListener('submit', (e) => this.handleMealPageFormSubmit(e));
-        document.getElementById('add-family-member-form').addEventListener('submit', (e) => this.addFamilyMember(e));
-        document.getElementById('meal-form').addEventListener('submit', (e) => this.handleMealModalSubmit(e));
-        document.getElementById('add-ingredient-button').addEventListener('click', () => this.handleAddIngredient());
-        document.getElementById('shopping-view').addEventListener('change', (e) => this.handleShoppingListUpdate(e));
+    data: {},
+    toISODate: (date) => new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0],
+
+    navigate(pageId, fromDetail = false) {
+        if (!fromDetail) activeShoppingListId = null;
+        currentPageId = pageId;
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        document.getElementById(`${pageId}-page`).classList.remove('hidden');
+        document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.nav-icon[data-page="${pageId}"]`).classList.add('active');
+        ui.refreshUI();
     },
 
-    getEventTypeDetails(type) {
-        const details = { 'School': { icon: 'fa-bus', bgColor: '#FEF3C7', fgColor: '#92400E', defaultNote: 'School Event' }, 'Team': { icon: 'fa-running', bgColor: '#D1FAE5', fgColor: '#065F46', defaultNote: 'Team Practice/Game' }, 'Restaurant': { icon: 'fa-building', bgColor: '#E0E7FF', fgColor: '#3730A3', defaultNote: 'Dining Out' }, 'Appointment': { icon: 'fa-stethoscope', bgColor: '#FEE2E2', fgColor: '#991B1B', defaultNote: 'Appointment' }, 'Default': { icon: 'fa-calendar-day', bgColor: '#F3F4F6', fgColor: '#4B5563', defaultNote: 'General Event' } };
-        return details[type] || details['Default'];
-    },
-    getMealTypeDetails(type) {
-        const details = { 'Breakfast': { icon: 'fa-sun', color: '#FBBF24' }, 'Lunch': { icon: 'fa-utensil-spoon', color: '#60A5FA' }, 'Dinner': { icon: 'fa-moon', color: '#818CF8' },};
-        return details[type];
+    handleAddItem() {
+        const pageToAction = { 'hub': 'schedule', 'shopping': 'shopping', 'calendar': 'schedule', 'meals': 'meals', 'health': 'health', 'contacts': 'contacts' };
+        const action = pageToAction[currentPageId];
+        if(action) ui.openModal(action);
     },
     
-    async handleTaskFormSubmit(e) { e.preventDefault(); const taskId = document.getElementById('taskId').value; const taskData = { name: document.getElementById('taskName').value, type: document.getElementById('taskType').value, assignee: document.getElementById('taskAssignee').value, dueDate: document.getElementById('taskDueDate').value, dueTime: document.getElementById('taskDueTime').value, isRecurring: document.getElementById('taskIsRecurring').checked, recurringDays: [], status: document.getElementById('taskIsDone').checked ? 'Done' : 'To Do', notes: document.getElementById('taskNotes').value, }; if (taskId) { await db.update('tasks', taskId, taskData); } else { await db.add('tasks', taskData); } ui.showToast("Task saved!"); document.getElementById('task_modal').close(); },
-    async handleMealPageFormSubmit(e) { e.preventDefault(); const form = e.target; const meal = { date: form.elements['meal-page-date'].value, mealType: form.elements['meal-page-type'].value, recipeName: form.elements['meal-page-recipeName'].value, ingredients: [] }; const newDoc = await db.add('meals', meal); ui.openMealModal(meal.date, meal.mealType, newDoc.id); form.reset(); },
-    async handleMealModalSubmit(e) { e.preventDefault(); const form = e.target; const mealId = form.elements.mealId.value; if (!mealId) return; const ingredients = Array.from(document.querySelectorAll('#ingredient-list-container .ingredient-name')).map(el => ({ name: el.textContent, status: el.previousElementSibling.checked ? 'Need' : 'Have' })); const mealData = { date: form.elements.mealDate.value, mealType: form.elements.mealType.value, recipeName: form.elements.recipeName.value, recipeURL: form.elements.recipeURL.value, ingredients }; await db.update('meals', mealId, mealData); ui.showToast("Meal updated!"); document.getElementById('meal_modal').close(); },
-    async addFamilyMember(e) { e.preventDefault(); const nameInput = document.getElementById('new-member-name'); const name = nameInput.value.trim(); if (name) { await db.add('familyMembers', { name }); nameInput.value = ''; ui.showToast("Family member added!"); } },
-    async addStore(e) { e.preventDefault(); const nameInput = document.getElementById('new-store-name'); const name = nameInput.value.trim(); if (name) { await db.add('stores', { name }); nameInput.value = ''; ui.showToast("Store added!"); } },
-    async addStoreItem(e) { e.preventDefault(); const input = document.getElementById('new-store-item-name'); const itemName = input.value.trim(); if(itemName && this.currentStoreId) { await db.add('storeItems', { itemName, storeId: this.currentStoreId }); input.value = ''; ui.renderStoreDetail(); } },
-    async handleAddToShoppingList(storeItemId) { const itemDoc = await db.get('storeItems', storeItemId); if (!itemDoc.exists()) return; const item = itemDoc.data(); const storeDoc = await db.get('stores', item.storeId); if (!storeDoc.exists()) return; const store = {id: storeDoc.id, ...storeDoc.data()}; if (this.activeStore && this.activeStore.id !== store.id) { if (!confirm(`You have an active list for ${this.activeStore.name}. Clear it and start a new one for ${store.name}?`)) return; await db.clear('groceries'); } this.activeStore = store; if((app.data.groceries || []).some(i => i.itemName.toLowerCase() === item.itemName.toLowerCase())) { return ui.showToast(`${item.itemName} is already on the list.`, 'error'); } await db.add('groceries', { storeId: item.storeId, itemName: item.itemName, isChecked: false, price: null }); ui.showToast("Item added to list!"); },
-    async handleShoppingListUpdate(e) { const target = e.target; const itemId = target.dataset.id; if (!itemId) return; if (target.matches('.shopping-item-checkbox')) { await db.update('groceries', itemId, { isChecked: target.checked }); } else if (target.matches('.shopping-item-price')) { await db.update('groceries', itemId, { price: parseFloat(target.value) || null }); } },
-    async handleRemoveFromShoppingList(id) { await db.delete('groceries', id); },
-    async handleCompleteShoppingTrip() { if (!this.activeStore || !app.data.groceries || app.data.groceries.length === 0) return; const totalCost = app.data.groceries.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const newTrip = { dateCompleted: new Date().toISOString(), items: app.data.groceries, totalCost, storeId: this.activeStore.id, storeName: this.activeStore.name }; await db.add('shoppingTrips', newTrip); await db.clear('groceries'); this.activeStore = null; ui.showToast('Shopping trip saved!'); },
-    async deleteStore(id) { await db.delete('stores', id); /* also delete associated storeItems */ ui.showToast("Store deleted."); },
-    async deleteStoreItem(id) { await db.delete('storeItems', id); ui.showToast("Item deleted from store."); },
-    handleAddIngredient() { const input = document.getElementById('new-ingredient-name'); const name = input.value.trim(); if (name) { ui.renderIngredientListItem({ name, status: 'Need' }); input.value = ''; input.focus(); } },
-    async deleteFamilyMember(id) { await db.delete('familyMembers', id); ui.showToast("Member removed."); },
-    async handleDeleteMeal() { const id = document.getElementById('mealId').value; if(id) await db.delete('meals', id); ui.showToast('Meal deleted.'); document.getElementById('meal_modal').close(); },
-    exportData() {ui.showToast('Exporting data...');},
-    importData(e) {ui.showToast('Importing data...');},
-    async clearAllData() { if (confirm("DANGER: This will permanently delete ALL data from the cloud. Are you sure?")) { for (const storeName of OBJECT_STORES) await db.clear(storeName); this.activeStore = null; ui.showToast('All cloud data has been cleared.'); document.getElementById('manage_modal').close(); } },
+    handleMainContentClick(e) {
+        const listItem = e.target.closest('.list-item[data-id]');
+        if (listItem) return ui.openModal(listItem.dataset.type, listItem.dataset.id);
+
+        const shoppingListCard = e.target.closest('[data-list-id]');
+        if(shoppingListCard) {
+            activeShoppingListId = shoppingListCard.dataset.listId;
+            return this.navigate('shopping', true);
+        }
+        
+        const checkbox = e.target.closest('[data-item-id] input[type="checkbox"]');
+        if (checkbox) {
+            const itemId = checkbox.closest('[data-item-id]').dataset.itemId;
+            return this.handleToggleShoppingItem(itemId, checkbox.checked);
+        }
+        
+        const editBtn = e.target.closest('.edit-shopping-item-btn');
+        if (editBtn) {
+            const itemId = editBtn.closest('[data-item-id]').dataset.itemId;
+            return ui.openModal('shoppingItem', itemId);
+        }
+    },
+
+    async handleFormSubmit(e) {
+        e.preventDefault();
+        const type = ui.modal.dataset.type;
+        const id = ui.modal.dataset.id;
+        let updatedData;
+
+        switch(type) {
+            case 'schedule': updatedData = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value, endDate: document.getElementById('edit-end-date').value, endTime: document.getElementById('edit-end-time').value }; break;
+            case 'shopping': updatedData = { name: document.getElementById('edit-list-name').value, icon: document.getElementById('edit-list-icon').value, items: (id ? this.data.shopping.find(l=>l.id===id).items : []) }; break;
+            case 'shoppingItem': const list = this.data.shopping.find(l => l.id === activeShoppingListId); const item = list.items.find(i => i.id === id); item.text = document.getElementById('edit-item-text').value; await db.update('shopping', list.id, { items: list.items }); break;
+            case 'health': updatedData = { person: document.getElementById('edit-health-person').value, name: document.getElementById('edit-health-name').value, dosage: document.getElementById('edit-health-dosage').value, time: document.getElementById('edit-health-time').value }; break;
+            case 'meals': updatedData = { date: document.getElementById('edit-meal-date').value, label: document.getElementById('edit-meal-label').value, title: document.getElementById('edit-meal-title').value }; break;
+            case 'contacts': updatedData = { name: document.getElementById('edit-contact-name').value }; break;
+        }
+        
+        if (updatedData) {
+            if (id && id !== 'null') await db.update(type, id, updatedData);
+            else await db.add(type, updatedData);
+        }
+        
+        ui.closeModal();
+    },
+    
+    async handleDelete() {
+        if (!confirm('Are you sure you want to delete this item?')) return;
+        const type = ui.modal.dataset.type;
+        const id = ui.modal.dataset.id;
+        
+        if (type === 'shoppingItem') {
+            const list = this.data.shopping.find(l => l.id === activeShoppingListId);
+            list.items = list.items.filter(i => i.id !== id);
+            await db.update('shopping', list.id, { items: list.items });
+        } else if (id) {
+            await db.delete(type, id);
+        }
+        
+        ui.closeModal();
+    },
+
+    async handleAddShoppingItem(e) {
+        e.preventDefault();
+        const input = document.getElementById('new-shopping-item-text');
+        const text = input.value.trim();
+        if (text) {
+            const list = this.data.shopping.find(l => l.id === activeShoppingListId);
+            list.items.push({ id: `item-${Date.now()}`, text, done: false });
+            await db.update('shopping', list.id, { items: list.items });
+        }
+    },
+
+    async handleToggleShoppingItem(itemId, isDone) {
+        const list = this.data.shopping.find(l => l.id === activeShoppingListId);
+        const item = list.items.find(i => i.id === itemId);
+        if (item) {
+            item.done = isDone;
+            await db.update('shopping', list.id, { items: list.items });
+        }
+    }
 };
 
-const initFirebase = async () => {
+// --- INITIALIZATION ---
+async function initFirebase() {
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : providedFirebaseConfig;
-    if (!firebaseConfig.apiKey) { document.body.innerHTML = '<div class="alert alert-error m-4">Firebase configuration is missing. The app cannot start.</div>'; return; }
-    const fb_app = initializeApp(firebaseConfig);
-    fb_db = getFirestore(fb_app);
-    fb_auth = getAuth(fb_app);
+    const app = initializeApp(firebaseConfig);
+    fb_db = getFirestore(app);
+    fb_auth = getAuth(app);
 
     onAuthStateChanged(fb_auth, async (user) => {
         if (user) {
             userId = user.uid;
-            app.init();
             setupRealtimeListeners();
             await seedInitialData();
         } else {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(fb_auth, __initial_auth_token);
-                else await signInAnonymously(fb_auth);
-            } catch (error) { console.error("Authentication error:", error); }
+            await signInAnonymously(fb_auth);
         }
     });
-};
+}
 
-const setupRealtimeListeners = () => {
+function setupRealtimeListeners() {
     unsubscribes.forEach(unsub => unsub());
     unsubscribes = [];
     OBJECT_STORES.forEach(storeName => {
-        const q = query(collection(fb_db, db._getCollectionPath(storeName)));
+        const q = collection(fb_db, db._getCollectionPath(storeName));
         const unsub = onSnapshot(q, (snapshot) => {
             app.data[storeName] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            ui.renderAll();
-        }, (error) => console.error(`Error listening to ${storeName}:`, error));
+            ui.refreshUI();
+        });
         unsubscribes.push(unsub);
     });
-};
+}
 
-const seedInitialData = async () => {
-    const membersSnapshot = await getDocs(collection(fb_db, db._getCollectionPath('familyMembers')));
-    if (!membersSnapshot.empty) return;
+async function seedInitialData() {
+    const contactsDoc = await getDocs(collection(fb_db, db._getCollectionPath('contacts')));
+    if (!contactsDoc.empty) return;
     
-    console.log("Seeding initial data for new user...");
+    console.log("Seeding initial data...");
+    const todayISO = app.toISODate(new Date());
+    const defaultData = {
+        schedule: [ { title: 'Drop off Leo at School', person: 'Dad', startDate: todayISO, startTime: '08:00', endDate: todayISO, endTime: '08:30', category: 'School' }, { title: 'Doctor Appointment', person: 'Mom', startDate: todayISO, startTime: '10:30', endDate: todayISO, endTime: '11:30', category: 'Health' }],
+        meals: [ { title: 'Pancakes & Berries', label: 'Breakfast', date: todayISO }, { title: 'Chicken Salad', label: 'Lunch', date: todayISO } ],
+        shopping: [ { name: 'Grocery Run', icon: 'shopping-cart', items: [ {id: `item-${Date.now()}`, text: 'Milk', done: false}, {id: `item-${Date.now()+1}`, text: 'Bread', done: true} ]}],
+        health: [ { person: 'Leo', name: 'Daily Vitamin', dosage: '1 gummy', time: '08:00', notes: 'Take with breakfast'} ],
+        contacts: [ { name: 'Mom' }, { name: 'Dad' }, { name: 'Leo' }]
+    };
+
     const batch = writeBatch(fb_db);
-    const today = new Date().toISOString().split('T')[0];
-
-    const family = [{name: 'Emma'}, {name: 'Jack'}, {name: 'Sarah'}, {name: 'Mike'}];
-    family.forEach(m => batch.set(doc(collection(fb_db, db._getCollectionPath('familyMembers'))), m));
-    
-    const tasks = [ { name: "School Drop-off", type: 'School', assignee: 'Sarah', dueDate: today, dueTime: '08:00', notes: 'Elementary School' }, { name: "Emma - Soccer Practice", type: 'Team', assignee: 'Mike', dueDate: today, dueTime: '10:00', notes: 'Community Park' }, { name: "Lunch with Team", type: 'Restaurant', assignee: 'Mike', dueDate: today, dueTime: '12:00', notes: 'Downtown Restaurant' }, ];
-    tasks.forEach(t => batch.set(doc(collection(fb_db, db._getCollectionPath('tasks'))), t));
-
-    const meals = [ { recipeName: 'Pancakes', mealType: 'Breakfast', date: today, assignee: 'Mike' }, { recipeName: 'Chicken Salad', mealType: 'Lunch', date: today, assignee: 'Sarah' }, { recipeName: 'Spaghetti', mealType: 'Dinner', date: today, assignee: 'Sarah' } ];
-    meals.forEach(m => batch.set(doc(collection(fb_db, db._getCollectionPath('meals'))), m));
-    
-    await batch.commit();
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    initFirebase();
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered.', reg))
-            .catch(err => console.log('SW registration failed:', err));
-        });
+    for (const storeName in defaultData) {
+        for (const item of defaultData[storeName]) {
+            const docRef = doc(collection(fb_db, db._getCollectionPath(storeName)));
+            batch.set(docRef, item);
+        }
     }
-});
-window.ui = ui;
-window.app = app;
-</script>
+    await batch.commit();
+}
 
+document.addEventListener('DOMContentLoaded', async () => {
+    ui.init();
+    await initFirebase();
+    app.navigate('hub');
+});
+</script>
 </body>
 </html>
+
