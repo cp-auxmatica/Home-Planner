@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="homenexus-light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,28 +37,6 @@
             --rounded-box: 1rem;
             --rounded-btn: 0.75rem;
             --border-color: #E2E2F2;
-            --bc: var(--border-color);
-        }
-
-        :root[data-theme="homenexus-dark"] {
-            --primary: #797BFF;
-            --primary-content: #ffffff;
-            --secondary: #2A2A3E;
-            --secondary-content: #E2E2F2;
-            --accent: #3A3A52;
-            --accent-content: #E2E2F2;
-            --neutral: #717182;
-            --base-100: #1C1C2E;
-            --base-200: #121223;
-            --base-300: #2A2A3E;
-            --base-content: #E2E2F2;
-            --info: #3ABFF8;
-            --success: #36D399;
-            --warning: #FBBD23;
-            --error: #F87272;
-            --rounded-box: 1rem;
-            --rounded-btn: 0.75rem;
-            --border-color: #2A2A3E;
             --bc: var(--border-color);
         }
 
@@ -189,14 +167,14 @@
                 </div>
             </div>
 
-            <!-- Calendar View (was fullschedule) -->
+            <!-- Calendar View -->
             <div id="calendar-view" class="view hidden">
                 <div class="card bg-base-100 p-4">
                     <div id="calendar"></div>
                 </div>
             </div>
             
-            <!-- Meals View (was mealplanner) -->
+            <!-- Meals View -->
             <div id="meals-view" class="view hidden">
                 <div class="card bg-base-100 mb-6">
                     <div class="card-body">
@@ -224,39 +202,21 @@
                 <div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
 
-            <!-- Shopping View (was grocerylist) -->
-            <div id="shopping-view" class="view hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card bg-base-100">
-                    <div class="card-body">
-                        <div id="active-list-header"></div>
-                        <div id="shopping-list-container" class="space-y-3 mt-4 max-h-96 overflow-y-auto pr-2"></div>
-                        <div id="active-list-footer" class="hidden">
-                            <div class="divider"></div>
-                            <div class="flex justify-between items-center font-bold text-lg">
-                                <span>Total:</span>
-                                <span id="shopping-list-total" class="text-success">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card bg-base-100">
-                    <div class="card-body">
-                        <h2 class="card-title">My Stores</h2>
-                        <form id="add-store-form" class="join w-full mt-4">
-                            <input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item flex-1" required />
-                            <button type="submit" class="btn btn-primary join-item">Add</button>
-                        </form>
-                        <div id="stores-container" class="mt-6 space-y-4"></div>
-                    </div>
-                </div>
+            <!-- Shopping View -->
+            <div id="shopping-view" class="view space-y-6">
+                <!-- This will be dynamically filled by ui.renderGroceryList or ui.renderStoreDetail -->
             </div>
             
             <!-- Family View -->
             <div id="family-view" class="view hidden">
                 <div class="card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title">Family Members</h2>
+                         <div class="flex justify-between items-center">
+                            <h2 class="card-title">Family Members</h2>
+                            <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()">
+                                <i class="fas fa-cog text-xl text-base-content/50"></i>
+                            </button>
+                        </div>
                          <form id="add-family-member-form" class="flex gap-2 my-4">
                             <input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required />
                             <button type="submit" class="btn btn-primary">Add</button>
@@ -295,7 +255,7 @@
     
     <div class="toast toast-top toast-center" id="toast-container"></div>
 
-    <!-- Modals (simplified, settings is now its own modal) -->
+    <!-- Modals -->
     <dialog id="task_modal" class="modal">
         <div class="modal-box w-11/12 max-w-lg">
             <h3 class="font-bold text-lg mb-4" id="task-modal-title">New Event</h3>
@@ -334,7 +294,7 @@
 
     <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
 
-    <dialog id="manage_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg">Settings</h3><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Theme</h4><select id="theme-switcher" class="select select-bordered w-full mt-2"><option value="homenexus-light">Light</option><option value="homenexus-dark">Dark</option><option value="system">System Default</option></select></div><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/60">Export or import your data. This is a local backup and will not affect cloud data.</p><div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div><div class="divider"></div><button class="btn btn-error w-full mt-4" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data</button></div><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <dialog id="manage_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg">Settings</h3><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/60">Export or import your data. This is a local backup and will not affect cloud data.</p><div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div><div class="divider"></div><button class="btn btn-error w-full mt-4" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Cloud Data</button></div><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
 
 <script type="module">
 // --- FIREBASE IMPORTS ---
@@ -354,28 +314,6 @@ const providedFirebaseConfig = {
   storageBucket: "home-planner-ce48b.firebasestorage.app",
   messagingSenderId: "20103999017",
   appId: "1:20103999017:web:9be545d5a0f70008dc7638"
-};
-
-const themeManager = {
-    init() {
-        const selector = document.getElementById('theme-switcher');
-        selector.addEventListener('change', (e) => this.setTheme(e.target.value));
-        const savedTheme = localStorage.getItem('theme') || 'system';
-        selector.value = savedTheme;
-        this.setTheme(savedTheme);
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-            if (localStorage.getItem('theme') === 'system') this.applySystemTheme();
-        });
-    },
-    setTheme(theme) {
-        localStorage.setItem('theme', theme);
-        if (theme === 'system') this.applySystemTheme();
-        else document.documentElement.setAttribute('data-theme', theme);
-    },
-    applySystemTheme() {
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'homenexus-dark' : 'homenexus-light';
-        document.documentElement.setAttribute('data-theme', systemTheme);
-    }
 };
 
 const db = {
@@ -422,29 +360,24 @@ const ui = {
         const today = new Date();
         const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
         const todayStr = today.toISOString().split('T')[0];
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
         
         const tasks = app.data.tasks || [];
         const meals = app.data.meals || [];
         
-        // Today's Schedule
         const scheduleContainer = document.getElementById('today-schedule-widget');
         const todayEvents = tasks.filter(t => t.dueDate === todayStr).sort((a,b) => (a.dueTime || "23:59").localeCompare(b.dueTime || "23:59"));
         scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => this.createScheduleItem(t)).join('') : '<div class="empty-state"><i class="fas fa-check-circle"></i><p>Nothing scheduled for today.</p></div>';
 
-        // Today's Menu
         const menuContainer = document.getElementById('today-menu-widget');
         menuContainer.innerHTML = ['Breakfast', 'Lunch', 'Dinner'].map(type => {
             const meal = meals.find(m => m.date === todayStr && m.mealType === type);
             return this.createMenuCard(meal, type, todayStr);
         }).join('');
 
-        // Coming Up
         const comingUpContainer = document.getElementById('coming-up-widget');
         const upcomingEvents = tasks.filter(t => new Date(t.dueDate) > today).sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, 3);
         comingUpContainer.innerHTML = upcomingEvents.length ? upcomingEvents.map(t => this.createScheduleItem(t, true)).join('') : '<div class="empty-state"><i class="fas fa-coffee"></i><p>Nothing on the horizon.</p></div>';
 
-        // Stats
         document.getElementById('stat-today').textContent = todayEvents.length;
         const mealsToday = meals.filter(m => m.date === todayStr).length;
         document.getElementById('stat-meals').textContent = `${mealsToday}/3`;
@@ -460,13 +393,8 @@ const ui = {
         if (isUpcoming) {
             const eventDate = new Date(task.dueDate + "T00:00:00");
             const tomorrow = new Date(); tomorrow.setDate(new Date().getDate() + 1);
-            if (eventDate.toDateString() === tomorrow.toDateString()) {
-                dateInfo = 'Tomorrow';
-            } else {
-                dateInfo = eventDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-            }
+            dateInfo = (eventDate.toDateString() === tomorrow.toDateString()) ? 'Tomorrow' : eventDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
         }
-        
         const assignees = (task.assignee || '').split(',').map(a => a.trim()).filter(Boolean);
         const assigneeHtml = assignees.map(a => `<div class="avatar placeholder w-6 h-6"><div class="bg-secondary text-secondary-content rounded-full"><span>${a.charAt(0).toUpperCase()}</span></div></div>`).join('');
 
@@ -487,8 +415,6 @@ const ui = {
 
     createMenuCard(meal, type, date) {
         const details = app.getMealTypeDetails(type);
-        const assignee = meal ? (app.data.familyMembers || []).find(m => m.name === meal.assignee) : null;
-
         return `<div class="card bg-base-200 text-center p-3 cursor-pointer" onclick="${meal ? `ui.openMealModal('${meal.date}', '${meal.mealType}', '${meal.id}')` : `ui.openMealModal(null, null, null, {date: '${date}', mealType: '${type}'})`}">
             <i class="fas ${details.icon} text-lg mx-auto mb-2" style="color: ${details.color}"></i>
             <p class="text-sm font-semibold text-base-content">${type}</p>
@@ -498,15 +424,106 @@ const ui = {
     },
     
     renderGroceryList() {
-        // This function and others (history, etc) can be ported from the previous version, adapting to the new UI structure
-        // For brevity, the logic is kept similar to the last fully functional version, but simplified for demonstration
         const container = document.getElementById('shopping-view');
-        container.innerHTML = `<div class="card bg-base-100"><div class="card-body"><h2 class="card-title">Groceries</h2><p>Grocery list functionality coming soon!</p></div></div>`;
+        const activeListHtml = `<div class="card bg-base-100"><div class="card-body" id="active-list-card"></div></div>`;
+        const storesHtml = `<div class="card bg-base-100"><div class="card-body" id="stores-card"></div></div>`;
+        container.innerHTML = activeListHtml + storesHtml;
+
+        this.renderActiveShoppingList();
+        this.renderStoresList();
     },
-    
-    renderHistory() {
-        const container = document.getElementById('history-view') || document.createElement('div');
-        container.innerHTML = `<div class="card bg-base-100"><div class="card-body"><h2 class="card-title">History</h2><p>History functionality coming soon!</p></div></div>`;
+
+    renderActiveShoppingList() {
+        const container = document.getElementById('active-list-card');
+        const shoppingList = app.data.groceries || [];
+        
+        let header = `<h2 class="card-title">Active Shopping List</h2>`;
+        if (app.activeStore) {
+            header = `<div class="flex justify-between items-start">
+                        <h2 class="card-title">Shopping at: ${app.activeStore.name}</h2>
+                        <button class="btn btn-success btn-sm" onclick="app.handleCompleteShoppingTrip()"><i class="fas fa-check-circle mr-2"></i>Done</button>
+                      </div>`;
+        }
+
+        let itemsHtml = '<div class="empty-state"><i class="fas fa-shopping-basket"></i><p>Your list is empty. Select a store to add items.</p></div>';
+        if (shoppingList.length > 0) {
+            itemsHtml = `<div class="space-y-3 mt-4 max-h-96 overflow-y-auto pr-2">${shoppingList.map(item => `
+                <div class="flex items-center gap-3 p-2 rounded-lg bg-base-200 group" id="shopping-item-${item.id}">
+                    <input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-primary shopping-item-checkbox" />
+                    <div class="flex-grow ${item.isChecked ? 'line-through text-base-content/50' : ''} shopping-item-name">${item.itemName}</div>
+                    <input type="number" step="0.01" placeholder="$0.00" value="${item.price || ''}" data-id="${item.id}" class="input input-xs input-bordered w-24 text-right shopping-item-price" />
+                    <button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList('${item.id}')">&times;</button>
+                </div>`).join('')}</div>`;
+        }
+
+        const total = shoppingList.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
+        const footer = shoppingList.length > 0 ? `<div class="divider"></div><div class="flex justify-between items-center font-bold text-lg"><span>Total:</span><span class="text-success">$${total.toFixed(2)}</span></div>` : '';
+        
+        container.innerHTML = header + itemsHtml + footer;
+    },
+
+    renderStoresList() {
+        const container = document.getElementById('stores-card');
+        const stores = app.data.stores || [];
+        let storesHtml = '<div class="empty-state"><i class="fas fa-store"></i><p>No stores yet. Add one!</p></div>';
+
+        if (stores.length > 0) {
+            storesHtml = `<div class="space-y-2">${stores.map(store => `
+                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200 cursor-pointer hover:bg-base-300" onclick="ui.openStoreView('${store.id}')">
+                    <span class="font-semibold">${store.name}</span>
+                    <i class="fas fa-chevron-right text-base-content/40"></i>
+                </div>`).join('')}</div>`;
+        }
+
+        container.innerHTML = `<h2 class="card-title">My Stores</h2>
+                               <form id="add-store-form" class="join w-full my-4">
+                                   <input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item flex-1" required />
+                                   <button type="submit" class="btn btn-primary join-item">Add</button>
+                               </form>` + storesHtml;
+        
+        document.getElementById('add-store-form').addEventListener('submit', (e) => app.addStore(e));
+    },
+
+    openStoreView(storeId) {
+        app.currentStoreId = storeId;
+        this.renderStoreDetail();
+    },
+
+    renderStoreDetail() {
+        const container = document.getElementById('shopping-view');
+        const store = (app.data.stores || []).find(s => s.id === app.currentStoreId);
+        if (!store) return;
+
+        const storeItems = (app.data.storeItems || []).filter(item => item.storeId === store.id);
+        let itemsHtml = '<div class="empty-state"><i class="fas fa-tags"></i><p>No items in this store yet.</p></div>';
+        if (storeItems.length > 0) {
+            itemsHtml = `<div class="space-y-2">${storeItems.map(item => `
+                <div class="flex items-center justify-between p-3 rounded-lg bg-base-200 group">
+                    <span>${item.itemName}</span>
+                    <div>
+                        <button class="btn btn-xs btn-ghost text-error opacity-0 group-hover:opacity-100" onclick="app.deleteStoreItem('${item.id}')"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-primary" onclick="app.handleAddToShoppingList('${item.id}')"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </div>`).join('')}</div>`;
+        }
+        
+        container.innerHTML = `
+            <div class="card bg-base-100">
+                <div class="card-body">
+                    <div class="flex items-center gap-4 mb-4">
+                        <button class="btn btn-ghost btn-circle" onclick="ui.renderGroceryList()"><i class="fas fa-arrow-left"></i></button>
+                        <h2 class="card-title">${store.name}</h2>
+                    </div>
+                    <form id="add-store-item-form" class="space-y-4 p-4 rounded-lg bg-base-200">
+                         <h3 class="font-semibold">Add New Item</h3>
+                         <input type="text" id="new-store-item-name" placeholder="Item name (e.g., Milk, Bread)" class="input input-bordered w-full" required />
+                         <button type="submit" class="btn btn-secondary w-full">Add Item to Store</button>
+                    </form>
+                    <div class="divider">Store Items</div>
+                    ${itemsHtml}
+                </div>
+            </div>`;
+        document.getElementById('add-store-item-form').addEventListener('submit', (e) => app.addStoreItem(e));
     },
 
     renderFullSchedule() { 
@@ -550,7 +567,6 @@ const ui = {
     },
     
     async openTaskModal(id = null, templateData = null) { 
-        // Logic from previous version, adapted for new UI
         const form = document.getElementById('task-form'); form.reset();
         document.getElementById('taskId').value = '';
         document.getElementById('recurring-options').classList.add('hidden');
@@ -561,14 +577,15 @@ const ui = {
             if (taskDoc.exists()) {
                 const task = taskDoc.data();
                 document.getElementById('task-modal-title').textContent = 'Edit Event';
-                Object.keys(task).forEach(key => {
-                    const el = form.elements[key];
-                    if (el) {
-                        if (el.type === 'checkbox') el.checked = task[key];
-                        else el.value = task[key];
-                    }
-                });
                 document.getElementById('taskId').value = id;
+                document.getElementById('taskName').value = task.name || '';
+                document.getElementById('taskType').value = task.type || '';
+                document.getElementById('taskAssignee').value = task.assignee || '';
+                document.getElementById('taskDueDate').value = task.dueDate || '';
+                document.getElementById('taskDueTime').value = task.dueTime || '';
+                document.getElementById('taskIsRecurring').checked = task.isRecurring || false;
+                document.getElementById('taskIsDone').checked = task.status === 'Done';
+                document.getElementById('taskNotes').value = task.notes || '';
                  if (task.isRecurring) {
                     document.getElementById('recurring-options').classList.remove('hidden');
                     task.recurringDays?.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active'));
@@ -579,7 +596,6 @@ const ui = {
     },
     
     async openMealModal(date, mealType, id = null, templateData = null) {
-        // Combined logic for new/edit meal
         const form = document.getElementById('meal-form'); form.reset();
         document.getElementById('ingredient-list-container').innerHTML = '';
         if (id) {
@@ -587,16 +603,30 @@ const ui = {
             if (mealDoc.exists()) {
                 const meal = {id, ...mealDoc.data()};
                 document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`;
-                Object.keys(meal).forEach(key => form.elements[key] && (form.elements[key].value = meal[key]));
-                (meal.ingredients || []).forEach(ing => this.renderIngredientListItem(ing));
+                document.getElementById('mealId').value = meal.id;
+                document.getElementById('mealDate').value = meal.date;
+                document.getElementById('mealType').value = meal.mealType;
+                document.getElementById('recipeName').value = meal.recipeName;
+                document.getElementById('recipeURL').value = meal.recipeURL || '';
+                (meal.ingredients || []).forEach(ing => ui.renderIngredientListItem(ing));
             }
         } else {
              document.getElementById('meal-modal-title').textContent = 'Plan New Meal';
              if(templateData) {
-                Object.keys(templateData).forEach(key => form.elements[key] && (form.elements[key].value = templateData[key]));
+                document.getElementById('mealDate').value = templateData.date;
+                document.getElementById('mealType').value = templateData.mealType;
              }
         }
         document.getElementById('meal_modal').showModal();
+    },
+
+     renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { 
+        const container = document.getElementById('ingredient-list-container'); 
+        const div = document.createElement('div'); 
+        div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; 
+        div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; 
+        div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); 
+        container.appendChild(div); 
     },
 
     showToast(message, type = 'success') { 
@@ -611,71 +641,49 @@ const ui = {
 };
 
 const app = {
-    _tempTaskData: null, activeStore: null, data: {},
+    _tempTaskData: null, activeStore: null, data: {}, currentStoreId: null,
     init() { ui.init(); this.setupEventListeners(); },
     setupEventListeners() {
         document.getElementById('task-form').addEventListener('submit', (e) => this.handleTaskFormSubmit(e));
         document.getElementById('meal-page-form').addEventListener('submit', (e) => this.handleMealPageFormSubmit(e));
         document.getElementById('add-family-member-form').addEventListener('submit', (e) => this.addFamilyMember(e));
-        document.getElementById('add-store-form').addEventListener('submit', (e) => this.addStore(e));
         document.getElementById('meal-form').addEventListener('submit', (e) => this.handleMealModalSubmit(e));
         document.getElementById('add-ingredient-button').addEventListener('click', () => this.handleAddIngredient());
-        // Simplified event listeners for brevity, full implementation would be similar to previous version
+        document.getElementById('shopping-view').addEventListener('change', (e) => this.handleShoppingListUpdate(e));
     },
 
     getEventTypeDetails(type) {
-        const details = {
-            'School': { icon: 'fa-bus', bgColor: '#FEF3C7', fgColor: '#92400E', defaultNote: 'School Event' },
-            'Team': { icon: 'fa-running', bgColor: '#D1FAE5', fgColor: '#065F46', defaultNote: 'Team Practice/Game' },
-            'Restaurant': { icon: 'fa-building', bgColor: '#E0E7FF', fgColor: '#3730A3', defaultNote: 'Dining Out' },
-            'Appointment': { icon: 'fa-stethoscope', bgColor: '#FEE2E2', fgColor: '#991B1B', defaultNote: 'Appointment' },
-            'Default': { icon: 'fa-calendar-day', bgColor: '#F3F4F6', fgColor: '#4B5563', defaultNote: 'General Event' }
-        };
+        const details = { 'School': { icon: 'fa-bus', bgColor: '#FEF3C7', fgColor: '#92400E', defaultNote: 'School Event' }, 'Team': { icon: 'fa-running', bgColor: '#D1FAE5', fgColor: '#065F46', defaultNote: 'Team Practice/Game' }, 'Restaurant': { icon: 'fa-building', bgColor: '#E0E7FF', fgColor: '#3730A3', defaultNote: 'Dining Out' }, 'Appointment': { icon: 'fa-stethoscope', bgColor: '#FEE2E2', fgColor: '#991B1B', defaultNote: 'Appointment' }, 'Default': { icon: 'fa-calendar-day', bgColor: '#F3F4F6', fgColor: '#4B5563', defaultNote: 'General Event' } };
         return details[type] || details['Default'];
     },
-     getMealTypeDetails(type) {
-        const details = {
-            'Breakfast': { icon: 'fa-sun', color: '#FBBF24' },
-            'Lunch': { icon: 'fa-utensil-spoon', color: '#60A5FA' },
-            'Dinner': { icon: 'fa-moon', color: '#818CF8' },
-        };
+    getMealTypeDetails(type) {
+        const details = { 'Breakfast': { icon: 'fa-sun', color: '#FBBF24' }, 'Lunch': { icon: 'fa-utensil-spoon', color: '#60A5FA' }, 'Dinner': { icon: 'fa-moon', color: '#818CF8' },};
         return details[type];
     },
     
-    async handleTaskFormSubmit(e) { e.preventDefault(); /* Full logic from previous version */ ui.showToast("Task saved!"); document.getElementById('task_modal').close(); },
-    async handleMealPageFormSubmit(e) { e.preventDefault(); /* Full logic from previous version */ ui.showToast("Meal planned!"); },
-    async addFamilyMember(e) { e.preventDefault(); /* Full logic from previous version */ ui.showToast("Family member added!"); },
-    async addStore(e) { e.preventDefault(); /* Full logic from previous version */ ui.showToast("Store added!"); },
-    async handleMealModalSubmit(e) { e.preventDefault(); /* Full logic from previous version */ ui.showToast("Meal updated!"); document.getElementById('meal_modal').close(); },
-    handleAddIngredient() {
-        const input = document.getElementById('new-ingredient-name');
-        const name = input.value.trim();
-        if (name) {
-            ui.renderIngredientListItem({ name, status: 'Need' });
-            input.value = '';
-            input.focus();
-        }
-    },
-    // Dummy handlers for other functions for brevity
-    deleteFamilyMember(id) { console.log('Delete family member', id); ui.showToast("Member removed."); },
-    handleCompleteShoppingTrip() { ui.showToast("Trip completed!"); },
-    deleteStore(id, name) { ui.showToast(`Store ${name} deleted.`); },
-    addStoreItem(e, storeId) { e.preventDefault(); ui.showToast("Item added to store."); },
-    toggleEditStoreItem(id){ console.log('edit store item', id)},
-    handleAddToShoppingList(id){ ui.showToast('Item added to list!')},
-    handleRemoveFromShoppingList(id){ui.showToast('Item removed.')},
-    toggleEditShoppingItem(id){console.log('edit shopping item', id)},
-    handleDeleteMeal(){ui.showToast('Meal deleted.'); document.getElementById('meal_modal').close()},
+    async handleTaskFormSubmit(e) { e.preventDefault(); const taskId = document.getElementById('taskId').value; const taskData = { name: document.getElementById('taskName').value, type: document.getElementById('taskType').value, assignee: document.getElementById('taskAssignee').value, dueDate: document.getElementById('taskDueDate').value, dueTime: document.getElementById('taskDueTime').value, isRecurring: document.getElementById('taskIsRecurring').checked, recurringDays: [], status: document.getElementById('taskIsDone').checked ? 'Done' : 'To Do', notes: document.getElementById('taskNotes').value, }; if (taskId) { await db.update('tasks', taskId, taskData); } else { await db.add('tasks', taskData); } ui.showToast("Task saved!"); document.getElementById('task_modal').close(); },
+    async handleMealPageFormSubmit(e) { e.preventDefault(); const form = e.target; const meal = { date: form.elements['meal-page-date'].value, mealType: form.elements['meal-page-type'].value, recipeName: form.elements['meal-page-recipeName'].value, ingredients: [] }; const newDoc = await db.add('meals', meal); ui.openMealModal(meal.date, meal.mealType, newDoc.id); form.reset(); },
+    async handleMealModalSubmit(e) { e.preventDefault(); const form = e.target; const mealId = form.elements.mealId.value; if (!mealId) return; const ingredients = Array.from(document.querySelectorAll('#ingredient-list-container .ingredient-name')).map(el => ({ name: el.textContent, status: el.previousElementSibling.checked ? 'Need' : 'Have' })); const mealData = { date: form.elements.mealDate.value, mealType: form.elements.mealType.value, recipeName: form.elements.recipeName.value, recipeURL: form.elements.recipeURL.value, ingredients }; await db.update('meals', mealId, mealData); ui.showToast("Meal updated!"); document.getElementById('meal_modal').close(); },
+    async addFamilyMember(e) { e.preventDefault(); const nameInput = document.getElementById('new-member-name'); const name = nameInput.value.trim(); if (name) { await db.add('familyMembers', { name }); nameInput.value = ''; ui.showToast("Family member added!"); } },
+    async addStore(e) { e.preventDefault(); const nameInput = document.getElementById('new-store-name'); const name = nameInput.value.trim(); if (name) { await db.add('stores', { name }); nameInput.value = ''; ui.showToast("Store added!"); } },
+    async addStoreItem(e) { e.preventDefault(); const input = document.getElementById('new-store-item-name'); const itemName = input.value.trim(); if(itemName && this.currentStoreId) { await db.add('storeItems', { itemName, storeId: this.currentStoreId }); input.value = ''; ui.renderStoreDetail(); } },
+    async handleAddToShoppingList(storeItemId) { const itemDoc = await db.get('storeItems', storeItemId); if (!itemDoc.exists()) return; const item = itemDoc.data(); const storeDoc = await db.get('stores', item.storeId); if (!storeDoc.exists()) return; const store = {id: storeDoc.id, ...storeDoc.data()}; if (this.activeStore && this.activeStore.id !== store.id) { if (!confirm(`You have an active list for ${this.activeStore.name}. Clear it and start a new one for ${store.name}?`)) return; await db.clear('groceries'); } this.activeStore = store; if((app.data.groceries || []).some(i => i.itemName.toLowerCase() === item.itemName.toLowerCase())) { return ui.showToast(`${item.itemName} is already on the list.`, 'error'); } await db.add('groceries', { storeId: item.storeId, itemName: item.itemName, isChecked: false, price: null }); ui.showToast("Item added to list!"); },
+    async handleShoppingListUpdate(e) { const target = e.target; const itemId = target.dataset.id; if (!itemId) return; if (target.matches('.shopping-item-checkbox')) { await db.update('groceries', itemId, { isChecked: target.checked }); } else if (target.matches('.shopping-item-price')) { await db.update('groceries', itemId, { price: parseFloat(target.value) || null }); } },
+    async handleRemoveFromShoppingList(id) { await db.delete('groceries', id); },
+    async handleCompleteShoppingTrip() { if (!this.activeStore || !app.data.groceries || app.data.groceries.length === 0) return; const totalCost = app.data.groceries.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const newTrip = { dateCompleted: new Date().toISOString(), items: app.data.groceries, totalCost, storeId: this.activeStore.id, storeName: this.activeStore.name }; await db.add('shoppingTrips', newTrip); await db.clear('groceries'); this.activeStore = null; ui.showToast('Shopping trip saved!'); },
+    async deleteStore(id) { await db.delete('stores', id); /* also delete associated storeItems */ ui.showToast("Store deleted."); },
+    async deleteStoreItem(id) { await db.delete('storeItems', id); ui.showToast("Item deleted from store."); },
+    handleAddIngredient() { const input = document.getElementById('new-ingredient-name'); const name = input.value.trim(); if (name) { ui.renderIngredientListItem({ name, status: 'Need' }); input.value = ''; input.focus(); } },
+    async deleteFamilyMember(id) { await db.delete('familyMembers', id); ui.showToast("Member removed."); },
+    async handleDeleteMeal() { const id = document.getElementById('mealId').value; if(id) await db.delete('meals', id); ui.showToast('Meal deleted.'); document.getElementById('meal_modal').close(); },
     exportData() {ui.showToast('Exporting data...');},
-    importData(e) {ui.showToast('Importing data...');}
+    importData(e) {ui.showToast('Importing data...');},
+    async clearAllData() { if (confirm("DANGER: This will permanently delete ALL data from the cloud. Are you sure?")) { for (const storeName of OBJECT_STORES) await db.clear(storeName); this.activeStore = null; ui.showToast('All cloud data has been cleared.'); document.getElementById('manage_modal').close(); } },
 };
 
 const initFirebase = async () => {
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : providedFirebaseConfig;
-    if (!firebaseConfig.apiKey) { 
-        document.body.innerHTML = '<div class="alert alert-error m-4">Firebase configuration is missing. The app cannot start.</div>';
-        return; 
-    }
+    if (!firebaseConfig.apiKey) { document.body.innerHTML = '<div class="alert alert-error m-4">Firebase configuration is missing. The app cannot start.</div>'; return; }
     const fb_app = initializeApp(firebaseConfig);
     fb_db = getFirestore(fb_app);
     fb_auth = getAuth(fb_app);
@@ -719,25 +727,16 @@ const seedInitialData = async () => {
     const family = [{name: 'Emma'}, {name: 'Jack'}, {name: 'Sarah'}, {name: 'Mike'}];
     family.forEach(m => batch.set(doc(collection(fb_db, db._getCollectionPath('familyMembers'))), m));
     
-    const tasks = [
-        { name: "School Drop-off", type: 'School', assignee: 'Sarah', dueDate: today, dueTime: '08:00', notes: 'Elementary School' },
-        { name: "Emma - Soccer Practice", type: 'Team', assignee: 'Mike', dueDate: today, dueTime: '10:00', notes: 'Community Park' },
-        { name: "Lunch with Team", type: 'Restaurant', assignee: 'Mike', dueDate: today, dueTime: '12:00', notes: 'Downtown Restaurant' },
-    ];
+    const tasks = [ { name: "School Drop-off", type: 'School', assignee: 'Sarah', dueDate: today, dueTime: '08:00', notes: 'Elementary School' }, { name: "Emma - Soccer Practice", type: 'Team', assignee: 'Mike', dueDate: today, dueTime: '10:00', notes: 'Community Park' }, { name: "Lunch with Team", type: 'Restaurant', assignee: 'Mike', dueDate: today, dueTime: '12:00', notes: 'Downtown Restaurant' }, ];
     tasks.forEach(t => batch.set(doc(collection(fb_db, db._getCollectionPath('tasks'))), t));
 
-    const meals = [
-        { recipeName: 'Pancakes', mealType: 'Breakfast', date: today, assignee: 'Mike' },
-        { recipeName: 'Chicken Salad', mealType: 'Lunch', date: today, assignee: 'Sarah' },
-        { recipeName: 'Spaghetti', mealType: 'Dinner', date: today, assignee: 'Sarah' }
-    ];
+    const meals = [ { recipeName: 'Pancakes', mealType: 'Breakfast', date: today, assignee: 'Mike' }, { recipeName: 'Chicken Salad', mealType: 'Lunch', date: today, assignee: 'Sarah' }, { recipeName: 'Spaghetti', mealType: 'Dinner', date: today, assignee: 'Sarah' } ];
     meals.forEach(m => batch.set(doc(collection(fb_db, db._getCollectionPath('meals'))), m));
     
     await batch.commit();
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    themeManager.init();
     initFirebase();
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
