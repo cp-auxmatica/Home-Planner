@@ -1,7 +1,7 @@
 const CACHE_NAME = 'hub-cache-v1';
 const urlsToCache = [
   '/',
-  'Home-Planner.html',
+  '/index.html',
   'https://cdn.tailwindcss.com',
   'https://unpkg.com/lucide@latest/dist/umd/lucide.js',
   'https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap',
